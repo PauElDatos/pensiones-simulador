@@ -259,8 +259,8 @@
     .pyrsvg{
       width:100%;
       height:auto;
-      aspect-ratio: 520 / 520;      /* más alta */
-      min-height:320px;             /* fuerza altura en móviles */
+      aspect-ratio: 520 / 520;
+      min-height:320px;
       border-radius:10px;
       border:1px solid rgba(255,255,255,.06);
       background:rgba(0,0,0,.08);
@@ -371,9 +371,7 @@
 
     <div class="body">
       <div class="loader" id="loadBox"><span class="spinner"></span><span id="loadText">Leyendo datasets…</span></div>
-
       <div class="country-grid" id="countryList"></div>
-
       <div class="note" id="leftNote">Estado: esperando datos.</div>
     </div>
   </section>
@@ -673,7 +671,6 @@
       return;
     }
 
-    // más alta: 520x520
     const W=520, H=520;
     const pad = {l: 74, r: 24, t: 44, b: 24};
     const innerW = W - pad.l - pad.r;
@@ -685,7 +682,6 @@
     const barH = innerH / pyr.ageCodes.length;
     const maxPx = (innerW/2) * 0.90;
 
-    // grid
     const gridLines = 6;
     for (let k=0;k<=gridLines;k++){
       const x = pad.l + (innerW * k/gridLines);
@@ -694,13 +690,11 @@
         stroke: COLORS.grid, "stroke-width":1, "stroke-opacity":"0.25"
       }));
     }
-    // center
     svg.appendChild(svgEl('line',{
       x1: cx, y1: pad.t, x2: cx, y2: pad.t+innerH,
       stroke: COLORS.text, "stroke-width":1.2, "stroke-opacity":"0.55"
     }));
 
-    // labels
     const labL = svgEl('text',{
       x: cx - 8, y: 30,
       fill: COLORS.workers, "font-size":"12", "font-family":"Arial, sans-serif",
@@ -803,28 +797,53 @@
       : `Aquí se cumple <span class="mono">(P/C) &lt; (τ/ρ)</span>: con este τ y ρ habría margen (superávit del esquema simple).`;
   }
 
-  // ---------- ejes (ticks "bonitos") ----------
-  // Objetivo: que xMax (y yMax) se adapten al dato y terminen en un "número redondo cercano":
-  // 22 -> 30, 30 -> 40, 41 -> 50, etc.
-  function niceCeilToStep(x, step){
-    return Math.ceil(x / step) * step;
+  // ---------- EJES (MODIFICACIÓN) ----------
+  // Regla para X (millones):
+  // - Si C >= 10: el eje termina SIEMPRE en el siguiente múltiplo de 10 (22→30, 30→40, 45.5→50).
+  // - Si C < 10: techo pequeño “bonito” (2, 5 o 10).
+  function xMaxFromC(C){
+    if (C === null) return 30;      // fallback si no hay dato
+    if (C < 1.5) return 2;
+    if (C < 3.5) return 5;
+    if (C < 10)  return 10;
+
+    let x = Math.ceil(C / 10) * 10;
+    // si C cae exacto (30.0), empuja al siguiente (40) como en tu ejemplo
+    if (Math.abs(x - C) < 1e-9) x += 10;
+    return x;
   }
 
-  function chooseAxisStep(max){
-    // max en millones. elegimos un escalón típico para ejes: 1,2,5,10,20,25,50,100...
-    if (max <= 10) return 2;
-    if (max <= 20) return 5;
-    if (max <= 40) return 10;
-    if (max <= 80) return 20;
-    if (max <= 120) return 25;
-    if (max <= 250) return 50;
+  function xStepFromXMax(xMax){
+    if (xMax <= 2)  return 0.5;
+    if (xMax <= 5)  return 1;
+    if (xMax <= 10) return 2;
+    // a partir de aquí, por tu regla, queremos decenas
+    return 10;
+  }
+
+  // Para Y usamos “bonitos” (1,2,5,10,20,50...) en función de magnitud.
+  function niceStep(max){
+    if (max <= 5)   return 1;
+    if (max <= 10)  return 2;
+    if (max <= 20)  return 5;
+    if (max <= 50)  return 10;
+    if (max <= 100) return 20;
+    if (max <= 200) return 50;
     return 100;
   }
 
-  function buildTicksFromStep(max, step){
+  function ceilToStep(x, step){
+    return Math.ceil(x / step) * step;
+  }
+
+  function buildTicks(max, step){
     const ticks = [];
-    for (let v=0; v<=max+1e-9; v += step) ticks.push(v);
-    // garantizar tick final exacto
+    const n = Math.round(max / step);
+    for (let i=0;i<=n;i++){
+      const v = i * step;
+      // evitar -0
+      ticks.push(Math.abs(v) < 1e-12 ? 0 : v);
+    }
     if (ticks[ticks.length-1] !== max) ticks.push(max);
     return ticks;
   }
@@ -853,38 +872,18 @@
     const P = metrics?.P_m ?? null;
     const k = metrics?.k ?? null;
 
-    // ------------------------
-    // MODIFICACIÓN PEDIDA:
-    // 1) xMax depende de C.
-    // 2) xMax debe acabar en el "decimal" (número redondo) más próximo por arriba:
-    //    ej: C=22 -> xMax=30 ; C=30 -> xMax=40.
-    // 3) ticks coherentes con ese xMax (step acorde).
-    // ------------------------
-    let xMax;
-    if (C !== null){
-      const raw = C;                         // en millones
-      const stepGuess = chooseAxisStep(raw); // escalón según magnitud
-      xMax = niceCeilToStep(raw, stepGuess); // redondeo "bonito" por arriba
-      // margen mínimo visual: si C cae EXACTO en xMax, empujamos al siguiente escalón
-      if (Math.abs(xMax - raw) < 1e-9) xMax += stepGuess;
-      // también asegurar un mínimo razonable
-      xMax = Math.max(30, xMax);
-    } else {
-      xMax = 30;
-    }
-    const xStep = chooseAxisStep(xMax);
-    // si el escalón elegido no divide bien el máximo (por el mínimo 30), ajustamos a 10
-    const xTicks = buildTicksFromStep(xMax, xStep);
+    // X: regla pedida
+    const xMax = xMaxFromC(C);
+    const xStep = xStepFromXMax(xMax);
+    const xTicks = buildTicks(xMax, xStep);
 
-    // yMax: dinámica (punto + recta). Redondeo a "bonito" con step propio.
-    let yMax = 15;
-    if (P !== null) yMax = Math.max(yMax, P * 1.20);
-    if (k !== null) yMax = Math.max(yMax, (k * xMax) * 1.05);
-
-    const yStepGuess = chooseAxisStep(yMax);
-    yMax = niceCeilToStep(yMax, yStepGuess);
-    const yStep = chooseAxisStep(yMax);
-    const yTicks = buildTicksFromStep(yMax, yStep);
+    // Y: que quepa el punto y la recta (si hay k), redondeado a “bonito”
+    let yMaxRaw = 15;
+    if (P !== null) yMaxRaw = Math.max(yMaxRaw, P * 1.20);
+    if (k !== null) yMaxRaw = Math.max(yMaxRaw, (k * xMax) * 1.05);
+    const yStep = niceStep(yMaxRaw);
+    const yMax = ceilToStep(yMaxRaw, yStep);
+    const yTicks = buildTicks(yMax, yStep);
 
     const xMin=0, yMin=0;
 
