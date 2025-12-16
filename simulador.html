@@ -1,513 +1,251 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pensiones — Simulador</title>
-  <style>
-    :root{
-      --bg:#252525;
-      --primary:#FEF702;
-      --text:#B0B0B0;
-      --grid:#4A4A4A;
-      --workers:#36C3FF;
-      --retired:#FF6A00;
-      --panel:#2b2b2b;
-      --stroke:#3a3a3a;
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pensiones — Simulador</title>
 
-      --fontTitle: "Futura","Trebuchet MS",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      --fontText:  Arial,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+<style>
+:root{
+  --bg:#252525;
+  --panel:#2b2b2b;
+  --stroke:#3a3a3a;
+  --primary:#FEF702;
+  --text:#B0B0B0;
+  --workers:#36C3FF;
+  --retired:#FF6A00;
+}
 
-      --radius:14px;
-      --shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,system-ui;
+}
 
-    *{box-sizing:border-box}
-    body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--fontText); }
+header{
+  padding:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+}
+h1{
+  margin:0;
+  font-family:Futura,system-ui;
+  color:var(--primary);
+  font-size:24px;
+}
+header p{
+  margin:6px 0 0;
+  font-size:13px;
+  opacity:.85;
+}
 
-    header{
-      padding:18px 18px 8px 18px;
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .h-title{ line-height:1.05; }
-    .h-title h1{
-      margin:0;
-      font-family:var(--fontTitle);
-      color:var(--primary);
-      font-size:22px;
-      letter-spacing:.3px;
-    }
-    .h-title p{ margin:6px 0 0 0; font-size:13px; opacity:.9; }
-    .h-meta{ font-size:12px; opacity:.85; text-align:right; }
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px;
-      border:1px solid var(--stroke);
-      border-radius:999px;
-      background:rgba(255,255,255,.03);
-    }
-    .dot{
-      width:8px; height:8px; border-radius:50%;
-      background:var(--primary);
-      box-shadow:0 0 0 3px rgba(254,247,2,.15);
-    }
-    a.back{
-      color:var(--text);
-      text-decoration:none;
-      border-bottom:1px solid rgba(255,255,255,.18);
-      padding-bottom:1px;
-    }
-    a.back:hover{ border-bottom-color: rgba(254,247,2,.35); color:#fff; }
+main{
+  display:grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap:14px;
+  padding:14px;
+}
 
-    main{
-      min-height: calc(100vh - 70px);
-      display:grid;
-      grid-template-columns: 1fr 420px;
-      gap:12px;
-      padding:12px 12px 18px 12px;
-    }
-    @media (max-width: 1200px){
-      main{ grid-template-columns:1fr; }
-    }
+/* PANEL */
+.panel{
+  background:linear-gradient(180deg,#2e2e2e,#262626);
+  border:1px solid var(--stroke);
+  border-radius:14px;
+  padding:14px;
+}
 
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
-      border:1px solid var(--stroke);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .ph{
-      padding:12px 12px 10px 12px;
-      border-bottom:1px solid var(--stroke);
-      background:rgba(255,255,255,.02);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .ttl{
-      font-family:var(--fontTitle);
-      color:var(--primary);
-      font-size:13px;
-      letter-spacing:.35px;
-      text-transform:uppercase;
-    }
-    .sub{ font-size:12px; opacity:.85; text-align:right; max-width:56ch; }
+/* ================== IZQUIERDA ================== */
+.left{
+  display:grid;
+  grid-template-columns:60px 1fr;
+  gap:12px;
+}
 
-    /* LEFT: empty chart placeholder */
-    .chart-area{
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      height:100%;
-    }
-    .bigsvg{
-      width:100%;
-      height:auto;
-      aspect-ratio: 1000 / 700;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.05);
-      background:rgba(0,0,0,.08);
-      display:block;
-    }
-    .caption{
-      font-size:12px;
-      opacity:.82;
-      line-height:1.35;
-      border-top:1px solid rgba(255,255,255,.06);
-      padding-top:8px;
-    }
+/* slider vertical */
+.vslider{
+  display:flex;
+  justify-content:center;
+}
+.vslider input{
+  writing-mode:bt-lr;
+  -webkit-appearance:slider-vertical;
+  height:620px;
+  width:24px;
+  accent-color:var(--primary);
+}
 
-    /* RIGHT: pyramid + controls */
-    .right-body{ padding:12px; display:flex; flex-direction:column; gap:12px; }
-    .pyr-frame{
-      display:grid;
-      grid-template-columns: 54px 1fr;
-      gap:10px;
-      align-items:stretch;
-    }
-    .vslider-shell{
-      background:rgba(0,0,0,.10);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:14px;
-      padding:10px 6px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .vslider-shell input[type="range"]{
-      -webkit-appearance: slider-vertical;
-      writing-mode: bt-lr;
-      width: 22px;
-      height: 460px;
-      accent-color: var(--primary);
-    }
-    .pyr-svg{
-      width:100%;
-      height:auto;
-      aspect-ratio: 520 / 520;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.05);
-      background:rgba(0,0,0,.08);
-      display:block;
-    }
-    .ctl{ display:grid; gap:6px; }
-    .ctl label{
-      font-size:12px;
-      opacity:.9;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .val{ font-variant-numeric: tabular-nums; opacity:.95; }
-    input[type="range"]{ width:100%; accent-color: var(--primary); }
-    .divider{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
-    .note{ font-size:11px; opacity:.75; line-height:1.35; }
-    .mono{
-      font-variant-numeric: tabular-nums;
-      font-feature-settings: "tnum" 1, "ss01" 1;
-    }
-  </style>
+/* gráficas */
+.graphs{
+  display:grid;
+  grid-template-rows:1fr auto;
+  gap:16px;
+}
+
+svg{
+  width:100%;
+  height:100%;
+  background:#1f1f1f;
+  border-radius:12px;
+}
+
+/* ratio */
+.ratio{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  font-size:14px;
+}
+.ratio img{
+  height:46px;
+}
+.ratio strong{
+  color:var(--primary);
+}
+
+/* ================== DERECHA ================== */
+.right{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+/* pirámide */
+.pyr svg{
+  height:620px;
+}
+
+/* controles */
+.control{
+  font-size:12px;
+}
+.control label{
+  display:flex;
+  justify-content:space-between;
+}
+.control input{
+  width:100%;
+}
+
+/* resultado */
+.result{
+  padding:12px;
+  border-radius:10px;
+  background:#1f1f1f;
+  font-size:13px;
+}
+.result.ok{border-left:4px solid #4caf50}
+.result.bad{border-left:4px solid #ff5252}
+
+</style>
 </head>
 
 <body>
+
 <header>
-  <div class="h-title">
-    <h1>Simulador</h1>
-    <p>Pirámide por quinquenios y parámetros. La gráfica principal queda como placeholder.</p>
+  <div>
+    <h1>Simulador del sistema de reparto</h1>
+    <p>Demografía + productividad → sostenibilidad</p>
   </div>
-  <div class="h-meta">
-    <div class="pill"><span class="dot"></span><span><a class="back" href="index.html">Volver</a></span></div>
-  </div>
+  <a href="index.html" style="color:#bbb;text-decoration:none">Volver</a>
 </header>
 
 <main>
 
-  <!-- LEFT: empty chart placeholder -->
-  <section class="panel" aria-label="Gráfica (placeholder)">
-    <div class="ph">
-      <div class="ttl">Gráfica</div>
-      <div class="sub mono">Placeholder</div>
+<!-- ================== IZQUIERDA ================== -->
+<section class="panel left">
+
+  <!-- divisor inicial -->
+  <div class="vslider">
+    <input id="split" type="range" min="5" max="60" value="25">
+  </div>
+
+  <div class="graphs">
+
+    <!-- gráfica temporal -->
+    <svg id="timeGraph" viewBox="0 0 1000 500"></svg>
+
+    <!-- ratio -->
+    <div class="ratio">
+      <img src="figuras/noun-person-8104496.svg">
+      <strong id="ratioText">3.2</strong>
+      <img src="figuras/noun-person-8100160.svg">
     </div>
-    <div class="chart-area">
-      <svg id="mainSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica vacía"></svg>
-      <div class="caption">
-        Aquí irá la gráfica del simulador (por decidir). A la derecha ya tienes la pirámide y sus parámetros.
-      </div>
-    </div>
-  </section>
 
-  <!-- RIGHT: pyramid + controls -->
-  <section class="panel" aria-label="Pirámide poblacional y controles">
-    <div class="ph">
-      <div class="ttl">Pirámide</div>
-      <div class="sub mono" id="pyrMeta">Población total: 47.0 M</div>
-    </div>
+  </div>
+</section>
 
-    <div class="right-body">
-      <div class="pyr-frame">
-        <div class="vslider-shell" title="Pico (quinquenio)">
-          <input id="peakSlider" type="range" min="0" max="20" step="1" value="9" />
-        </div>
+<!-- ================== DERECHA ================== -->
+<section class="panel right">
 
-        <svg id="pyrSvg" class="pyr-svg" viewBox="0 0 520 520" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide por quinquenios"></svg>
-      </div>
+  <div class="pyr">
+    <svg id="pyramid" viewBox="0 0 520 720"></svg>
+  </div>
 
-      <div class="ctl">
-        <label>
-          <span>Dispersión del perfil etario (σ)</span>
-          <span class="val mono" id="sigmaVal">18</span>
-        </label>
-        <input id="sigmaSlider" type="range" min="6" max="40" step="1" value="18" />
-      </div>
+  <div class="control">
+    <label>Productividad por trabajador <span id="prodV">1.00</span></label>
+    <input id="prod" type="range" min="0.5" max="2.0" step="0.01" value="1">
+  </div>
 
-      <div class="ctl">
-        <label>
-          <span>Densidad del pico</span>
-          <span class="val mono" id="densityVal">0.75</span>
-        </label>
-        <input id="densitySlider" type="range" min="0.35" max="1.25" step="0.01" value="0.75" />
-      </div>
+  <div class="control">
+    <label>Pensión media relativa <span id="pensV">0.55</span></label>
+    <input id="pens" type="range" min="0.3" max="1.0" step="0.01" value="0.55">
+  </div>
 
-      <div class="divider"></div>
+  <div class="control">
+    <label>Tipo de cotización <span id="cotV">0.30</span></label>
+    <input id="cot" type="range" min="0.1" max="0.5" step="0.01" value="0.3">
+  </div>
 
-      <div class="ctl">
-        <label>
-          <span>Total población (millones)</span>
-          <span class="val mono" id="popVal">47.0</span>
-        </label>
-        <input id="popSlider" type="range" min="5" max="350" step="0.5" value="47" />
-      </div>
+  <div id="result" class="result"></div>
 
-      <div class="note">
-        Pirámide sintética: perfil base (campana) con pico desplazable y control de dispersión (σ). La densidad ajusta la “concentración” del máximo.
-        Escala vertical invertida: 0–4 abajo, 95–99 arriba.
-      </div>
-    </div>
-  </section>
+</section>
 
 </main>
 
 <script>
-(() => {
-  const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-  const COLORS = {
-    primary: CSS('--primary'),
-    text: CSS('--text'),
-    grid: CSS('--grid'),
-    workers: CSS('--workers'),
-    retired: CSS('--retired'),
-  };
+const split = document.getElementById("split");
+const prod = document.getElementById("prod");
+const pens = document.getElementById("pens");
+const cot  = document.getElementById("cot");
 
-  const AGE_LABELS = [
-    "0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
-    "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95-99","100+"
-  ];
+const ratioText = document.getElementById("ratioText");
+const resultBox = document.getElementById("result");
 
-  const state = {
-    popTotalM: 47.0,
-    peakIdx: 9,     // 45-49
-    sigma: 18,      // slider [6..40] -> sigmaModel = sigma/6
-    density: 0.75   // controls sharpness
-  };
+function update(){
+  const retiredShare = split.value / 100;
+  const workersShare = 1 - retiredShare;
 
-  const els = {
-    pyrSvg: document.getElementById('pyrSvg'),
-    pyrMeta: document.getElementById('pyrMeta'),
+  const productivity = +prod.value;
+  const pension      = +pens.value;
+  const contrib      = +cot.value;
 
-    peakSlider: document.getElementById('peakSlider'),
+  const income = workersShare * productivity * contrib;
+  const cost   = retiredShare * pension;
 
-    sigmaSlider: document.getElementById('sigmaSlider'),
-    sigmaVal: document.getElementById('sigmaVal'),
+  const ratio = workersShare / retiredShare;
+  ratioText.textContent = ratio.toFixed(2);
 
-    densitySlider: document.getElementById('densitySlider'),
-    densityVal: document.getElementById('densityVal'),
-
-    popSlider: document.getElementById('popSlider'),
-    popVal: document.getElementById('popVal'),
-  };
-
-  // SVG helpers
-  const svgEl = (name, attrs={}) => {
-    const el = document.createElementNS("http://www.w3.org/2000/svg", name);
-    for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
-    return el;
-  };
-  const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
-
-  function gaussian(x, mu, sigma){
-    const z = (x - mu) / Math.max(1e-6, sigma);
-    return Math.exp(-0.5 * z * z);
+  if(income >= cost){
+    resultBox.className = "result ok";
+    resultBox.innerHTML =
+      `<strong>SISTEMA SOSTENIBLE</strong><br>
+       Ingresos ≥ Gastos<br>
+       Superávit relativo: ${(income-cost).toFixed(2)}`;
+  }else{
+    resultBox.className = "result bad";
+    resultBox.innerHTML =
+      `<strong>SISTEMA NO SOSTENIBLE</strong><br>
+       Ingresos < Gastos<br>
+       Déficit relativo: ${(cost-income).toFixed(2)}`;
   }
+}
 
-  // density effect:
-  // base in (0,1]. We raise it to a power p:
-  // - higher density => larger p => sharper peak
-  // - lower density => smaller p => flatter
-  function applyDensity(v, density){
-    // map density [0.35..1.25] to p ~ [0.65..2.20]
-    const p = 0.65 + (density - 0.35) * (2.20 - 0.65) / (1.25 - 0.35);
-    return Math.pow(v, p);
-  }
-
-  function buildSyntheticShares(){
-    const n = AGE_LABELS.length;
-    const peak = state.peakIdx;
-    const sigmaModel = state.sigma / 6.0; // 6..40 -> ~1..6.67
-
-    const total = new Array(n).fill(0);
-
-    for (let i=0;i<n;i++){
-      let v = gaussian(i, peak, sigmaModel);
-
-      // base juvenil para evitar colapsos cuando el pico es viejo
-      v += 0.22 * gaussian(i, 2.0, sigmaModel * 1.6);
-
-      // cola suave (ancianos)
-      const tailStart = Math.max(0, peak + 4);
-      if (i >= tailStart){
-        const t = (i - tailStart);
-        v += 0.10 * Math.exp(-t / Math.max(1.5, sigmaModel*1.2));
-      }
-
-      // aplicar densidad (concentración del pico)
-      v = applyDensity(v, state.density);
-
-      total[i] = v;
-    }
-
-    // normalize
-    let s = total.reduce((a,b)=>a+b,0);
-    if (s <= 0) s = 1;
-    for (let i=0;i<n;i++) total[i] /= s;
-
-    // split M/F (mujer ligeramente mayor en edades altas)
-    const m = new Array(n).fill(0);
-    const f = new Array(n).fill(0);
-    for (let i=0;i<n;i++){
-      const ageFactor = i / (n-1);
-      const femaleBias = 0.50 + 0.10 * Math.pow(ageFactor, 1.6);
-      const fb = Math.min(0.62, Math.max(0.50, femaleBias));
-      f[i] = total[i] * fb;
-      m[i] = total[i] * (1 - fb);
-    }
-
-    return {m, f};
-  }
-
-  function renderPyramid(){
-    const svg = els.pyrSvg;
-    clearSvg(svg);
-
-    const W = 520, H = 520;
-    const pad = {l: 86, r: 30, t: 44, b: 24};
-    const innerW = W - pad.l - pad.r;
-    const innerH = H - pad.t - pad.b;
-    const cx = pad.l + innerW/2;
-
-    const {m,f} = buildSyntheticShares();
-
-    // grid
-    const gridLines = 6;
-    for (let k=0;k<=gridLines;k++){
-      const x = pad.l + (innerW * k/gridLines);
-      svg.appendChild(svgEl('line', {
-        x1:x, y1:pad.t, x2:x, y2:pad.t+innerH,
-        stroke: COLORS.grid, "stroke-width":1, "stroke-opacity":"0.30"
-      }));
-    }
-
-    // center line
-    svg.appendChild(svgEl('line',{
-      x1: cx, y1: pad.t, x2: cx, y2: pad.t+innerH,
-      stroke: COLORS.text, "stroke-width":1.2, "stroke-opacity":"0.65"
-    }));
-
-    // title
-    const title = svgEl('text',{
-      x: pad.l, y: 24,
-      fill: COLORS.primary,
-      "font-size":"13",
-      "font-family":"Futura, Trebuchet MS, Arial, sans-serif",
-      "letter-spacing":"0.35",
-      "opacity":"0.95"
-    });
-    title.textContent = "Distribución por edad (quinquenios)";
-    svg.appendChild(title);
-
-    // labels Hombre / Mujer
-    const labL = svgEl('text',{
-      x: cx - 10, y: 40,
-      fill: COLORS.workers,
-      "font-size":"12",
-      "font-family":"Arial, sans-serif",
-      "text-anchor":"end",
-      "opacity":"0.90"
-    });
-    labL.textContent = "Hombre";
-    svg.appendChild(labL);
-
-    const labR = svgEl('text',{
-      x: cx + 10, y: 40,
-      fill: COLORS.retired,
-      "font-size":"12",
-      "font-family":"Arial, sans-serif",
-      "text-anchor":"start",
-      "opacity":"0.90"
-    });
-    labR.textContent = "Mujer";
-    svg.appendChild(labR);
-
-    // scale
-    let maxBin = 0;
-    for (let i=0;i<m.length;i++){
-      maxBin = Math.max(maxBin, m[i], f[i]);
-    }
-    if (maxBin <= 0) maxBin = 1;
-    const maxPx = (innerW/2) * 0.92;
-
-    const n = AGE_LABELS.length;
-    const barH = innerH / n;
-
-    // IMPORTANT: invert rendering => 0-4 at bottom, 95-99 top
-    // y = pad.t + (n-1-i)*barH
-    for (let i=0;i<n;i++){
-      const y = pad.t + (n - 1 - i) * barH + 1;
-      const h = Math.max(1, barH - 2);
-
-      const wL = (m[i] / maxBin) * maxPx;
-      const wR = (f[i] / maxBin) * maxPx;
-
-      svg.appendChild(svgEl('rect',{
-        x: cx - wL, y, width: wL, height: h,
-        fill: COLORS.workers, "fill-opacity":"0.78"
-      }));
-      svg.appendChild(svgEl('rect',{
-        x: cx, y, width: wR, height: h,
-        fill: COLORS.retired, "fill-opacity":"0.78"
-      }));
-
-      // Age labels (left), aligned to the same row we drew
-      const t = svgEl('text',{
-        x: 12, y: y + h*0.72,
-        fill: COLORS.text,
-        "font-size":"11",
-        "font-family":"Arial, sans-serif",
-        "opacity":"0.90"
-      });
-      t.textContent = AGE_LABELS[i];
-      svg.appendChild(t);
-    }
-
-    els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
-  }
-
-  function syncUI(){
-    els.popSlider.value = state.popTotalM;
-    els.popVal.textContent = state.popTotalM.toFixed(1);
-
-    els.peakSlider.value = state.peakIdx;
-
-    els.sigmaSlider.value = state.sigma;
-    els.sigmaVal.textContent = String(state.sigma);
-
-    els.densitySlider.value = state.density;
-    els.densityVal.textContent = state.density.toFixed(2);
-  }
-
-  els.peakSlider.addEventListener('input', (e) => {
-    state.peakIdx = Number(e.target.value);
-    renderPyramid();
-  });
-
-  els.sigmaSlider.addEventListener('input', (e) => {
-    state.sigma = Number(e.target.value);
-    els.sigmaVal.textContent = String(state.sigma);
-    renderPyramid();
-  });
-
-  els.densitySlider.addEventListener('input', (e) => {
-    state.density = Number(e.target.value);
-    els.densityVal.textContent = state.density.toFixed(2);
-    renderPyramid();
-  });
-
-  els.popSlider.addEventListener('input', (e) => {
-    state.popTotalM = Number(e.target.value);
-    els.popVal.textContent = state.popTotalM.toFixed(1);
-    els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
-  });
-
-  // init
-  syncUI();
-  renderPyramid();
-})();
+document.querySelectorAll("input").forEach(i=>i.addEventListener("input",update));
+update();
 </script>
 
 </body>
