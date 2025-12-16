@@ -95,6 +95,7 @@
       align-items:center;
       justify-content:space-between;
       gap:10px;
+      min-height:44px; /* para que entren sin cambiar el alto visual del bloque */
     }
     .ttl{
       font-family:var(--fontTitle);
@@ -102,12 +103,59 @@
       font-size:13px;
       letter-spacing:.35px;
       text-transform:uppercase;
+      white-space:nowrap;
+      flex:0 0 auto;
     }
     .sub{
       font-size:12px;
       opacity:.85;
       text-align:right;
       max-width:56ch;
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+
+    /* NUEVO: grupo de botones en la cabecera del panel derecho (sin cambiar tamaño del bloque) */
+    .ph-actions{
+      flex:1 1 auto;
+      display:flex;
+      justify-content:center;
+      gap:8px;
+      min-width:0;
+      overflow:hidden;
+    }
+    .ph-btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+      color:var(--text);
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:12px;
+      line-height:1;
+      cursor:pointer;
+      white-space:nowrap;
+      flex:1 1 0;
+      min-width:0;
+      max-width:220px; /* “alargados”, pero sin romper el header */
+      text-overflow:ellipsis;
+      overflow:hidden;
+    }
+    .ph-btn:hover{
+      border-color: rgba(254,247,2,.25);
+      background:rgba(255,255,255,.03);
+      color:#fff;
+    }
+    .ph-btn[aria-pressed="true"]{
+      border-color: rgba(254,247,2,.35);
+      background:rgba(254,247,2,.08);
+      color:#fff;
+    }
+    @media (max-width: 900px){
+      /* en pantallas pequeñas el header se satura; apilamos sin cambiar el panel */
+      .ph{ flex-wrap:wrap; }
+      .ph-actions{ width:100%; order:3; justify-content:stretch; }
+      .sub{ width:100%; order:2; text-align:left; }
     }
 
     /* LEFT: countries (scroll list, same height as right) */
@@ -380,6 +428,20 @@
   <section class="panel" aria-label="Visualización y explicación">
     <div class="ph">
       <div class="ttl">Gráfica C–P</div>
+
+      <!-- NUEVO: 3 botones alargados entre el título y el readout (sin cambiar tamaño del bloque) -->
+      <div class="ph-actions" aria-label="Clasificación de países">
+        <button class="ph-btn" id="btnSortProductivity" type="button" aria-pressed="false" title="Ordena por pendiente k=τ/ρ (mayor a menor)">
+          Productividad (k) ↓
+        </button>
+        <button class="ph-btn" id="btnSortMostProfitable" type="button" aria-pressed="false" title="Ordena por mayor margen: (k·C − P) relativo (mayor a menor)">
+          Más rentables ↓
+        </button>
+        <button class="ph-btn" id="btnSortLeastSustainable" type="button" aria-pressed="false" title="Ordena por mayor tensión: (P − k·C) relativo (mayor a menor)">
+          Menos sostenibles ↓
+        </button>
+      </div>
+
       <div class="sub mono" id="cpReadout">C: — | P: —</div>
     </div>
 
@@ -516,7 +578,8 @@
     oecdNames: [],
     popByIso3: new Map(),        // iso3 -> Map(year -> Map(age -> value))
     popYears: new Set(),
-    popPreferredYear: null
+    popPreferredYear: null,
+    sortMode: "default"          // NUEVO
   };
 
   const els = {
@@ -529,6 +592,11 @@
     cpSvg: document.getElementById('cpSvg'),
     cpReadout: document.getElementById('cpReadout'),
     kReadout: document.getElementById('kReadout'),
+
+    // NUEVO: botones
+    btnSortProductivity: document.getElementById('btnSortProductivity'),
+    btnSortMostProfitable: document.getElementById('btnSortMostProfitable'),
+    btnSortLeastSustainable: document.getElementById('btnSortLeastSustainable'),
 
     resultMini: document.getElementById('resultMini'),
     resultBadge: document.getElementById('resultBadge'),
@@ -630,6 +698,67 @@
       btn.addEventListener('click', () => selectCountry(name));
       els.countryList.appendChild(btn);
     });
+  }
+
+  // ---------- NUEVO: ordenaciones ----------
+  function setSortButtons(mode){
+    els.btnSortProductivity.setAttribute("aria-pressed", mode === "productivity" ? "true" : "false");
+    els.btnSortMostProfitable.setAttribute("aria-pressed", mode === "profitable" ? "true" : "false");
+    els.btnSortLeastSustainable.setAttribute("aria-pressed", mode === "unsustainable" ? "true" : "false");
+  }
+
+  // score helpers:
+  // - productivity: k (más alto = “más productivo” por tu criterio de línea amarilla)
+  // - profitable: margen relativo (k·C − P) / (k·C) (más alto = más margen)
+  // - unsustainable: tensión relativa (P − k·C) / (k·C) (más alto = menos sostenible)
+  function sortCountries(mode){
+    state.sortMode = mode;
+    setSortButtons(mode);
+
+    const baseNames = [...state.oecdNames];
+    const decorated = baseNames.map(name => {
+      const entry = state.countriesByName.get(name) || null;
+      const m = entry ? resolveCountryMetrics(entry) : null;
+
+      let score = -Infinity;
+
+      if (m && m.C_m !== null && m.P_m !== null && m.k !== null && m.k > 0){
+        const pStar = m.k * m.C_m; // P* = k·C
+        if (mode === "productivity"){
+          score = m.k;
+        } else if (mode === "profitable"){
+          // margen relativo (solo tiene sentido si pStar > 0)
+          score = (pStar > 0) ? ((pStar - m.P_m) / pStar) : -Infinity;
+        } else if (mode === "unsustainable"){
+          score = (pStar > 0) ? ((m.P_m - pStar) / pStar) : -Infinity;
+        }
+      }
+
+      return { name, score };
+    });
+
+    decorated.sort((a,b) => {
+      // mayor a menor; si empatan, alfabético ES
+      if (b.score !== a.score) return (b.score - a.score);
+      return a.name.localeCompare(b.name, "es");
+    });
+
+    state.oecdNames = decorated.map(d => d.name);
+    renderCountryList();
+
+    // Mantener selección si existe; si no, seleccionar el primero
+    if (state.selectedCountry && state.countriesByName.has(state.selectedCountry)){
+      renderCPChart();
+    } else if (state.oecdNames.length){
+      selectCountry(state.oecdNames[0]);
+    }
+  }
+
+  function wireSortButtons(){
+    els.btnSortProductivity.addEventListener("click", () => sortCountries("productivity"));
+    els.btnSortMostProfitable.addEventListener("click", () => sortCountries("profitable"));
+    els.btnSortLeastSustainable.addEventListener("click", () => sortCountries("unsustainable"));
+    setSortButtons(state.sortMode);
   }
 
   // ---------- Pirámide ----------
@@ -797,18 +926,14 @@
       : `Aquí se cumple <span class="mono">(P/C) &lt; (τ/ρ)</span>: con este τ y ρ habría margen (superávit del esquema simple).`;
   }
 
-  // ---------- EJES (MODIFICACIÓN) ----------
-  // Regla para X (millones):
-  // - Si C >= 10: el eje termina SIEMPRE en el siguiente múltiplo de 10 (22→30, 30→40, 45.5→50).
-  // - Si C < 10: techo pequeño “bonito” (2, 5 o 10).
+  // ---------- EJES ----------
   function xMaxFromC(C){
-    if (C === null) return 30;      // fallback si no hay dato
+    if (C === null) return 30;
     if (C < 1.5) return 2;
     if (C < 3.5) return 5;
     if (C < 10)  return 10;
 
     let x = Math.ceil(C / 10) * 10;
-    // si C cae exacto (30.0), empuja al siguiente (40) como en tu ejemplo
     if (Math.abs(x - C) < 1e-9) x += 10;
     return x;
   }
@@ -817,11 +942,9 @@
     if (xMax <= 2)  return 0.5;
     if (xMax <= 5)  return 1;
     if (xMax <= 10) return 2;
-    // a partir de aquí, por tu regla, queremos decenas
     return 10;
   }
 
-  // Para Y usamos “bonitos” (1,2,5,10,20,50...) en función de magnitud.
   function niceStep(max){
     if (max <= 5)   return 1;
     if (max <= 10)  return 2;
@@ -841,7 +964,6 @@
     const n = Math.round(max / step);
     for (let i=0;i<=n;i++){
       const v = i * step;
-      // evitar -0
       ticks.push(Math.abs(v) < 1e-12 ? 0 : v);
     }
     if (ticks[ticks.length-1] !== max) ticks.push(max);
@@ -872,12 +994,10 @@
     const P = metrics?.P_m ?? null;
     const k = metrics?.k ?? null;
 
-    // X: regla pedida
     const xMax = xMaxFromC(C);
     const xStep = xStepFromXMax(xMax);
     const xTicks = buildTicks(xMax, xStep);
 
-    // Y: que quepa el punto y la recta (si hay k), redondeado a “bonito”
     let yMaxRaw = 15;
     if (P !== null) yMaxRaw = Math.max(yMaxRaw, P * 1.20);
     if (k !== null) yMaxRaw = Math.max(yMaxRaw, (k * xMax) * 1.05);
@@ -890,7 +1010,6 @@
     const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
     const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
 
-    // grid + labels
     yTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
         x1: pad.l, y1: yToPx(v), x2: pad.l+innerW, y2: yToPx(v),
@@ -920,7 +1039,6 @@
       svg.appendChild(t);
     });
 
-    // axes
     svg.appendChild(svgEl('line',{
       x1: pad.l, y1: pad.t+innerH, x2: pad.l+innerW, y2: pad.t+innerH,
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
@@ -930,7 +1048,6 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    // labels
     const xl = svgEl('text',{
       x: pad.l + innerW/2, y: H - 20,
       fill: COLORS.text, "font-size":"14", "font-family":"Arial, sans-serif",
@@ -948,7 +1065,6 @@
     yl.textContent = "Pensionistas (millones)";
     svg.appendChild(yl);
 
-    // No hay C/P
     if (!metrics || C === null || P === null){
       els.cpReadout.textContent = `Datos C/P no disponibles para ${state.selectedCountry}`;
       els.kReadout.textContent = `k: —`;
@@ -969,7 +1085,6 @@
 
     setExplainPanel(metrics);
 
-    // línea equilibrio y = kx
     if (k !== null){
       const xAtTop = yMax / k;
       let xEnd, yEnd;
@@ -994,7 +1109,6 @@
       svg.appendChild(badge);
     }
 
-    // guías
     svg.appendChild(svgEl('line',{
       x1: xToPx(0), y1: yToPx(P),
       x2: xToPx(C), y2: yToPx(P),
@@ -1008,7 +1122,6 @@
       "stroke-dasharray":"6 6"
     }));
 
-    // punto
     svg.appendChild(svgEl('circle',{
       cx: xToPx(C), cy: yToPx(P), r: 7.5,
       fill: COLORS.retired, "fill-opacity":"0.95"
@@ -1090,8 +1203,8 @@
       const val = Number((r[iVal] || "").trim());
 
       if (!ref || !year || !isFinite(val)) continue;
-      if (sex && sex !== "_T") continue;          // este CSV es total
-      if (!PYR_AGE_ORDER.includes(age)) continue; // solo quinquenios
+      if (sex && sex !== "_T") continue;
+      if (!PYR_AGE_ORDER.includes(age)) continue;
 
       state.popYears.add(year);
 
@@ -1130,6 +1243,8 @@
       els.loadText.textContent = "Leyendo JSON + CSV…";
 
       await Promise.all([ loadPensionsJSON(), loadPopulationCSV() ]);
+
+      wireSortButtons(); // NUEVO (botones)
 
       els.loadBox.style.display = "none";
       els.leftNote.textContent =
