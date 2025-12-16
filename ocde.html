@@ -240,6 +240,47 @@
       flex-direction:column;
       gap:10px;
     }
+
+    /* Small pyramid block */
+    .pyrwrap{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      background:rgba(255,255,255,.02);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .pyrtitle{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+      font-size:12px;
+      opacity:.92;
+    }
+    .pyrtitle .l{
+      font-family:var(--fontTitle);
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      color:var(--primary);
+      font-size:12px;
+    }
+    .pyrsvg{
+      width:100%;
+      height:auto;
+      aspect-ratio: 520 / 360;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(0,0,0,.08);
+      display:block;
+    }
+    .pyrnote{
+      font-size:11px;
+      opacity:.72;
+      line-height:1.35;
+    }
+
     .kv{
       display:grid;
       grid-template-columns: 1fr auto;
@@ -338,7 +379,7 @@
     </div>
 
     <div class="body">
-      <div class="loader" id="loadBox"><span class="spinner"></span><span id="loadText">Leyendo JSON…</span></div>
+      <div class="loader" id="loadBox"><span class="spinner"></span><span id="loadText">Leyendo datasets…</span></div>
 
       <p class="small-title">Top 10</p>
       <div class="country-grid" id="top10"></div>
@@ -387,11 +428,25 @@
       <!-- EXPLANATION -->
       <aside class="panel explain" aria-label="Explicación del resultado">
         <div class="ph">
-          <div class="ttl">Resultado</div>
+          <div class="ttl">Bloque país</div>
           <div class="sub mono" id="resultMini">—</div>
         </div>
 
         <div class="body">
+
+          <!-- PIRÁMIDE (encima de Resultado) -->
+          <div class="pyrwrap" aria-label="Pirámide poblacional">
+            <div class="pyrtitle">
+              <span class="l">Pirámide</span>
+              <span class="mono" id="pyrMeta">—</span>
+            </div>
+            <svg id="pyrSvg" class="pyrsvg" viewBox="0 0 520 360" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide poblacional (total)"></svg>
+            <div class="pyrnote" id="pyrNote">
+              Fuente: OECD Population (HIST). Si el CSV solo tiene sexo total, se muestra una pirámide simétrica (total/2 a cada lado).
+            </div>
+          </div>
+
+          <!-- RESULTADO -->
           <div class="badge ok" id="resultBadge">
             <span class="dot2"></span>
             <span id="resultBadgeText">Selecciona un país</span>
@@ -445,7 +500,14 @@
 
 <script>
 (() => {
-  const DATA_URL = "oecd_pensions_merged.json"; // <-- ajusta si lo pones en otra ruta
+  // Ajusta rutas si los ficheros están en otra carpeta.
+  const DATA_URL = "oecd_pensions_merged.json";
+
+  // IMPORTANTE:
+  // Sube este CSV al repositorio (misma carpeta que ocde.html) y pon aquí el nombre exacto.
+  // Ejemplo recomendado: "population_2024_oecd.csv"
+  // Ahora mismo apunto al nombre que sueles tener en descargas OECD; renómbralo en tu repo para simplificar.
+  const POP_CSV_URL = "OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,1.0+.POP.PS._T..H.csv";
 
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const COLORS = {
@@ -456,15 +518,78 @@
     retired: CSS('--retired'),
   };
 
-  // Puedes ajustar TOP10 si quieres:
+  // Top 10
   const TOP10 = [
     "España","Estados Unidos","Japón","Alemania","Francia","Italia","Reino Unido","Canadá","México","Corea del Sur"
   ];
 
+  // Mapa nombre (tu UI) -> ISO3 (REF_AREA del CSV OECD)
+  const NAME_TO_ISO3 = {
+    "Alemania":"DEU",
+    "Australia":"AUS",
+    "Austria":"AUT",
+    "Bélgica":"BEL",
+    "Canadá":"CAN",
+    "Chile":"CHL",
+    "Colombia":"COL",
+    "Corea del Sur":"KOR",
+    "Costa Rica":"CRI",
+    "Dinamarca":"DNK",
+    "Eslovaquia":"SVK",
+    "Eslovenia":"SVN",
+    "España":"ESP",
+    "Estados Unidos":"USA",
+    "Estonia":"EST",
+    "Finlandia":"FIN",
+    "Francia":"FRA",
+    "Grecia":"GRC",
+    "Hungría":"HUN",
+    "Islandia":"ISL",
+    "Irlanda":"IRL",
+    "Israel":"ISR",
+    "Italia":"ITA",
+    "Japón":"JPN",
+    "Letonia":"LVA",
+    "Lituania":"LTU",
+    "Luxemburgo":"LUX",
+    "México":"MEX",
+    "Noruega":"NOR",
+    "Nueva Zelanda":"NZL",
+    "Países Bajos":"NLD",
+    "Polonia":"POL",
+    "Portugal":"PRT",
+    "Reino Unido":"GBR",
+    "República Checa":"CZE",
+    "Suecia":"SWE",
+    "Suiza":"CHE",
+    "Turquía":"TUR"
+  };
+
+  // Edades (del CSV que has subido): quinquenios + 85+
+  const PYR_AGE_ORDER = [
+    "Y_LE4","Y5T9","Y10T14","Y15T19","Y20T24","Y25T29","Y30T34","Y35T39","Y40T44","Y45T49",
+    "Y50T54","Y55T59","Y60T64","Y65T69","Y70T74","Y75T79","Y80T84","Y_GE85"
+  ];
+  const AGE_LABEL = (code) => {
+    const m = {
+      "Y_LE4":"0–4","Y5T9":"5–9","Y10T14":"10–14","Y15T19":"15–19","Y20T24":"20–24","Y25T29":"25–29",
+      "Y30T34":"30–34","Y35T39":"35–39","Y40T44":"40–44","Y45T49":"45–49","Y50T54":"50–54","Y55T59":"55–59",
+      "Y60T64":"60–64","Y65T69":"65–69","Y70T74":"70–74","Y75T79":"75–79","Y80T84":"80–84","Y_GE85":"85+"
+    };
+    return m[code] || code;
+  };
+
   const state = {
     selectedCountry: null,
-    countriesByName: new Map(), // name -> { iso2, name, observations[] }
+
+    // pensiones
+    countriesByName: new Map(), // name -> entry del json
     oecdNames: [],
+
+    // población (pirámide): iso3 -> { year -> { ageCode -> valuePeople } }
+    popByIso3: new Map(),
+    popYears: new Set(), // años encontrados (por si luego quieres selector)
+    popPreferredYear: null // elegimos el último año disponible
   };
 
   const els = {
@@ -494,21 +619,24 @@
     kVal: document.getElementById('kVal'),
     PStar: document.getElementById('PStar'),
     explainText: document.getElementById('explainText'),
+
+    // pyramid
+    pyrSvg: document.getElementById('pyrSvg'),
+    pyrMeta: document.getElementById('pyrMeta'),
+    pyrNote: document.getElementById('pyrNote')
   };
 
-  // --------- utilidades de datos ----------
+  // --------- helpers generales ----------
   const safeNum = (x) => (typeof x === "number" && isFinite(x)) ? x : null;
-
-  function fmtMillionsFromPeople(people){
+  const toMillions = (people) => {
     const p = safeNum(people);
     if (p === null) return null;
     return p / 1e6;
-  }
+  };
 
   function pickLatestObservation(observations, predicate){
     const arr = observations.filter(o => predicate(o));
     if (!arr.length) return null;
-    // Orden simple por fecha ISO desc (vale para YYYY-MM-DD)
     arr.sort((a,b) => {
       const da = a?.period?.date || "";
       const db = b?.period?.date || "";
@@ -518,50 +646,36 @@
   }
 
   function sumContributionRates(observations){
-    // Regla:
-    // - suma todos los metrics que empiecen por "contribution_rate_"
-    // - si no hay ninguno, devuelve null
-    // - si algunos son 0 (p.ej. Dinamarca), se respetan; la suma puede quedar 0
     const rates = observations
       .filter(o => typeof o?.metric === "string" && o.metric.startsWith("contribution_rate_"))
       .map(o => safeNum(o.value))
       .filter(v => v !== null);
-
     if (!rates.length) return null;
-    const s = rates.reduce((a,b)=>a+b,0);
-    return s;
+    return rates.reduce((a,b)=>a+b,0);
   }
 
   function resolveCountryMetrics(countryEntry){
-    // Esperamos un objeto como el del JSON: { country:{iso2,name}, observations:[...] }
     if (!countryEntry || !Array.isArray(countryEntry.observations)) return null;
     const obs = countryEntry.observations;
 
-    // P (pensionistas)
     const pObs = pickLatestObservation(obs, o => o.metric === "pensioners_people");
     const P_people = pObs ? safeNum(pObs.value) : null;
 
-    // C (cotizantes) — en el dataset hay varios nombres posibles (empleados, afiliados, etc.)
     const cObs = pickLatestObservation(obs, o =>
       o.metric === "contributors_employed_people" ||
       o.metric === "contributors_affiliates_people" ||
-      o.metric === "contributors_affiliated_people" ||
-      o.metric === "contributors_affiliates_people" ||
-      o.metric === "contributors_employed_people"
+      o.metric === "contributors_affiliated_people"
     );
     const C_people = cObs ? safeNum(cObs.value) : null;
 
-    // ρ (tasa de reemplazo)
     const rhoObs = pickLatestObservation(obs, o => o.metric === "replacement_rate_gross_full_career");
     const rho = rhoObs ? safeNum(rhoObs.value) : null;
 
-    // τ (cotización a pensiones): suma de contribution_rate_*
     const tau = sumContributionRates(obs);
 
-    const C_m = (C_people !== null) ? fmtMillionsFromPeople(C_people) : null;
-    const P_m = (P_people !== null) ? fmtMillionsFromPeople(P_people) : null;
+    const C_m = (C_people !== null) ? toMillions(C_people) : null;
+    const P_m = (P_people !== null) ? toMillions(P_people) : null;
 
-    // k
     const k = (tau !== null && rho !== null && rho > 0) ? (tau / rho) : null;
 
     return {
@@ -569,13 +683,7 @@
       iso2: countryEntry.country?.iso2 ?? "",
       C_people, P_people,
       C_m, P_m,
-      tau, rho, k,
-      meta: {
-        C_date: cObs?.period?.date || null,
-        P_date: pObs?.period?.date || null,
-        tau_count: obs.filter(o => typeof o?.metric === "string" && o.metric.startsWith("contribution_rate_")).length,
-        rho_date: rhoObs?.period?.date || null,
-      }
+      tau, rho, k
     };
   }
 
@@ -583,7 +691,7 @@
     return (m && m.C_m !== null && m.P_m !== null && m.tau !== null && m.rho !== null && m.k !== null);
   }
 
-  // --------- render UI ----------
+  // --------- SVG helpers ----------
   const svgEl = (name, attrs={}) => {
     const el = document.createElementNS("http://www.w3.org/2000/svg", name);
     for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
@@ -591,6 +699,131 @@
   };
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
 
+  // --------- Pirámide poblacional ----------
+  function getPyramidForCountry(countryName){
+    const iso3 = NAME_TO_ISO3[countryName] || null;
+    if (!iso3) return null;
+    const byYear = state.popByIso3.get(iso3) || null;
+    if (!byYear) return null;
+
+    const year = state.popPreferredYear || [...state.popYears].sort().slice(-1)[0] || null;
+    if (!year) return null;
+
+    const bucket = byYear.get(year) || null;
+    if (!bucket) return null;
+
+    // extraer en orden
+    const vals = PYR_AGE_ORDER.map(a => safeNum(bucket.get(a)) ?? null);
+    if (vals.every(v => v === null)) return null;
+
+    return { iso3, year, values: vals, ageCodes: PYR_AGE_ORDER };
+  }
+
+  function renderPyramid(countryName){
+    const svg = els.pyrSvg;
+    clearSvg(svg);
+
+    const pyr = getPyramidForCountry(countryName);
+    if (!pyr){
+      els.pyrMeta.textContent = "Sin datos";
+      els.pyrNote.textContent = "No hay datos de pirámide para este país (revisa el mapeo ISO3 o el CSV en tu repo).";
+      const t = svgEl('text', {
+        x: 20, y: 60,
+        fill: COLORS.text,
+        "font-size":"13",
+        "font-family":"Arial, sans-serif",
+        "opacity":"0.85"
+      });
+      t.textContent = "Pirámide no disponible";
+      svg.appendChild(t);
+      return;
+    }
+
+    const W=520, H=360;
+    const pad = {l: 68, r: 22, t: 34, b: 18};
+    const innerW = W - pad.l - pad.r;
+    const innerH = H - pad.t - pad.b;
+    const cx = pad.l + innerW/2;
+
+    // valores por edad en personas. Como el CSV es sexo total (_T), dibujamos simétrico (total/2 a cada lado).
+    const vals = pyr.values.map(v => (v === null ? 0 : v));
+    const maxV = Math.max(1, ...vals);
+
+    const barH = innerH / pyr.ageCodes.length;
+    const maxPx = (innerW/2) * 0.90;
+
+    // grid vertical
+    const gridLines = 6;
+    for (let k=0;k<=gridLines;k++){
+      const x = pad.l + (innerW * k/gridLines);
+      svg.appendChild(svgEl('line', {
+        x1:x, y1:pad.t, x2:x, y2:pad.t+innerH,
+        stroke: COLORS.grid, "stroke-width":1, "stroke-opacity":"0.25"
+      }));
+    }
+
+    // center line
+    svg.appendChild(svgEl('line',{
+      x1: cx, y1: pad.t, x2: cx, y2: pad.t+innerH,
+      stroke: COLORS.text, "stroke-width":1.2, "stroke-opacity":"0.55"
+    }));
+
+    // labels left/right
+    const labL = svgEl('text',{
+      x: cx - 8, y: 22,
+      fill: COLORS.workers, "font-size":"12", "font-family":"Arial, sans-serif",
+      "text-anchor":"end", "opacity":"0.88"
+    });
+    labL.textContent = "Total";
+    svg.appendChild(labL);
+
+    const labR = svgEl('text',{
+      x: cx + 8, y: 22,
+      fill: COLORS.retired, "font-size":"12", "font-family":"Arial, sans-serif",
+      "text-anchor":"start", "opacity":"0.88"
+    });
+    labR.textContent = "Total";
+    svg.appendChild(labR);
+
+    // render (0–4 abajo, 85+ arriba) => invertimos
+    for (let i=0;i<pyr.ageCodes.length;i++){
+      const code = pyr.ageCodes[i];
+      const v = vals[i];
+      const y = pad.t + (pyr.ageCodes.length - 1 - i) * barH + 1;
+      const h = Math.max(1, barH - 2);
+
+      const half = v * 0.5;
+      const w = (half / (maxV*0.5)) * maxPx; // equivale a v/maxV
+
+      // izquierda
+      svg.appendChild(svgEl('rect',{
+        x: cx - w, y, width: w, height: h,
+        fill: COLORS.workers, "fill-opacity":"0.70"
+      }));
+      // derecha
+      svg.appendChild(svgEl('rect',{
+        x: cx, y, width: w, height: h,
+        fill: COLORS.retired, "fill-opacity":"0.70"
+      }));
+
+      // edad label
+      const t = svgEl('text',{
+        x: 10, y: y + h*0.72,
+        fill: COLORS.text, "font-size":"11",
+        "font-family":"Arial, sans-serif",
+        "opacity":"0.88"
+      });
+      t.textContent = AGE_LABEL(code);
+      svg.appendChild(t);
+    }
+
+    // meta
+    const totalPop = vals.reduce((a,b)=>a+b,0);
+    els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
+    els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F en este CSV).`;
+  }
+
+  // --------- UI (countries) ----------
   function countryTag(name){
     const entry = state.countriesByName.get(name);
     if (!entry) return "—";
@@ -599,7 +832,6 @@
   }
 
   function renderCountries(){
-    // Top 10 (si un país no existe en el JSON, igualmente se muestra y quedará "—")
     els.top10.innerHTML = "";
     TOP10.forEach(name => {
       const btn = document.createElement('button');
@@ -611,7 +843,6 @@
       els.top10.appendChild(btn);
     });
 
-    // resto
     const rest = state.oecdNames.filter(n => !TOP10.includes(n));
     els.countrySelect.innerHTML =
       `<option value="">— Elegir país —</option>` +
@@ -632,9 +863,13 @@
     selectCountry(v);
   });
 
+  // --------- panel derecho ----------
   function setExplainPanel(metrics){
     const name = state.selectedCountry || "—";
     els.resultMini.textContent = `${name} (último dato)`;
+
+    // pirámide siempre intenta render
+    renderPyramid(name);
 
     if (!metrics || !hasCoreData(metrics)){
       els.resultBadge.classList.remove('warn','ok');
@@ -684,6 +919,30 @@
       : `Aquí se cumple <span class="mono">(P/C) &lt; (τ/ρ)</span>: con este τ y ρ habría margen (superávit del esquema simple).`;
   }
 
+  // --------- eje dinámico (nice ticks) ----------
+  function niceNum(x){
+    // redondea a 1,2,5 * 10^n
+    const exp = Math.floor(Math.log10(Math.max(1e-9, x)));
+    const f = x / Math.pow(10, exp);
+    let nf;
+    if (f <= 1) nf = 1;
+    else if (f <= 2) nf = 2;
+    else if (f <= 5) nf = 5;
+    else nf = 10;
+    return nf * Math.pow(10, exp);
+  }
+  function niceAxisMax(v){
+    return niceNum(v);
+  }
+  function buildTicks(max, targetCount){
+    const step = niceNum(max / Math.max(1, targetCount));
+    const ticks = [];
+    const n = Math.ceil(max / step);
+    for (let i=0;i<=n;i++) ticks.push(i*step);
+    return ticks;
+  }
+
+  // --------- render chart C-P (xMax/yMax adaptativos) ----------
   function renderCPChart(){
     const svg = els.cpSvg;
     clearSvg(svg);
@@ -693,16 +952,62 @@
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
-    const xMin=0, xMax=60;  // ampliado para países grandes
-    const yMin=0, yMax=30;
+    // país seleccionado
+    if (!state.selectedCountry){
+      els.cpReadout.textContent = `C: — | P: —`;
+      els.kReadout.textContent = `k: —`;
+      setExplainPanel(null);
+
+      const badge = svgEl('text',{
+        x: pad.l + innerW - 10, y: pad.t + 18,
+        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
+        "text-anchor":"end", "opacity":"0.85"
+      });
+      badge.textContent = "Selecciona un país";
+      svg.appendChild(badge);
+      return;
+    }
+
+    const entry = state.countriesByName.get(state.selectedCountry) || null;
+    const metrics = entry ? resolveCountryMetrics(entry) : null;
+
+    // Si faltan C/P, dibuja ejes con rango base
+    let C = metrics?.C_m ?? null;
+    let P = metrics?.P_m ?? null;
+    let k = metrics?.k ?? null;
+
+    // Rangos dinámicos:
+    // - si hay C/P: margen 20% y mínimo razonable
+    // - si hay k: considerar punto de corte de la línea (para que se vea bien)
+    let xMax = (C !== null) ? (C * 1.25) : 30;
+    let yMax = (P !== null) ? (P * 1.25) : 15;
+
+    if (k !== null){
+      // para que la línea tenga recorrido visible, miramos dónde llega en yMax o xMax
+      // y ampliamos un poco si hace falta
+      // (si k es pequeña, la línea sube lento y es mejor ampliar x)
+      xMax = Math.max(xMax, (yMax / k) * 1.05);
+      yMax = Math.max(yMax, (k * xMax) * 1.05);
+    }
+
+    // topes mínimos
+    xMax = Math.max(30, xMax);
+    yMax = Math.max(15, yMax);
+
+    // "nice"
+    xMax = niceAxisMax(xMax);
+    yMax = niceAxisMax(yMax);
+
+    const xMin=0, yMin=0;
 
     const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
     const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
 
-    // ticks dinámicos básicos
-    const xTicks = [0,10,20,30,40,50,60];
-    const yTicks = [0,5,10,15,20,25,30];
+    // ticks
+    const xTicks = buildTicks(xMax, 6);
+    const yTicks = buildTicks(yMax, 6);
 
+    // grid + labels
     yTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
         x1: pad.l, y1: yToPx(v), x2: pad.l+innerW, y2: yToPx(v),
@@ -760,26 +1065,8 @@
     yl.textContent = "Pensionistas (millones)";
     svg.appendChild(yl);
 
-    // país seleccionado
-    if (!state.selectedCountry){
-      els.cpReadout.textContent = `C: — | P: —`;
-      els.kReadout.textContent = `k: —`;
-      setExplainPanel(null);
-
-      const badge = svgEl('text',{
-        x: pad.l + innerW - 10, y: pad.t + 18,
-        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
-        "text-anchor":"end", "opacity":"0.85"
-      });
-      badge.textContent = "Selecciona un país";
-      svg.appendChild(badge);
-      return;
-    }
-
-    const entry = state.countriesByName.get(state.selectedCountry) || null;
-    const metrics = entry ? resolveCountryMetrics(entry) : null;
-
-    if (!metrics || metrics.C_m === null || metrics.P_m === null){
+    // Si no hay C/P, actualiza panel y termina con aviso
+    if (!metrics || C === null || P === null){
       els.cpReadout.textContent = `Datos C/P no disponibles para ${state.selectedCountry}`;
       els.kReadout.textContent = `k: —`;
       setExplainPanel(metrics);
@@ -793,10 +1080,6 @@
       svg.appendChild(badge);
       return;
     }
-
-    const C = metrics.C_m;
-    const P = metrics.P_m;
-    const k = metrics.k;
 
     els.cpReadout.textContent = `C: ${C.toFixed(2)} M | P: ${P.toFixed(2)} M`;
     els.kReadout.textContent = (k !== null) ? `k: ${k.toFixed(2)}` : `k: —`;
@@ -873,32 +1156,133 @@
     renderCPChart();
   }
 
-  // --------- carga JSON ----------
-  async function loadData(){
-    try{
-      const res = await fetch(DATA_URL, { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+  // --------- CSV parse mínimo (robusto para comillas básicas) ----------
+  function parseCSV(text){
+    // Parser sencillo pero correcto para CSV estándar con comillas dobles.
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
 
-      const countries = Array.isArray(json?.countries) ? json.countries : [];
-      state.countriesByName.clear();
-      state.oecdNames = [];
+    for (let i=0;i<text.length;i++){
+      const ch = text[i];
+      const next = text[i+1];
 
-      for (const c of countries){
-        const name = c?.country?.name;
-        if (!name) continue;
-        state.countriesByName.set(name, c);
-        state.oecdNames.push(name);
+      if (ch === '"'){
+        if (inQuotes && next === '"'){ // escape ""
+          cur += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === ',' && !inQuotes){
+        row.push(cur);
+        cur = "";
+      } else if ((ch === '\n' || ch === '\r') && !inQuotes){
+        if (ch === '\r' && next === '\n') i++;
+        row.push(cur);
+        cur = "";
+        // evita líneas vacías
+        if (row.length > 1 || (row.length === 1 && row[0].trim() !== "")){
+          rows.push(row);
+        }
+        row = [];
+      } else {
+        cur += ch;
       }
+    }
+    // last
+    row.push(cur);
+    if (row.length > 1 || (row.length === 1 && row[0].trim() !== "")) rows.push(row);
 
-      state.oecdNames.sort((a,b)=>a.localeCompare(b, "es"));
+    if (!rows.length) return { header: [], data: [] };
+    const header = rows[0].map(h => h.trim());
+    const data = rows.slice(1);
+    return { header, data };
+  }
 
-      // UI: load ok
+  // --------- load POP CSV ----------
+  async function loadPopulationCSV(){
+    const res = await fetch(POP_CSV_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error(`CSV población: HTTP ${res.status}`);
+    const text = await res.text();
+    const { header, data } = parseCSV(text);
+
+    const idx = (name) => header.indexOf(name);
+
+    // Este CSV OECD trae columnas como: REF_AREA, SEX, AGE, TIME_PERIOD, OBS_VALUE
+    const iRef = idx("REF_AREA");
+    const iSex = idx("SEX");
+    const iAge = idx("AGE");
+    const iYear = idx("TIME_PERIOD");
+    const iVal = idx("OBS_VALUE");
+
+    if ([iRef,iSex,iAge,iYear,iVal].some(i => i < 0)){
+      throw new Error("CSV población: columnas esperadas no encontradas (REF_AREA, SEX, AGE, TIME_PERIOD, OBS_VALUE).");
+    }
+
+    state.popByIso3.clear();
+    state.popYears.clear();
+
+    for (const r of data){
+      const ref = (r[iRef] || "").trim();
+      const sex = (r[iSex] || "").trim();
+      const age = (r[iAge] || "").trim();
+      const year = (r[iYear] || "").trim();
+      const val = Number((r[iVal] || "").trim());
+
+      if (!ref || !year || !isFinite(val)) continue;
+      // En tu archivo, SEX es "_T". Si en el futuro tienes M/F, aquí puedes filtrarlo o almacenarlo.
+      if (sex && sex !== "_T") continue;
+
+      if (!PYR_AGE_ORDER.includes(age)) continue;
+
+      state.popYears.add(year);
+
+      if (!state.popByIso3.has(ref)) state.popByIso3.set(ref, new Map());
+      const byYear = state.popByIso3.get(ref);
+      if (!byYear.has(year)) byYear.set(year, new Map());
+      byYear.get(year).set(age, val);
+    }
+
+    // elegir año preferido (máximo)
+    const years = [...state.popYears].map(y => Number(y)).filter(n => isFinite(n)).sort((a,b)=>a-b);
+    state.popPreferredYear = years.length ? String(years[years.length-1]) : null;
+  }
+
+  // --------- load JSON pensiones ----------
+  async function loadPensionsJSON(){
+    const res = await fetch(DATA_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error(`JSON pensiones: HTTP ${res.status}`);
+    const json = await res.json();
+
+    const countries = Array.isArray(json?.countries) ? json.countries : [];
+    state.countriesByName.clear();
+    state.oecdNames = [];
+
+    for (const c of countries){
+      const name = c?.country?.name;
+      if (!name) continue;
+      state.countriesByName.set(name, c);
+      state.oecdNames.push(name);
+    }
+    state.oecdNames.sort((a,b)=>a.localeCompare(b, "es"));
+  }
+
+  // --------- init (carga ambos) ----------
+  async function init(){
+    try{
+      els.loadText.textContent = "Leyendo JSON + CSV…";
+
+      await Promise.all([
+        loadPensionsJSON(),
+        loadPopulationCSV()
+      ]);
+
       els.loadBox.style.display = "none";
       els.leftNote.textContent =
-        `Datos cargados: ${state.oecdNames.length} países. Etiqueta: "datos" si hay C,P,τ,ρ,k; "parcial" si falta algo.`;
+        `Datos pensiones: ${state.oecdNames.length} países. Pirámides: ${state.popByIso3.size} códigos (año ${state.popPreferredYear || "—"}).`;
 
-      // elegir por defecto: España si existe, si no el primero
       const defaultCountry = state.countriesByName.has("España") ? "España" : (state.oecdNames[0] || null);
       state.selectedCountry = defaultCountry;
 
@@ -911,9 +1295,9 @@
 
       renderCPChart();
     }catch(err){
-      els.loadText.textContent = "Error leyendo JSON";
+      els.loadText.textContent = "Error cargando datasets";
       els.leftNote.textContent =
-        `No se pudo cargar "${DATA_URL}". Revisa que el archivo exista en la misma carpeta y que GitHub Pages lo esté sirviendo.`;
+        `No se pudo cargar "${DATA_URL}" o "${POP_CSV_URL}". Revisa que ambos existan en tu repo (misma carpeta) y que GitHub Pages los sirva.`;
 
       els.selectedCountryMeta.textContent = "Error";
       els.countrySelect.disabled = true;
@@ -926,8 +1310,7 @@
     }
   }
 
-  // init
-  loadData();
+  init();
 })();
 </script>
 
