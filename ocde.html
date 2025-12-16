@@ -172,7 +172,7 @@
     /* CENTER (chart) + RIGHT (explain) */
     .viz{
       display:grid;
-      grid-template-columns: minmax(0, 1fr) 330px; /* bloque estrecho derecha */
+      grid-template-columns: minmax(0, 1fr) 330px;
       gap:12px;
       height:100%;
       min-height:0;
@@ -205,7 +205,6 @@
     .swatch.retired{ background:var(--retired); }
     .swatch.primary{ background:var(--primary); }
 
-    /* SVG: ocupa el espacio disponible */
     .bigsvg{
       width:100%;
       flex:1 1 auto;
@@ -295,6 +294,26 @@
       white-space:nowrap;
     }
     .muted{ opacity:.78; }
+
+    .loader{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+      font-size:12px;
+      opacity:.9;
+    }
+    .spinner{
+      width:14px; height:14px;
+      border-radius:999px;
+      border:2px solid rgba(255,255,255,.22);
+      border-top-color: var(--primary);
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg);} }
   </style>
 </head>
 
@@ -315,22 +334,24 @@
   <section class="panel countries" aria-label="Países OCDE">
     <div class="ph">
       <div class="ttl">OCDE</div>
-      <div class="sub" id="selectedCountryMeta">Seleccionado: España</div>
+      <div class="sub" id="selectedCountryMeta">Cargando datos…</div>
     </div>
 
     <div class="body">
+      <div class="loader" id="loadBox"><span class="spinner"></span><span id="loadText">Leyendo JSON…</span></div>
+
       <p class="small-title">Top 10</p>
       <div class="country-grid" id="top10"></div>
 
       <div class="divider"></div>
 
       <p class="small-title">Resto de países</p>
-      <select id="countrySelect" aria-label="Selecciona otro país">
+      <select id="countrySelect" aria-label="Selecciona otro país" disabled>
         <option value="">— Elegir país —</option>
       </select>
 
-      <div class="note">
-        Estado actual: datos completos solo para España. El resto queda preparado para incorporar C, P, τ y ρ por país.
+      <div class="note" id="leftNote">
+        Estado: esperando datos.
       </div>
     </div>
   </section>
@@ -339,7 +360,7 @@
   <section class="panel" aria-label="Visualización y explicación">
     <div class="ph">
       <div class="ttl">Gráfica C–P</div>
-      <div class="sub mono" id="cpReadout">C: 21.34 M | P: 9.30 M</div>
+      <div class="sub mono" id="cpReadout">C: — | P: —</div>
     </div>
 
     <div class="viz">
@@ -352,7 +373,7 @@
             <div class="legend-item"><span class="swatch retired"></span><span>Punto país</span></div>
             <div class="legend-item"><span class="swatch workers"></span><span>Proyecciones</span></div>
           </div>
-          <div class="legend-item mono" id="kReadout">k: 0.36</div>
+          <div class="legend-item mono" id="kReadout">k: —</div>
         </div>
 
         <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
@@ -367,43 +388,43 @@
       <aside class="panel explain" aria-label="Explicación del resultado">
         <div class="ph">
           <div class="ttl">Resultado</div>
-          <div class="sub mono" id="resultMini">España (hoy)</div>
+          <div class="sub mono" id="resultMini">—</div>
         </div>
 
         <div class="body">
-          <div class="badge warn" id="resultBadge">
+          <div class="badge ok" id="resultBadge">
             <span class="dot2"></span>
-            <span id="resultBadgeText">Por encima de la línea → tensión (impuestos/deuda)</span>
+            <span id="resultBadgeText">Selecciona un país</span>
           </div>
 
           <div class="kv">
             <div class="k">Cotizantes (C)</div>
-            <div class="v mono" id="CVal">21.34 M</div>
+            <div class="v mono" id="CVal">—</div>
 
             <div class="k">Pensionistas (P)</div>
-            <div class="v mono" id="PVal">9.30 M</div>
+            <div class="v mono" id="PVal">—</div>
 
             <div class="k">Ratio P/C</div>
-            <div class="v mono" id="PCRatio">0.44</div>
+            <div class="v mono" id="PCRatio">—</div>
 
             <div class="k">Trabajadores por pensionista (C/P)</div>
-            <div class="v mono" id="CPRatio">2.30</div>
+            <div class="v mono" id="CPRatio">—</div>
           </div>
 
           <div class="hr"></div>
 
           <div class="kv">
             <div class="k">τ (cotización a pensiones)</div>
-            <div class="v mono" id="tauVal">0.29</div>
+            <div class="v mono" id="tauVal">—</div>
 
             <div class="k">ρ (tasa de reemplazo)</div>
-            <div class="v mono" id="rhoVal">0.80</div>
+            <div class="v mono" id="rhoVal">—</div>
 
             <div class="k">k = τ/ρ (pendiente de equilibrio)</div>
-            <div class="v mono" id="kVal">0.36</div>
+            <div class="v mono" id="kVal">—</div>
 
             <div class="k">Equilibrio a C actual: P* = k·C</div>
-            <div class="v mono" id="PStar">7.68 M</div>
+            <div class="v mono" id="PStar">—</div>
           </div>
 
           <div class="txt">
@@ -412,7 +433,7 @@
           </div>
 
           <div class="txt muted" id="explainText">
-            Si el punto cae por encima de la recta, (P/C) &gt; (τ/ρ): con cotizaciones actuales no alcanza y se completa con impuestos/deuda o reformas.
+            Cargando datos…
           </div>
         </div>
       </aside>
@@ -424,6 +445,8 @@
 
 <script>
 (() => {
+  const DATA_URL = "oecd_pensions_merged.json"; // <-- ajusta si lo pones en otra ruta
+
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const COLORS = {
     primary: CSS('--primary'),
@@ -433,39 +456,32 @@
     retired: CSS('--retired'),
   };
 
-  const OECD = [
-    "Alemania","Australia","Austria","Bélgica","Canadá","Chile","Colombia","Corea del Sur","Costa Rica",
-    "Dinamarca","Eslovaquia","Eslovenia","España","Estados Unidos","Estonia","Finlandia","Francia","Grecia",
-    "Hungría","Islandia","Irlanda","Israel","Italia","Japón","Letonia","Lituania","Luxemburgo","México",
-    "Noruega","Nueva Zelanda","Países Bajos","Polonia","Portugal","Reino Unido","República Checa","Suecia",
-    "Suiza","Turquía"
-  ];
+  // Puedes ajustar TOP10 si quieres:
   const TOP10 = [
     "España","Estados Unidos","Japón","Alemania","Francia","Italia","Reino Unido","Canadá","México","Corea del Sur"
   ];
 
-  // Datos por país (placeholder; de momento solo España).
-  const COUNTRY = {
-    "España": {
-      C: 21.34,  // millones afiliados (aprox. cierre 2024)
-      P: 9.30,   // millones pensionistas (abril 2025)
-      tau: 0.29,
-      rho: 0.80
-    }
+  const state = {
+    selectedCountry: null,
+    countriesByName: new Map(), // name -> { iso2, name, observations[] }
+    oecdNames: [],
   };
 
-  const state = { selectedCountry: "España" };
-
   const els = {
+    // left
+    loadBox: document.getElementById('loadBox'),
+    loadText: document.getElementById('loadText'),
+    leftNote: document.getElementById('leftNote'),
     top10: document.getElementById('top10'),
     countrySelect: document.getElementById('countrySelect'),
     selectedCountryMeta: document.getElementById('selectedCountryMeta'),
 
+    // chart
     cpSvg: document.getElementById('cpSvg'),
     cpReadout: document.getElementById('cpReadout'),
     kReadout: document.getElementById('kReadout'),
 
-    // right block
+    // right
     resultMini: document.getElementById('resultMini'),
     resultBadge: document.getElementById('resultBadge'),
     resultBadgeText: document.getElementById('resultBadgeText'),
@@ -480,47 +496,94 @@
     explainText: document.getElementById('explainText'),
   };
 
-  const COUNTRY_TAG = (name) => (COUNTRY[name] ? "datos" : "—");
+  // --------- utilidades de datos ----------
+  const safeNum = (x) => (typeof x === "number" && isFinite(x)) ? x : null;
 
-  function renderCountries(){
-    els.top10.innerHTML = "";
-    TOP10.forEach(name => {
-      const btn = document.createElement('button');
-      btn.className = 'country-btn';
-      btn.type = 'button';
-      btn.setAttribute('aria-selected', name === state.selectedCountry ? "true":"false");
-      btn.innerHTML = `<span>${name}</span><span class="tag">${COUNTRY_TAG(name)}</span>`;
-      btn.addEventListener('click', () => {
-        state.selectedCountry = name;
-        els.selectedCountryMeta.textContent = `Seleccionado: ${name}`;
-        syncCountrySelect();
-        renderCountries();
-        renderCPChart();
-      });
-      els.top10.appendChild(btn);
+  function fmtMillionsFromPeople(people){
+    const p = safeNum(people);
+    if (p === null) return null;
+    return p / 1e6;
+  }
+
+  function pickLatestObservation(observations, predicate){
+    const arr = observations.filter(o => predicate(o));
+    if (!arr.length) return null;
+    // Orden simple por fecha ISO desc (vale para YYYY-MM-DD)
+    arr.sort((a,b) => {
+      const da = a?.period?.date || "";
+      const db = b?.period?.date || "";
+      return db.localeCompare(da);
     });
-
-    const rest = OECD.filter(c => !TOP10.includes(c));
-    els.countrySelect.innerHTML =
-      `<option value="">— Elegir país —</option>` +
-      rest.map(c => `<option value="${c}">${c}</option>`).join("");
+    return arr[0];
   }
 
-  function syncCountrySelect(){
-    if (!TOP10.includes(state.selectedCountry)) els.countrySelect.value = state.selectedCountry;
-    else els.countrySelect.value = "";
+  function sumContributionRates(observations){
+    // Regla:
+    // - suma todos los metrics que empiecen por "contribution_rate_"
+    // - si no hay ninguno, devuelve null
+    // - si algunos son 0 (p.ej. Dinamarca), se respetan; la suma puede quedar 0
+    const rates = observations
+      .filter(o => typeof o?.metric === "string" && o.metric.startsWith("contribution_rate_"))
+      .map(o => safeNum(o.value))
+      .filter(v => v !== null);
+
+    if (!rates.length) return null;
+    const s = rates.reduce((a,b)=>a+b,0);
+    return s;
   }
 
-  els.countrySelect.addEventListener('change', (e) => {
-    const v = e.target.value;
-    if (!v) return;
-    state.selectedCountry = v;
-    els.selectedCountryMeta.textContent = `Seleccionado: ${v}`;
-    renderCountries();
-    renderCPChart();
-  });
+  function resolveCountryMetrics(countryEntry){
+    // Esperamos un objeto como el del JSON: { country:{iso2,name}, observations:[...] }
+    if (!countryEntry || !Array.isArray(countryEntry.observations)) return null;
+    const obs = countryEntry.observations;
 
-  // SVG helpers
+    // P (pensionistas)
+    const pObs = pickLatestObservation(obs, o => o.metric === "pensioners_people");
+    const P_people = pObs ? safeNum(pObs.value) : null;
+
+    // C (cotizantes) — en el dataset hay varios nombres posibles (empleados, afiliados, etc.)
+    const cObs = pickLatestObservation(obs, o =>
+      o.metric === "contributors_employed_people" ||
+      o.metric === "contributors_affiliates_people" ||
+      o.metric === "contributors_affiliated_people" ||
+      o.metric === "contributors_affiliates_people" ||
+      o.metric === "contributors_employed_people"
+    );
+    const C_people = cObs ? safeNum(cObs.value) : null;
+
+    // ρ (tasa de reemplazo)
+    const rhoObs = pickLatestObservation(obs, o => o.metric === "replacement_rate_gross_full_career");
+    const rho = rhoObs ? safeNum(rhoObs.value) : null;
+
+    // τ (cotización a pensiones): suma de contribution_rate_*
+    const tau = sumContributionRates(obs);
+
+    const C_m = (C_people !== null) ? fmtMillionsFromPeople(C_people) : null;
+    const P_m = (P_people !== null) ? fmtMillionsFromPeople(P_people) : null;
+
+    // k
+    const k = (tau !== null && rho !== null && rho > 0) ? (tau / rho) : null;
+
+    return {
+      name: countryEntry.country?.name ?? "—",
+      iso2: countryEntry.country?.iso2 ?? "",
+      C_people, P_people,
+      C_m, P_m,
+      tau, rho, k,
+      meta: {
+        C_date: cObs?.period?.date || null,
+        P_date: pObs?.period?.date || null,
+        tau_count: obs.filter(o => typeof o?.metric === "string" && o.metric.startsWith("contribution_rate_")).length,
+        rho_date: rhoObs?.period?.date || null,
+      }
+    };
+  }
+
+  function hasCoreData(m){
+    return (m && m.C_m !== null && m.P_m !== null && m.tau !== null && m.rho !== null && m.k !== null);
+  }
+
+  // --------- render UI ----------
   const svgEl = (name, attrs={}) => {
     const el = document.createElementNS("http://www.w3.org/2000/svg", name);
     for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
@@ -528,26 +591,73 @@
   };
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
 
-  function setExplainPanel(d, k, C, P){
-    els.resultMini.textContent = `${state.selectedCountry} (hoy)`;
+  function countryTag(name){
+    const entry = state.countriesByName.get(name);
+    if (!entry) return "—";
+    const m = resolveCountryMetrics(entry);
+    return hasCoreData(m) ? "datos" : "parcial";
+  }
 
-    if (!d || !k){
+  function renderCountries(){
+    // Top 10 (si un país no existe en el JSON, igualmente se muestra y quedará "—")
+    els.top10.innerHTML = "";
+    TOP10.forEach(name => {
+      const btn = document.createElement('button');
+      btn.className = 'country-btn';
+      btn.type = 'button';
+      btn.setAttribute('aria-selected', name === state.selectedCountry ? "true":"false");
+      btn.innerHTML = `<span>${name}</span><span class="tag">${countryTag(name)}</span>`;
+      btn.addEventListener('click', () => selectCountry(name));
+      els.top10.appendChild(btn);
+    });
+
+    // resto
+    const rest = state.oecdNames.filter(n => !TOP10.includes(n));
+    els.countrySelect.innerHTML =
+      `<option value="">— Elegir país —</option>` +
+      rest.map(c => `<option value="${c}">${c}</option>`).join("");
+
+    els.countrySelect.disabled = false;
+  }
+
+  function syncCountrySelect(){
+    if (!state.selectedCountry) { els.countrySelect.value = ""; return; }
+    if (!TOP10.includes(state.selectedCountry)) els.countrySelect.value = state.selectedCountry;
+    else els.countrySelect.value = "";
+  }
+
+  els.countrySelect.addEventListener('change', (e) => {
+    const v = e.target.value;
+    if (!v) return;
+    selectCountry(v);
+  });
+
+  function setExplainPanel(metrics){
+    const name = state.selectedCountry || "—";
+    els.resultMini.textContent = `${name} (último dato)`;
+
+    if (!metrics || !hasCoreData(metrics)){
       els.resultBadge.classList.remove('warn','ok');
       els.resultBadge.classList.add('ok');
-      els.resultBadgeText.textContent = "Datos no disponibles para este país (pendiente se calcula por país).";
+      els.resultBadgeText.textContent = "Datos insuficientes para calcular (C,P,τ,ρ,k).";
 
-      els.CVal.textContent = "—";
-      els.PVal.textContent = "—";
+      els.CVal.textContent = metrics?.C_m !== null ? `${metrics.C_m.toFixed(2)} M` : "—";
+      els.PVal.textContent = metrics?.P_m !== null ? `${metrics.P_m.toFixed(2)} M` : "—";
       els.PCRatio.textContent = "—";
       els.CPRatio.textContent = "—";
-      els.tauVal.textContent = "—";
-      els.rhoVal.textContent = "—";
-      els.kVal.textContent = "—";
+      els.tauVal.textContent = metrics?.tau !== null ? metrics.tau.toFixed(3) : "—";
+      els.rhoVal.textContent = metrics?.rho !== null ? metrics.rho.toFixed(2) : "—";
+      els.kVal.textContent = metrics?.k !== null ? metrics.k.toFixed(2) : "—";
       els.PStar.textContent = "—";
 
-      els.explainText.innerHTML = `Para este país todavía no hay C, P, τ y ρ cargados. Cuando estén, el panel mostrará si (P/C) supera (τ/ρ).`;
+      els.explainText.innerHTML =
+        `Para este país falta algún componente (C, P, τ o ρ). El JSON puede tener datos parciales o con métricas no disponibles.`;
       return;
     }
+
+    const C = metrics.C_m;
+    const P = metrics.P_m;
+    const k = metrics.k;
 
     const ratioPC = (C > 0) ? (P / C) : NaN;
     const ratioCP = (P > 0) ? (C / P) : NaN;
@@ -558,9 +668,9 @@
     els.PVal.textContent = `${P.toFixed(2)} M`;
     els.PCRatio.textContent = isFinite(ratioPC) ? ratioPC.toFixed(2) : "—";
     els.CPRatio.textContent = isFinite(ratioCP) ? ratioCP.toFixed(2) : "—";
-    els.tauVal.textContent = d.tau.toFixed(2);
-    els.rhoVal.textContent = d.rho.toFixed(2);
-    els.kVal.textContent = k.toFixed(2);
+    els.tauVal.textContent = metrics.tau.toFixed(3);
+    els.rhoVal.textContent = metrics.rho.toFixed(2);
+    els.kVal.textContent = metrics.k.toFixed(2);
     els.PStar.textContent = `${pStar.toFixed(2)} M`;
 
     els.resultBadge.classList.remove('warn','ok');
@@ -570,8 +680,8 @@
       : "Por debajo de la línea → margen (sin tensión fiscal)";
 
     els.explainText.innerHTML = above
-      ? `Aquí se cumple <span class="mono">(P/C) &gt; (τ/ρ)</span>: con las cotizaciones actuales no alcanza para pagar pensiones a ese nivel, y se completa con impuestos/deuda o reformas.`
-      : `Aquí se cumple <span class="mono">(P/C) &lt; (τ/ρ)</span>: con este τ y ρ la caja de pensiones estaría en superávit (habría margen para bajar cotizaciones o mejorar pensiones).`;
+      ? `Aquí se cumple <span class="mono">(P/C) &gt; (τ/ρ)</span>: con las cotizaciones actuales no alcanza y se completa con impuestos/deuda o reformas.`
+      : `Aquí se cumple <span class="mono">(P/C) &lt; (τ/ρ)</span>: con este τ y ρ habría margen (superávit del esquema simple).`;
   }
 
   function renderCPChart(){
@@ -583,15 +693,15 @@
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
-    const xMin=0, xMax=30;
-    const yMin=0, yMax=15;
+    const xMin=0, xMax=60;  // ampliado para países grandes
+    const yMin=0, yMax=30;
 
     const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
     const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
 
-    // grid + ticks
-    const yTicks = [0,3,6,9,12,15];
-    const xTicks = [0,5,10,15,20,25,30];
+    // ticks dinámicos básicos
+    const xTicks = [0,10,20,30,40,50,60];
+    const yTicks = [0,5,10,15,20,25,30];
 
     yTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
@@ -650,34 +760,51 @@
     yl.textContent = "Pensionistas (millones)";
     svg.appendChild(yl);
 
-    // Fetch country data
-    const d = COUNTRY[state.selectedCountry] || null;
-
-    if (!d){
-      els.cpReadout.textContent = `Datos C/P no disponibles para ${state.selectedCountry}`;
+    // país seleccionado
+    if (!state.selectedCountry){
+      els.cpReadout.textContent = `C: — | P: —`;
       els.kReadout.textContent = `k: —`;
-      setExplainPanel(null, null, NaN, NaN);
+      setExplainPanel(null);
 
       const badge = svgEl('text',{
         x: pad.l + innerW - 10, y: pad.t + 18,
         fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.85"
       });
-      badge.textContent = "Pendiente y punto: no disponibles (pendiente se calcula por país)";
+      badge.textContent = "Selecciona un país";
       svg.appendChild(badge);
       return;
     }
 
-    const k = (d.tau && d.rho) ? (d.tau / d.rho) : null;
-    const C = d.C, P = d.P;
+    const entry = state.countriesByName.get(state.selectedCountry) || null;
+    const metrics = entry ? resolveCountryMetrics(entry) : null;
+
+    if (!metrics || metrics.C_m === null || metrics.P_m === null){
+      els.cpReadout.textContent = `Datos C/P no disponibles para ${state.selectedCountry}`;
+      els.kReadout.textContent = `k: —`;
+      setExplainPanel(metrics);
+
+      const badge = svgEl('text',{
+        x: pad.l + innerW - 10, y: pad.t + 18,
+        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
+        "text-anchor":"end", "opacity":"0.85"
+      });
+      badge.textContent = "C/P no disponibles (o incompletos)";
+      svg.appendChild(badge);
+      return;
+    }
+
+    const C = metrics.C_m;
+    const P = metrics.P_m;
+    const k = metrics.k;
 
     els.cpReadout.textContent = `C: ${C.toFixed(2)} M | P: ${P.toFixed(2)} M`;
-    els.kReadout.textContent = k ? `k: ${k.toFixed(2)}` : `k: —`;
+    els.kReadout.textContent = (k !== null) ? `k: ${k.toFixed(2)}` : `k: —`;
 
-    setExplainPanel(d, k, C, P);
+    setExplainPanel(metrics);
 
-    // equilibrium line y = kx
-    if (k){
+    // línea equilibrio y = kx
+    if (k !== null){
       const xAtTop = yMax / k;
       let xEnd, yEnd;
       if (xAtTop <= xMax){ xEnd = xAtTop; yEnd = yMax; }
@@ -699,9 +826,18 @@
       });
       badge.textContent = above ? "Por encima: tensión (impuestos/deuda)" : "Por debajo: dentro del equilibrio";
       svg.appendChild(badge);
+    } else {
+      const badge = svgEl('text',{
+        x: pad.l + innerW - 10, y: pad.t + 18,
+        fill: COLORS.text,
+        "font-size":"12", "font-family":"Arial, sans-serif",
+        "text-anchor":"end", "opacity":"0.90"
+      });
+      badge.textContent = "k no disponible (faltan τ y/o ρ)";
+      svg.appendChild(badge);
     }
 
-    // projections
+    // proyecciones (guías)
     svg.appendChild(svgEl('line',{
       x1: xToPx(0), y1: yToPx(P),
       x2: xToPx(C), y2: yToPx(P),
@@ -715,7 +851,7 @@
       "stroke-dasharray":"6 6"
     }));
 
-    // dot + label
+    // punto
     svg.appendChild(svgEl('circle',{
       cx: xToPx(C), cy: yToPx(P), r: 7.5,
       fill: COLORS.retired, "fill-opacity":"0.95"
@@ -729,11 +865,69 @@
     svg.appendChild(lab);
   }
 
+  function selectCountry(name){
+    state.selectedCountry = name;
+    els.selectedCountryMeta.textContent = `Seleccionado: ${name}`;
+    syncCountrySelect();
+    renderCountries();
+    renderCPChart();
+  }
+
+  // --------- carga JSON ----------
+  async function loadData(){
+    try{
+      const res = await fetch(DATA_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+
+      const countries = Array.isArray(json?.countries) ? json.countries : [];
+      state.countriesByName.clear();
+      state.oecdNames = [];
+
+      for (const c of countries){
+        const name = c?.country?.name;
+        if (!name) continue;
+        state.countriesByName.set(name, c);
+        state.oecdNames.push(name);
+      }
+
+      state.oecdNames.sort((a,b)=>a.localeCompare(b, "es"));
+
+      // UI: load ok
+      els.loadBox.style.display = "none";
+      els.leftNote.textContent =
+        `Datos cargados: ${state.oecdNames.length} países. Etiqueta: "datos" si hay C,P,τ,ρ,k; "parcial" si falta algo.`;
+
+      // elegir por defecto: España si existe, si no el primero
+      const defaultCountry = state.countriesByName.has("España") ? "España" : (state.oecdNames[0] || null);
+      state.selectedCountry = defaultCountry;
+
+      renderCountries();
+      syncCountrySelect();
+
+      els.selectedCountryMeta.textContent = defaultCountry
+        ? `Seleccionado: ${defaultCountry}`
+        : `Sin países`;
+
+      renderCPChart();
+    }catch(err){
+      els.loadText.textContent = "Error leyendo JSON";
+      els.leftNote.textContent =
+        `No se pudo cargar "${DATA_URL}". Revisa que el archivo exista en la misma carpeta y que GitHub Pages lo esté sirviendo.`;
+
+      els.selectedCountryMeta.textContent = "Error";
+      els.countrySelect.disabled = true;
+
+      els.resultBadge.classList.remove('warn','ok');
+      els.resultBadge.classList.add('warn');
+      els.resultBadgeText.textContent = "No se pudo cargar el dataset.";
+      els.explainText.textContent = `Error: ${String(err?.message || err)}`;
+      renderCPChart();
+    }
+  }
+
   // init
-  renderCountries();
-  syncCountrySelect();
-  els.selectedCountryMeta.textContent = `Seleccionado: ${state.selectedCountry}`;
-  renderCPChart();
+  loadData();
 })();
 </script>
 
