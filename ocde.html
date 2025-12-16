@@ -803,28 +803,29 @@
       : `Aquí se cumple <span class="mono">(P/C) &lt; (τ/ρ)</span>: con este τ y ρ habría margen (superávit del esquema simple).`;
   }
 
-  // ---------- eje (ticks simples) ----------
-  function niceNum(x){
-    const exp = Math.floor(Math.log10(Math.max(1e-9, x)));
-    const f = x / Math.pow(10, exp);
-    let nf;
-    if (f <= 1) nf = 1;
-    else if (f <= 2) nf = 2;
-    else if (f <= 5) nf = 5;
-    else nf = 10;
-    return nf * Math.pow(10, exp);
+  // ---------- ejes (ticks "bonitos") ----------
+  // Objetivo: que xMax (y yMax) se adapten al dato y terminen en un "número redondo cercano":
+  // 22 -> 30, 30 -> 40, 41 -> 50, etc.
+  function niceCeilToStep(x, step){
+    return Math.ceil(x / step) * step;
   }
-  function niceCeil(x){
-    const step = niceNum(x);
-    // step puede ser menor que x; queremos subir al siguiente múltiplo de step
-    const n = Math.ceil(x / step);
-    return n * step;
+
+  function chooseAxisStep(max){
+    // max en millones. elegimos un escalón típico para ejes: 1,2,5,10,20,25,50,100...
+    if (max <= 10) return 2;
+    if (max <= 20) return 5;
+    if (max <= 40) return 10;
+    if (max <= 80) return 20;
+    if (max <= 120) return 25;
+    if (max <= 250) return 50;
+    return 100;
   }
-  function buildTicks(max, targetCount){
-    const step = niceNum(max / Math.max(1, targetCount));
+
+  function buildTicksFromStep(max, step){
     const ticks = [];
-    const n = Math.ceil(max / step);
-    for (let i=0;i<=n;i++) ticks.push(i*step);
+    for (let v=0; v<=max+1e-9; v += step) ticks.push(v);
+    // garantizar tick final exacto
+    if (ticks[ticks.length-1] !== max) ticks.push(max);
     return ticks;
   }
 
@@ -852,27 +853,43 @@
     const P = metrics?.P_m ?? null;
     const k = metrics?.k ?? null;
 
-    // REGLA SOLICITADA:
-    // xMax = C * 1.10 (si hay C), con un mínimo razonable.
-    let xMax = (C !== null) ? (C * 1.10) : 30;
-    xMax = Math.max(30, xMax);
-    xMax = niceCeil(xMax); // redondeo al alza manteniendo >= C*1.10
-
-    // yMax: mantenemos dinámica para que no quede recortado el punto ni la recta
-    let yMax = (P !== null) ? (P * 1.20) : 15;
-    yMax = Math.max(15, yMax);
-    if (k !== null){
-      yMax = Math.max(yMax, (k * xMax) * 1.05);
+    // ------------------------
+    // MODIFICACIÓN PEDIDA:
+    // 1) xMax depende de C.
+    // 2) xMax debe acabar en el "decimal" (número redondo) más próximo por arriba:
+    //    ej: C=22 -> xMax=30 ; C=30 -> xMax=40.
+    // 3) ticks coherentes con ese xMax (step acorde).
+    // ------------------------
+    let xMax;
+    if (C !== null){
+      const raw = C;                         // en millones
+      const stepGuess = chooseAxisStep(raw); // escalón según magnitud
+      xMax = niceCeilToStep(raw, stepGuess); // redondeo "bonito" por arriba
+      // margen mínimo visual: si C cae EXACTO en xMax, empujamos al siguiente escalón
+      if (Math.abs(xMax - raw) < 1e-9) xMax += stepGuess;
+      // también asegurar un mínimo razonable
+      xMax = Math.max(30, xMax);
+    } else {
+      xMax = 30;
     }
-    yMax = niceCeil(yMax);
+    const xStep = chooseAxisStep(xMax);
+    // si el escalón elegido no divide bien el máximo (por el mínimo 30), ajustamos a 10
+    const xTicks = buildTicksFromStep(xMax, xStep);
+
+    // yMax: dinámica (punto + recta). Redondeo a "bonito" con step propio.
+    let yMax = 15;
+    if (P !== null) yMax = Math.max(yMax, P * 1.20);
+    if (k !== null) yMax = Math.max(yMax, (k * xMax) * 1.05);
+
+    const yStepGuess = chooseAxisStep(yMax);
+    yMax = niceCeilToStep(yMax, yStepGuess);
+    const yStep = chooseAxisStep(yMax);
+    const yTicks = buildTicksFromStep(yMax, yStep);
 
     const xMin=0, yMin=0;
 
     const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
     const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
-
-    const xTicks = buildTicks(xMax, 6);
-    const yTicks = buildTicks(yMax, 6);
 
     // grid + labels
     yTicks.forEach(v => {
