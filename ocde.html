@@ -110,17 +110,17 @@
       max-width:56ch;
     }
 
-    /* LEFT: countries */
+    /* LEFT: countries (scroll list, same height as right) */
     .countries{ display:flex; flex-direction:column; height:100%; min-height:0; }
     .countries .body{
       padding:10px 10px 12px 10px;
       display:flex;
       flex-direction:column;
       gap:10px;
-      overflow:auto;
+      overflow:auto;   /* scroll */
       min-height:0;
+      flex:1 1 auto;
     }
-    .small-title{ font-size:12px; opacity:.9; margin:0; }
     .country-grid{ display:grid; grid-template-columns:1fr; gap:8px; }
     .country-btn{
       width:100%;
@@ -151,18 +151,8 @@
       border-radius:999px;
       border:1px solid rgba(255,255,255,.09);
       opacity:.9;
+      white-space:nowrap;
     }
-    select{
-      width:100%;
-      padding:10px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-      color:var(--text);
-      outline:none;
-      font-size:13px;
-    }
-    .divider{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
     .note{
       font-size:11px;
       opacity:.75;
@@ -241,7 +231,7 @@
       gap:10px;
     }
 
-    /* Small pyramid block */
+    /* Taller pyramid */
     .pyrwrap{
       border:1px solid rgba(255,255,255,.08);
       border-radius:12px;
@@ -269,7 +259,8 @@
     .pyrsvg{
       width:100%;
       height:auto;
-      aspect-ratio: 520 / 360;
+      aspect-ratio: 520 / 520;      /* más alta */
+      min-height:320px;             /* fuerza altura en móviles */
       border-radius:10px;
       border:1px solid rgba(255,255,255,.06);
       background:rgba(0,0,0,.08);
@@ -374,26 +365,16 @@
   <!-- LEFT -->
   <section class="panel countries" aria-label="Países OCDE">
     <div class="ph">
-      <div class="ttl">OCDE</div>
+      <div class="ttl">Países OCDE</div>
       <div class="sub" id="selectedCountryMeta">Cargando datos…</div>
     </div>
 
     <div class="body">
       <div class="loader" id="loadBox"><span class="spinner"></span><span id="loadText">Leyendo datasets…</span></div>
 
-      <p class="small-title">Top 10</p>
-      <div class="country-grid" id="top10"></div>
+      <div class="country-grid" id="countryList"></div>
 
-      <div class="divider"></div>
-
-      <p class="small-title">Resto de países</p>
-      <select id="countrySelect" aria-label="Selecciona otro país" disabled>
-        <option value="">— Elegir país —</option>
-      </select>
-
-      <div class="note" id="leftNote">
-        Estado: esperando datos.
-      </div>
+      <div class="note" id="leftNote">Estado: esperando datos.</div>
     </div>
   </section>
 
@@ -434,13 +415,13 @@
 
         <div class="body">
 
-          <!-- PIRÁMIDE (encima de Resultado) -->
+          <!-- PIRÁMIDE -->
           <div class="pyrwrap" aria-label="Pirámide poblacional">
             <div class="pyrtitle">
               <span class="l">Pirámide</span>
               <span class="mono" id="pyrMeta">—</span>
             </div>
-            <svg id="pyrSvg" class="pyrsvg" viewBox="0 0 520 360" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide poblacional (total)"></svg>
+            <svg id="pyrSvg" class="pyrsvg" viewBox="0 0 520 520" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide poblacional (total)"></svg>
             <div class="pyrnote" id="pyrNote">
               Fuente: OECD Population (HIST). Si el CSV solo tiene sexo total, se muestra una pirámide simétrica (total/2 a cada lado).
             </div>
@@ -487,9 +468,7 @@
             <div class="math">Con ρ = B/w:&nbsp;&nbsp;P/C = τ/ρ&nbsp;&nbsp;⇒&nbsp;&nbsp;P = (τ/ρ)·C</div>
           </div>
 
-          <div class="txt muted" id="explainText">
-            Cargando datos…
-          </div>
+          <div class="txt muted" id="explainText">Cargando datos…</div>
         </div>
       </aside>
 
@@ -500,13 +479,8 @@
 
 <script>
 (() => {
-  // Ajusta rutas si los ficheros están en otra carpeta.
+  // Rutas (en tu repo)
   const DATA_URL = "oecd_pensions_merged.json";
-
-  // IMPORTANTE:
-  // Sube este CSV al repositorio (misma carpeta que ocde.html) y pon aquí el nombre exacto.
-  // Ejemplo recomendado: "population_2024_oecd.csv"
-  // Ahora mismo apunto al nombre que sueles tener en descargas OECD; renómbralo en tu repo para simplificar.
   const POP_CSV_URL = "OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,1.0+.POP.PS._T..H.csv";
 
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -518,95 +492,46 @@
     retired: CSS('--retired'),
   };
 
-  // Top 10
-  const TOP10 = [
-    "España","Estados Unidos","Japón","Alemania","Francia","Italia","Reino Unido","Canadá","México","Corea del Sur"
-  ];
-
-  // Mapa nombre (tu UI) -> ISO3 (REF_AREA del CSV OECD)
+  // Nombre UI -> ISO3 (REF_AREA CSV)
   const NAME_TO_ISO3 = {
-    "Alemania":"DEU",
-    "Australia":"AUS",
-    "Austria":"AUT",
-    "Bélgica":"BEL",
-    "Canadá":"CAN",
-    "Chile":"CHL",
-    "Colombia":"COL",
-    "Corea del Sur":"KOR",
-    "Costa Rica":"CRI",
-    "Dinamarca":"DNK",
-    "Eslovaquia":"SVK",
-    "Eslovenia":"SVN",
-    "España":"ESP",
-    "Estados Unidos":"USA",
-    "Estonia":"EST",
-    "Finlandia":"FIN",
-    "Francia":"FRA",
-    "Grecia":"GRC",
-    "Hungría":"HUN",
-    "Islandia":"ISL",
-    "Irlanda":"IRL",
-    "Israel":"ISR",
-    "Italia":"ITA",
-    "Japón":"JPN",
-    "Letonia":"LVA",
-    "Lituania":"LTU",
-    "Luxemburgo":"LUX",
-    "México":"MEX",
-    "Noruega":"NOR",
-    "Nueva Zelanda":"NZL",
-    "Países Bajos":"NLD",
-    "Polonia":"POL",
-    "Portugal":"PRT",
-    "Reino Unido":"GBR",
-    "República Checa":"CZE",
-    "Suecia":"SWE",
-    "Suiza":"CHE",
-    "Turquía":"TUR"
+    "Alemania":"DEU","Australia":"AUS","Austria":"AUT","Bélgica":"BEL","Canadá":"CAN","Chile":"CHL","Colombia":"COL",
+    "Corea del Sur":"KOR","Costa Rica":"CRI","Dinamarca":"DNK","Eslovaquia":"SVK","Eslovenia":"SVN","España":"ESP",
+    "Estados Unidos":"USA","Estonia":"EST","Finlandia":"FIN","Francia":"FRA","Grecia":"GRC","Hungría":"HUN","Islandia":"ISL",
+    "Irlanda":"IRL","Israel":"ISR","Italia":"ITA","Japón":"JPN","Letonia":"LVA","Lituania":"LTU","Luxemburgo":"LUX","México":"MEX",
+    "Noruega":"NOR","Nueva Zelanda":"NZL","Países Bajos":"NLD","Polonia":"POL","Portugal":"PRT","Reino Unido":"GBR",
+    "República Checa":"CZE","Suecia":"SWE","Suiza":"CHE","Turquía":"TUR"
   };
 
-  // Edades (del CSV que has subido): quinquenios + 85+
   const PYR_AGE_ORDER = [
     "Y_LE4","Y5T9","Y10T14","Y15T19","Y20T24","Y25T29","Y30T34","Y35T39","Y40T44","Y45T49",
     "Y50T54","Y55T59","Y60T64","Y65T69","Y70T74","Y75T79","Y80T84","Y_GE85"
   ];
-  const AGE_LABEL = (code) => {
-    const m = {
-      "Y_LE4":"0–4","Y5T9":"5–9","Y10T14":"10–14","Y15T19":"15–19","Y20T24":"20–24","Y25T29":"25–29",
-      "Y30T34":"30–34","Y35T39":"35–39","Y40T44":"40–44","Y45T49":"45–49","Y50T54":"50–54","Y55T59":"55–59",
-      "Y60T64":"60–64","Y65T69":"65–69","Y70T74":"70–74","Y75T79":"75–79","Y80T84":"80–84","Y_GE85":"85+"
-    };
-    return m[code] || code;
-  };
+  const AGE_LABEL = (code) => ({
+    "Y_LE4":"0–4","Y5T9":"5–9","Y10T14":"10–14","Y15T19":"15–19","Y20T24":"20–24","Y25T29":"25–29",
+    "Y30T34":"30–34","Y35T39":"35–39","Y40T44":"40–44","Y45T49":"45–49","Y50T54":"50–54","Y55T59":"55–59",
+    "Y60T64":"60–64","Y65T69":"65–69","Y70T74":"70–74","Y75T79":"75–79","Y80T84":"80–84","Y_GE85":"85+"
+  }[code] || code);
 
   const state = {
     selectedCountry: null,
-
-    // pensiones
-    countriesByName: new Map(), // name -> entry del json
+    countriesByName: new Map(), // nombre -> entry JSON
     oecdNames: [],
-
-    // población (pirámide): iso3 -> { year -> { ageCode -> valuePeople } }
-    popByIso3: new Map(),
-    popYears: new Set(), // años encontrados (por si luego quieres selector)
-    popPreferredYear: null // elegimos el último año disponible
+    popByIso3: new Map(),        // iso3 -> Map(year -> Map(age -> value))
+    popYears: new Set(),
+    popPreferredYear: null
   };
 
   const els = {
-    // left
     loadBox: document.getElementById('loadBox'),
     loadText: document.getElementById('loadText'),
     leftNote: document.getElementById('leftNote'),
-    top10: document.getElementById('top10'),
-    countrySelect: document.getElementById('countrySelect'),
+    countryList: document.getElementById('countryList'),
     selectedCountryMeta: document.getElementById('selectedCountryMeta'),
 
-    // chart
     cpSvg: document.getElementById('cpSvg'),
     cpReadout: document.getElementById('cpReadout'),
     kReadout: document.getElementById('kReadout'),
 
-    // right
     resultMini: document.getElementById('resultMini'),
     resultBadge: document.getElementById('resultBadge'),
     resultBadgeText: document.getElementById('resultBadgeText'),
@@ -620,13 +545,12 @@
     PStar: document.getElementById('PStar'),
     explainText: document.getElementById('explainText'),
 
-    // pyramid
     pyrSvg: document.getElementById('pyrSvg'),
     pyrMeta: document.getElementById('pyrMeta'),
     pyrNote: document.getElementById('pyrNote')
   };
 
-  // --------- helpers generales ----------
+  // ---------- utils ----------
   const safeNum = (x) => (typeof x === "number" && isFinite(x)) ? x : null;
   const toMillions = (people) => {
     const p = safeNum(people);
@@ -637,11 +561,7 @@
   function pickLatestObservation(observations, predicate){
     const arr = observations.filter(o => predicate(o));
     if (!arr.length) return null;
-    arr.sort((a,b) => {
-      const da = a?.period?.date || "";
-      const db = b?.period?.date || "";
-      return db.localeCompare(da);
-    });
+    arr.sort((a,b) => (b?.period?.date || "").localeCompare(a?.period?.date || ""));
     return arr[0];
   }
 
@@ -678,20 +598,14 @@
 
     const k = (tau !== null && rho !== null && rho > 0) ? (tau / rho) : null;
 
-    return {
-      name: countryEntry.country?.name ?? "—",
-      iso2: countryEntry.country?.iso2 ?? "",
-      C_people, P_people,
-      C_m, P_m,
-      tau, rho, k
-    };
+    return { name: countryEntry.country?.name ?? "—", C_m, P_m, tau, rho, k };
   }
 
   function hasCoreData(m){
     return (m && m.C_m !== null && m.P_m !== null && m.tau !== null && m.rho !== null && m.k !== null);
   }
 
-  // --------- SVG helpers ----------
+  // ---------- SVG helpers ----------
   const svgEl = (name, attrs={}) => {
     const el = document.createElementNS("http://www.w3.org/2000/svg", name);
     for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
@@ -699,7 +613,28 @@
   };
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
 
-  // --------- Pirámide poblacional ----------
+  // ---------- LEFT list ----------
+  function countryTag(name){
+    const entry = state.countriesByName.get(name);
+    if (!entry) return "—";
+    const m = resolveCountryMetrics(entry);
+    return hasCoreData(m) ? "datos" : "parcial";
+  }
+
+  function renderCountryList(){
+    els.countryList.innerHTML = "";
+    state.oecdNames.forEach(name => {
+      const btn = document.createElement('button');
+      btn.className = 'country-btn';
+      btn.type = 'button';
+      btn.setAttribute('aria-selected', name === state.selectedCountry ? "true":"false");
+      btn.innerHTML = `<span>${name}</span><span class="tag">${countryTag(name)}</span>`;
+      btn.addEventListener('click', () => selectCountry(name));
+      els.countryList.appendChild(btn);
+    });
+  }
+
+  // ---------- Pirámide ----------
   function getPyramidForCountry(countryName){
     const iso3 = NAME_TO_ISO3[countryName] || null;
     if (!iso3) return null;
@@ -712,7 +647,6 @@
     const bucket = byYear.get(year) || null;
     if (!bucket) return null;
 
-    // extraer en orden
     const vals = PYR_AGE_ORDER.map(a => safeNum(bucket.get(a)) ?? null);
     if (vals.every(v => v === null)) return null;
 
@@ -726,7 +660,7 @@
     const pyr = getPyramidForCountry(countryName);
     if (!pyr){
       els.pyrMeta.textContent = "Sin datos";
-      els.pyrNote.textContent = "No hay datos de pirámide para este país (revisa el mapeo ISO3 o el CSV en tu repo).";
+      els.pyrNote.textContent = "No hay datos de pirámide para este país (revisa mapeo ISO3 o el CSV en tu repo).";
       const t = svgEl('text', {
         x: 20, y: 60,
         fill: COLORS.text,
@@ -739,20 +673,19 @@
       return;
     }
 
-    const W=520, H=360;
-    const pad = {l: 68, r: 22, t: 34, b: 18};
+    // más alta: 520x520
+    const W=520, H=520;
+    const pad = {l: 74, r: 24, t: 44, b: 24};
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
     const cx = pad.l + innerW/2;
 
-    // valores por edad en personas. Como el CSV es sexo total (_T), dibujamos simétrico (total/2 a cada lado).
     const vals = pyr.values.map(v => (v === null ? 0 : v));
     const maxV = Math.max(1, ...vals);
-
     const barH = innerH / pyr.ageCodes.length;
     const maxPx = (innerW/2) * 0.90;
 
-    // grid vertical
+    // grid
     const gridLines = 6;
     for (let k=0;k<=gridLines;k++){
       const x = pad.l + (innerW * k/gridLines);
@@ -761,16 +694,15 @@
         stroke: COLORS.grid, "stroke-width":1, "stroke-opacity":"0.25"
       }));
     }
-
-    // center line
+    // center
     svg.appendChild(svgEl('line',{
       x1: cx, y1: pad.t, x2: cx, y2: pad.t+innerH,
       stroke: COLORS.text, "stroke-width":1.2, "stroke-opacity":"0.55"
     }));
 
-    // labels left/right
+    // labels
     const labL = svgEl('text',{
-      x: cx - 8, y: 22,
+      x: cx - 8, y: 30,
       fill: COLORS.workers, "font-size":"12", "font-family":"Arial, sans-serif",
       "text-anchor":"end", "opacity":"0.88"
     });
@@ -778,35 +710,30 @@
     svg.appendChild(labL);
 
     const labR = svgEl('text',{
-      x: cx + 8, y: 22,
+      x: cx + 8, y: 30,
       fill: COLORS.retired, "font-size":"12", "font-family":"Arial, sans-serif",
       "text-anchor":"start", "opacity":"0.88"
     });
     labR.textContent = "Total";
     svg.appendChild(labR);
 
-    // render (0–4 abajo, 85+ arriba) => invertimos
     for (let i=0;i<pyr.ageCodes.length;i++){
       const code = pyr.ageCodes[i];
       const v = vals[i];
       const y = pad.t + (pyr.ageCodes.length - 1 - i) * barH + 1;
       const h = Math.max(1, barH - 2);
 
-      const half = v * 0.5;
-      const w = (half / (maxV*0.5)) * maxPx; // equivale a v/maxV
+      const w = (v / maxV) * maxPx;
 
-      // izquierda
       svg.appendChild(svgEl('rect',{
         x: cx - w, y, width: w, height: h,
         fill: COLORS.workers, "fill-opacity":"0.70"
       }));
-      // derecha
       svg.appendChild(svgEl('rect',{
         x: cx, y, width: w, height: h,
         fill: COLORS.retired, "fill-opacity":"0.70"
       }));
 
-      // edad label
       const t = svgEl('text',{
         x: 10, y: y + h*0.72,
         fill: COLORS.text, "font-size":"11",
@@ -817,58 +744,15 @@
       svg.appendChild(t);
     }
 
-    // meta
     const totalPop = vals.reduce((a,b)=>a+b,0);
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
     els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F en este CSV).`;
   }
 
-  // --------- UI (countries) ----------
-  function countryTag(name){
-    const entry = state.countriesByName.get(name);
-    if (!entry) return "—";
-    const m = resolveCountryMetrics(entry);
-    return hasCoreData(m) ? "datos" : "parcial";
-  }
-
-  function renderCountries(){
-    els.top10.innerHTML = "";
-    TOP10.forEach(name => {
-      const btn = document.createElement('button');
-      btn.className = 'country-btn';
-      btn.type = 'button';
-      btn.setAttribute('aria-selected', name === state.selectedCountry ? "true":"false");
-      btn.innerHTML = `<span>${name}</span><span class="tag">${countryTag(name)}</span>`;
-      btn.addEventListener('click', () => selectCountry(name));
-      els.top10.appendChild(btn);
-    });
-
-    const rest = state.oecdNames.filter(n => !TOP10.includes(n));
-    els.countrySelect.innerHTML =
-      `<option value="">— Elegir país —</option>` +
-      rest.map(c => `<option value="${c}">${c}</option>`).join("");
-
-    els.countrySelect.disabled = false;
-  }
-
-  function syncCountrySelect(){
-    if (!state.selectedCountry) { els.countrySelect.value = ""; return; }
-    if (!TOP10.includes(state.selectedCountry)) els.countrySelect.value = state.selectedCountry;
-    else els.countrySelect.value = "";
-  }
-
-  els.countrySelect.addEventListener('change', (e) => {
-    const v = e.target.value;
-    if (!v) return;
-    selectCountry(v);
-  });
-
-  // --------- panel derecho ----------
+  // ---------- panel derecho ----------
   function setExplainPanel(metrics){
     const name = state.selectedCountry || "—";
     els.resultMini.textContent = `${name} (último dato)`;
-
-    // pirámide siempre intenta render
     renderPyramid(name);
 
     if (!metrics || !hasCoreData(metrics)){
@@ -885,8 +769,8 @@
       els.kVal.textContent = metrics?.k !== null ? metrics.k.toFixed(2) : "—";
       els.PStar.textContent = "—";
 
-      els.explainText.innerHTML =
-        `Para este país falta algún componente (C, P, τ o ρ). El JSON puede tener datos parciales o con métricas no disponibles.`;
+      els.explainText.textContent =
+        "Para este país falta algún componente (C, P, τ o ρ). El JSON puede tener datos parciales.";
       return;
     }
 
@@ -919,9 +803,8 @@
       : `Aquí se cumple <span class="mono">(P/C) &lt; (τ/ρ)</span>: con este τ y ρ habría margen (superávit del esquema simple).`;
   }
 
-  // --------- eje dinámico (nice ticks) ----------
+  // ---------- eje (ticks simples) ----------
   function niceNum(x){
-    // redondea a 1,2,5 * 10^n
     const exp = Math.floor(Math.log10(Math.max(1e-9, x)));
     const f = x / Math.pow(10, exp);
     let nf;
@@ -931,8 +814,11 @@
     else nf = 10;
     return nf * Math.pow(10, exp);
   }
-  function niceAxisMax(v){
-    return niceNum(v);
+  function niceCeil(x){
+    const step = niceNum(x);
+    // step puede ser menor que x; queremos subir al siguiente múltiplo de step
+    const n = Math.ceil(x / step);
+    return n * step;
   }
   function buildTicks(max, targetCount){
     const step = niceNum(max / Math.max(1, targetCount));
@@ -942,7 +828,7 @@
     return ticks;
   }
 
-  // --------- render chart C-P (xMax/yMax adaptativos) ----------
+  // ---------- chart ----------
   function renderCPChart(){
     const svg = els.cpSvg;
     clearSvg(svg);
@@ -952,58 +838,39 @@
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
-    // país seleccionado
     if (!state.selectedCountry){
       els.cpReadout.textContent = `C: — | P: —`;
       els.kReadout.textContent = `k: —`;
       setExplainPanel(null);
-
-      const badge = svgEl('text',{
-        x: pad.l + innerW - 10, y: pad.t + 18,
-        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
-        "text-anchor":"end", "opacity":"0.85"
-      });
-      badge.textContent = "Selecciona un país";
-      svg.appendChild(badge);
       return;
     }
 
     const entry = state.countriesByName.get(state.selectedCountry) || null;
     const metrics = entry ? resolveCountryMetrics(entry) : null;
 
-    // Si faltan C/P, dibuja ejes con rango base
-    let C = metrics?.C_m ?? null;
-    let P = metrics?.P_m ?? null;
-    let k = metrics?.k ?? null;
+    const C = metrics?.C_m ?? null;
+    const P = metrics?.P_m ?? null;
+    const k = metrics?.k ?? null;
 
-    // Rangos dinámicos:
-    // - si hay C/P: margen 20% y mínimo razonable
-    // - si hay k: considerar punto de corte de la línea (para que se vea bien)
-    let xMax = (C !== null) ? (C * 1.25) : 30;
-    let yMax = (P !== null) ? (P * 1.25) : 15;
+    // REGLA SOLICITADA:
+    // xMax = C * 1.10 (si hay C), con un mínimo razonable.
+    let xMax = (C !== null) ? (C * 1.10) : 30;
+    xMax = Math.max(30, xMax);
+    xMax = niceCeil(xMax); // redondeo al alza manteniendo >= C*1.10
 
+    // yMax: mantenemos dinámica para que no quede recortado el punto ni la recta
+    let yMax = (P !== null) ? (P * 1.20) : 15;
+    yMax = Math.max(15, yMax);
     if (k !== null){
-      // para que la línea tenga recorrido visible, miramos dónde llega en yMax o xMax
-      // y ampliamos un poco si hace falta
-      // (si k es pequeña, la línea sube lento y es mejor ampliar x)
-      xMax = Math.max(xMax, (yMax / k) * 1.05);
       yMax = Math.max(yMax, (k * xMax) * 1.05);
     }
-
-    // topes mínimos
-    xMax = Math.max(30, xMax);
-    yMax = Math.max(15, yMax);
-
-    // "nice"
-    xMax = niceAxisMax(xMax);
-    yMax = niceAxisMax(yMax);
+    yMax = niceCeil(yMax);
 
     const xMin=0, yMin=0;
 
     const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
     const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
 
-    // ticks
     const xTicks = buildTicks(xMax, 6);
     const yTicks = buildTicks(yMax, 6);
 
@@ -1065,7 +932,7 @@
     yl.textContent = "Pensionistas (millones)";
     svg.appendChild(yl);
 
-    // Si no hay C/P, actualiza panel y termina con aviso
+    // No hay C/P
     if (!metrics || C === null || P === null){
       els.cpReadout.textContent = `Datos C/P no disponibles para ${state.selectedCountry}`;
       els.kReadout.textContent = `k: —`;
@@ -1109,18 +976,9 @@
       });
       badge.textContent = above ? "Por encima: tensión (impuestos/deuda)" : "Por debajo: dentro del equilibrio";
       svg.appendChild(badge);
-    } else {
-      const badge = svgEl('text',{
-        x: pad.l + innerW - 10, y: pad.t + 18,
-        fill: COLORS.text,
-        "font-size":"12", "font-family":"Arial, sans-serif",
-        "text-anchor":"end", "opacity":"0.90"
-      });
-      badge.textContent = "k no disponible (faltan τ y/o ρ)";
-      svg.appendChild(badge);
     }
 
-    // proyecciones (guías)
+    // guías
     svg.appendChild(svgEl('line',{
       x1: xToPx(0), y1: yToPx(P),
       x2: xToPx(C), y2: yToPx(P),
@@ -1151,14 +1009,12 @@
   function selectCountry(name){
     state.selectedCountry = name;
     els.selectedCountryMeta.textContent = `Seleccionado: ${name}`;
-    syncCountrySelect();
-    renderCountries();
+    renderCountryList();
     renderCPChart();
   }
 
-  // --------- CSV parse mínimo (robusto para comillas básicas) ----------
+  // ---------- CSV parse ----------
   function parseCSV(text){
-    // Parser sencillo pero correcto para CSV estándar con comillas dobles.
     const rows = [];
     let row = [];
     let cur = "";
@@ -1169,39 +1025,27 @@
       const next = text[i+1];
 
       if (ch === '"'){
-        if (inQuotes && next === '"'){ // escape ""
-          cur += '"';
-          i++;
-        } else {
-          inQuotes = !inQuotes;
-        }
+        if (inQuotes && next === '"'){ cur += '"'; i++; }
+        else { inQuotes = !inQuotes; }
       } else if (ch === ',' && !inQuotes){
-        row.push(cur);
-        cur = "";
+        row.push(cur); cur = "";
       } else if ((ch === '\n' || ch === '\r') && !inQuotes){
         if (ch === '\r' && next === '\n') i++;
-        row.push(cur);
-        cur = "";
-        // evita líneas vacías
-        if (row.length > 1 || (row.length === 1 && row[0].trim() !== "")){
-          rows.push(row);
-        }
+        row.push(cur); cur = "";
+        if (row.length > 1 || (row.length === 1 && row[0].trim() !== "")) rows.push(row);
         row = [];
       } else {
         cur += ch;
       }
     }
-    // last
     row.push(cur);
     if (row.length > 1 || (row.length === 1 && row[0].trim() !== "")) rows.push(row);
 
     if (!rows.length) return { header: [], data: [] };
-    const header = rows[0].map(h => h.trim());
-    const data = rows.slice(1);
-    return { header, data };
+    return { header: rows[0].map(h => h.trim()), data: rows.slice(1) };
   }
 
-  // --------- load POP CSV ----------
+  // ---------- load POP CSV ----------
   async function loadPopulationCSV(){
     const res = await fetch(POP_CSV_URL, { cache: "no-store" });
     if (!res.ok) throw new Error(`CSV población: HTTP ${res.status}`);
@@ -1209,8 +1053,6 @@
     const { header, data } = parseCSV(text);
 
     const idx = (name) => header.indexOf(name);
-
-    // Este CSV OECD trae columnas como: REF_AREA, SEX, AGE, TIME_PERIOD, OBS_VALUE
     const iRef = idx("REF_AREA");
     const iSex = idx("SEX");
     const iAge = idx("AGE");
@@ -1218,7 +1060,7 @@
     const iVal = idx("OBS_VALUE");
 
     if ([iRef,iSex,iAge,iYear,iVal].some(i => i < 0)){
-      throw new Error("CSV población: columnas esperadas no encontradas (REF_AREA, SEX, AGE, TIME_PERIOD, OBS_VALUE).");
+      throw new Error("CSV población: faltan columnas REF_AREA, SEX, AGE, TIME_PERIOD, OBS_VALUE.");
     }
 
     state.popByIso3.clear();
@@ -1232,10 +1074,8 @@
       const val = Number((r[iVal] || "").trim());
 
       if (!ref || !year || !isFinite(val)) continue;
-      // En tu archivo, SEX es "_T". Si en el futuro tienes M/F, aquí puedes filtrarlo o almacenarlo.
-      if (sex && sex !== "_T") continue;
-
-      if (!PYR_AGE_ORDER.includes(age)) continue;
+      if (sex && sex !== "_T") continue;          // este CSV es total
+      if (!PYR_AGE_ORDER.includes(age)) continue; // solo quinquenios
 
       state.popYears.add(year);
 
@@ -1245,12 +1085,11 @@
       byYear.get(year).set(age, val);
     }
 
-    // elegir año preferido (máximo)
     const years = [...state.popYears].map(y => Number(y)).filter(n => isFinite(n)).sort((a,b)=>a-b);
     state.popPreferredYear = years.length ? String(years[years.length-1]) : null;
   }
 
-  // --------- load JSON pensiones ----------
+  // ---------- load pensions JSON ----------
   async function loadPensionsJSON(){
     const res = await fetch(DATA_URL, { cache: "no-store" });
     if (!res.ok) throw new Error(`JSON pensiones: HTTP ${res.status}`);
@@ -1269,15 +1108,12 @@
     state.oecdNames.sort((a,b)=>a.localeCompare(b, "es"));
   }
 
-  // --------- init (carga ambos) ----------
+  // ---------- init ----------
   async function init(){
     try{
       els.loadText.textContent = "Leyendo JSON + CSV…";
 
-      await Promise.all([
-        loadPensionsJSON(),
-        loadPopulationCSV()
-      ]);
+      await Promise.all([ loadPensionsJSON(), loadPopulationCSV() ]);
 
       els.loadBox.style.display = "none";
       els.leftNote.textContent =
@@ -1286,22 +1122,15 @@
       const defaultCountry = state.countriesByName.has("España") ? "España" : (state.oecdNames[0] || null);
       state.selectedCountry = defaultCountry;
 
-      renderCountries();
-      syncCountrySelect();
-
-      els.selectedCountryMeta.textContent = defaultCountry
-        ? `Seleccionado: ${defaultCountry}`
-        : `Sin países`;
-
+      els.selectedCountryMeta.textContent = defaultCountry ? `Seleccionado: ${defaultCountry}` : `Sin países`;
+      renderCountryList();
       renderCPChart();
     }catch(err){
       els.loadText.textContent = "Error cargando datasets";
       els.leftNote.textContent =
-        `No se pudo cargar "${DATA_URL}" o "${POP_CSV_URL}". Revisa que ambos existan en tu repo (misma carpeta) y que GitHub Pages los sirva.`;
+        `No se pudo cargar "${DATA_URL}" o "${POP_CSV_URL}". Revisa que ambos existan en tu repo y se sirvan en GitHub Pages.`;
 
       els.selectedCountryMeta.textContent = "Error";
-      els.countrySelect.disabled = true;
-
       els.resultBadge.classList.remove('warn','ok');
       els.resultBadge.classList.add('warn');
       els.resultBadgeText.textContent = "No se pudo cargar el dataset.";
