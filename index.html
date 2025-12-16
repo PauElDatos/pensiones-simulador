@@ -3,925 +3,165 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pensiones — Simulador C vs P</title>
+  <title>Pensiones — Inicio</title>
   <style>
     :root{
       --bg:#252525;
       --primary:#FEF702;
       --text:#B0B0B0;
-      --grid:#4A4A4A;
-      --workers:#36C3FF;
-      --retired:#FF6A00;
       --panel:#2b2b2b;
       --stroke:#3a3a3a;
-
-      --fontTitle: "Futura", "Trebuchet MS", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      --fontText:  Arial, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-
-      --radius:14px;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
+      --radius:16px;
 
+      --fontTitle: "Futura","Trebuchet MS",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      --fontText:  Arial,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    }
     *{box-sizing:border-box}
     body{
       margin:0;
+      min-height:100vh;
       background:var(--bg);
       color:var(--text);
       font-family:var(--fontText);
-    }
-
-    header{
-      padding:18px 18px 8px 18px;
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .h-title{ line-height:1.05; }
-    .h-title h1{
-      margin:0;
-      font-family:var(--fontTitle);
-      color:var(--primary);
-      font-size:22px;
-      letter-spacing:.3px;
-    }
-    .h-title p{
-      margin:6px 0 0 0;
-      font-size:13px;
-      color:var(--text);
-      opacity:.9;
-    }
-    .h-meta{
-      font-size:12px;
-      opacity:.85;
-      text-align:right;
-      max-width:52ch;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border:1px solid var(--stroke);
-      border-radius:999px;
-      background:rgba(255,255,255,.03);
-    }
-    .dot{
-      width:8px; height:8px; border-radius:50%;
-      background:var(--primary);
-      box-shadow:0 0 0 3px rgba(254,247,2,.15);
-    }
-
-    main{
-      min-height: calc(100vh - 70px);
-      display:grid;
-      grid-template-columns: 300px 1fr 420px;
-      gap:12px;
-      padding:12px 12px 18px 12px;
-    }
-    @media (max-width: 1200px){
-      main{ grid-template-columns: 1fr; }
-    }
-
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
-      border:1px solid var(--stroke);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .ph{
-      padding:12px 12px 10px 12px;
-      border-bottom:1px solid var(--stroke);
-      background:rgba(255,255,255,.02);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .ttl{
-      font-family:var(--fontTitle);
-      color:var(--primary);
-      font-size:13px;
-      letter-spacing:.35px;
-      text-transform:uppercase;
-    }
-    .sub{
-      font-size:12px;
-      opacity:.85;
-      text-align:right;
-      max-width:46ch;
-    }
-
-    /* LEFT: countries */
-    .countries{ display:flex; flex-direction:column; height:100%; }
-    .countries .body{
-      padding:10px 10px 12px 10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      overflow:auto;
-    }
-    .small-title{
-      font-size:12px;
-      opacity:.9;
-      margin:0;
-    }
-    .country-grid{ display:grid; grid-template-columns:1fr; gap:8px; }
-    .country-btn{
-      width:100%;
-      text-align:left;
-      padding:10px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.02);
-      color:var(--text);
-      cursor:pointer;
-      font-size:13px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-    }
-    .country-btn:hover{
-      border-color: rgba(254,247,2,.25);
-      background:rgba(255,255,255,.03);
-    }
-    .country-btn[aria-selected="true"]{
-      border-color: rgba(254,247,2,.35);
-      background:rgba(254,247,2,.08);
-    }
-    .tag{
-      font-size:11px;
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.09);
-      opacity:.9;
-    }
-    select{
-      width:100%;
-      padding:10px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-      color:var(--text);
-      outline:none;
-      font-size:13px;
-    }
-    .divider{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
-    .note{
-      font-size:11px;
-      opacity:.75;
-      line-height:1.35;
-    }
-
-    /* CENTER: chart */
-    .chart-wrap{ display:flex; flex-direction:column; height:100%; }
-    .chart-area{ padding:12px; height:100%; display:flex; flex-direction:column; gap:10px; }
-    .chart-legend{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-      font-size:12px;
-      opacity:.92;
-    }
-    .legend-left{ display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
-    .legend-item{ display:flex; align-items:center; gap:8px; }
-    .swatch{ width:10px; height:10px; border-radius:2px; background:var(--primary); }
-    .swatch.workers{ background:var(--workers); }
-    .swatch.retired{ background:var(--retired); }
-    .swatch.primary{ background:var(--primary); }
-
-    /* Critical: avoid text deformation: keep aspect ratio and meet */
-    .bigsvg{
-      width:100%;
-      height:auto;
-      aspect-ratio: 1000 / 700;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.05);
-      background:rgba(0,0,0,.08);
-      display:block;
-    }
-    .caption{
-      font-size:12px;
-      opacity:.8;
-      line-height:1.35;
-      border-top:1px solid rgba(255,255,255,.06);
-      padding-top:8px;
-    }
-
-    /* RIGHT: pyramid */
-    .right{ display:flex; flex-direction:column; height:100%; }
-    .right-body{ padding:12px; display:flex; flex-direction:column; gap:12px; }
-
-    .pyr-frame{
-      display:grid;
-      grid-template-columns: 54px 1fr;
-      gap:10px;
-      align-items:stretch;
-    }
-
-    /* vertical slider shell */
-    .vslider-shell{
-      background:rgba(0,0,0,.10);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:14px;
-      padding:10px 6px;
       display:flex;
       align-items:center;
       justify-content:center;
+      padding:18px;
     }
-    .vslider-shell input[type="range"]{
-      -webkit-appearance: slider-vertical;
-      writing-mode: bt-lr; /* fallback */
-      width: 22px;
-      height: 460px;
-      accent-color: var(--primary);
+    .shell{
+      width:min(980px, 100%);
+      display:grid;
+      gap:14px;
     }
-
-    .pyr-svg{
-      width:100%;
-      height:auto;
-      aspect-ratio: 520 / 520;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.05);
-      background:rgba(0,0,0,.08);
-      display:block;
+    header{
+      padding:14px 16px;
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      box-shadow:var(--shadow);
     }
-
-    .ctl{ display:grid; gap:6px; }
-    .ctl label{
-      font-size:12px;
+    h1{
+      margin:0;
+      font-family:var(--fontTitle);
+      color:var(--primary);
+      font-size:28px;
+      letter-spacing:.3px;
+      line-height:1.05;
+    }
+    p{
+      margin:8px 0 0 0;
       opacity:.9;
+      font-size:14px;
+      line-height:1.35;
+      max-width:80ch;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      .grid{ grid-template-columns:1fr; }
+    }
+    a.card{
+      text-decoration:none;
+      color:inherit;
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      box-shadow:var(--shadow);
+      padding:22px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:180px;
+      position:relative;
+      overflow:hidden;
+    }
+    a.card:hover{
+      border-color: rgba(254,247,2,.35);
+      background:linear-gradient(180deg, rgba(254,247,2,.07), rgba(255,255,255,.02));
+    }
+    .kicker{
+      font-family:var(--fontTitle);
+      color:var(--primary);
+      text-transform:uppercase;
+      letter-spacing:.35px;
+      font-size:13px;
+    }
+    .title{
+      font-family:var(--fontTitle);
+      font-size:26px;
+      color:#fff;
+      letter-spacing:.2px;
+      margin:0;
+      line-height:1.05;
+    }
+    .desc{
+      margin:0;
+      opacity:.9;
+      font-size:14px;
+      line-height:1.35;
+      max-width:65ch;
+    }
+    .arrow{
+      position:absolute;
+      right:16px;
+      bottom:16px;
+      width:44px; height:44px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      justify-content:center;
+      font-size:18px;
+      color:var(--primary);
     }
-    .val{ font-variant-numeric: tabular-nums; opacity:.95; }
-
-    input[type="range"]{ width:100%; accent-color: var(--primary); }
-
-    .bottom-controls{
-      padding:10px 12px;
-      border-top:1px solid var(--stroke);
-      background:rgba(0,0,0,.10);
-      display:grid;
-      gap:12px;
-    }
-
-    .mono{
-      font-variant-numeric: tabular-nums;
-      font-feature-settings: "tnum" 1, "ss01" 1;
+    footer{
+      opacity:.75;
+      font-size:12px;
+      line-height:1.35;
+      padding:0 2px;
     }
   </style>
 </head>
-
 <body>
+  <div class="shell">
+    <header>
+      <h1>Pensiones — Web de divulgación</h1>
+      <p>
+        Dos módulos: (1) comparativa OCDE (punto país y línea de equilibrio calculada por país), y (2) simulador normativo
+        (pirámide + parámetros). Sitio estático, apto para GitHub Pages.
+      </p>
+    </header>
 
-<header>
-  <div class="h-title">
-    <h1>Sostenibilidad del sistema</h1>
-    <p>Trabajadores (C) vs Pensionistas (P) — demo interactiva</p>
+    <div class="grid">
+      <a class="card" href="simulador.html">
+        <div class="kicker">Módulo 1</div>
+        <h2 class="title">Simulador</h2>
+        <p class="desc">
+          Ajusta la pirámide por quinquenios y parámetros demográficos. La gráfica de la izquierda queda preparada para
+          la siguiente iteración (por ahora, placeholder).
+        </p>
+        <div class="arrow">→</div>
+      </a>
+
+      <a class="card" href="ocde.html">
+        <div class="kicker">Módulo 2</div>
+        <h2 class="title">Sostenibilidad países OCDE</h2>
+        <p class="desc">
+          Selecciona un país OCDE y visualiza su punto (C,P) junto con la línea de equilibrio definida por su k = τ/ρ.
+          De momento, datos completos solo para España.
+        </p>
+        <div class="arrow">→</div>
+      </a>
+    </div>
+
+    <footer>
+      Nota: El cálculo de k (pendiente) se define por país. En España, ejemplo base: τ≈0,29 y ρ≈0,80 ⇒ k≈0,36.
+    </footer>
   </div>
-  <div class="h-meta">
-    <div class="pill"><span class="dot"></span><span>Modelo divulgativo (sin backend). Punto real: España.</span></div>
-  </div>
-</header>
-
-<main>
-
-  <!-- LEFT -->
-  <section class="panel countries" aria-label="Países OCDE">
-    <div class="ph">
-      <div class="ttl">OCDE</div>
-      <div class="sub" id="selectedCountryMeta">Seleccionado: España</div>
-    </div>
-
-    <div class="body">
-      <p class="small-title">Top 10</p>
-      <div class="country-grid" id="top10"></div>
-
-      <div class="divider"></div>
-
-      <p class="small-title">Resto de países</p>
-      <select id="countrySelect" aria-label="Selecciona otro país">
-        <option value="">— Elegir país —</option>
-      </select>
-
-      <div class="note">
-        Por ahora solo España tiene datos C/P reales (21,3M cotizantes; 9,3M pensionistas).
-      </div>
-    </div>
-  </section>
-
-  <!-- CENTER -->
-  <section class="panel chart-wrap" aria-label="Gráfica Cotizantes vs Pensionistas">
-    <div class="ph">
-      <div class="ttl">Gráfica C–P</div>
-      <div class="sub mono" id="cpReadout">C: 21.3 M | P: 9.3 M</div>
-    </div>
-
-    <div class="chart-area">
-      <div class="chart-legend">
-        <div class="legend-left">
-          <div class="legend-item"><span class="swatch primary"></span><span>Línea de equilibrio (k)</span></div>
-          <div class="legend-item"><span class="swatch retired"></span><span>Punto país</span></div>
-          <div class="legend-item"><span class="swatch workers"></span><span>Proyección</span></div>
-        </div>
-        <div class="legend-item mono" id="kReadout">k: 0.36</div>
-      </div>
-
-      <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
-
-      <div class="caption" id="cpCaption">
-        Regla visual: si el punto (C,P) cae <span style="color:var(--primary)">por debajo</span> de la línea, con ese k el sistema “entra” en el límite.
-        Si cae <span style="color:var(--retired)">por encima</span>, requiere impuestos extra y/o deuda (en este modelo).
-      </div>
-    </div>
-  </section>
-
-  <!-- RIGHT -->
-  <section class="panel right" aria-label="Pirámide poblacional y controles">
-    <div class="ph">
-      <div class="ttl">Pirámide</div>
-      <div class="sub mono" id="pyrMeta">Población total: 47.0 M</div>
-    </div>
-
-    <div class="right-body">
-
-      <div class="pyr-frame">
-
-        <!-- Vertical slider: peak position -->
-        <div class="vslider-shell" title="Pico (quinquenio)">
-          <input id="peakSlider" type="range" min="0" max="20" step="1" value="9" />
-        </div>
-
-        <svg id="pyrSvg" class="pyr-svg" viewBox="0 0 520 520" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide por quinquenios"></svg>
-      </div>
-
-      <!-- Horizontal slider: width -->
-      <div class="ctl">
-        <label>
-          <span>Anchura del bulto (campana)</span>
-          <span class="val mono" id="widthVal">18</span>
-        </label>
-        <input id="widthSlider" type="range" min="6" max="40" step="1" value="18" />
-      </div>
-
-      <div class="note">
-        Pirámide sintética: un “bulto” principal (campana) deformable en posición (vertical) y anchura (horizontal).
-      </div>
-
-    </div>
-
-    <!-- Bottom controls: total population + productivity k -->
-    <div class="bottom-controls" aria-label="Controles inferiores">
-      <div class="ctl">
-        <label>
-          <span>Total población (millones)</span>
-          <span class="val mono" id="popVal">47.0</span>
-        </label>
-        <input id="popSlider" type="range" min="5" max="350" step="0.5" value="47" />
-      </div>
-
-      <div class="ctl">
-        <label>
-          <span>Productividad por trabajador (k)</span>
-          <span class="val mono" id="kVal">0.36</span>
-        </label>
-        <input id="kSlider" type="range" min="0.10" max="0.80" step="0.01" value="0.36" />
-      </div>
-
-      <div class="note">
-        k mayor ⇒ línea más vertical (más pensionistas sostenibles por cotizante en el modelo).
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<script>
-(() => {
-  // =============================
-  // Colors
-  // =============================
-  const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-  const COLORS = {
-    primary: CSS('--primary'),
-    text: CSS('--text'),
-    grid: CSS('--grid'),
-    workers: CSS('--workers'),
-    retired: CSS('--retired'),
-  };
-
-  // =============================
-  // OECD list
-  // =============================
-  const OECD = [
-    "Alemania","Australia","Austria","Bélgica","Canadá","Chile","Colombia","Corea del Sur","Costa Rica",
-    "Dinamarca","Eslovaquia","Eslovenia","España","Estados Unidos","Estonia","Finlandia","Francia","Grecia",
-    "Hungría","Islandia","Irlanda","Israel","Italia","Japón","Letonia","Lituania","Luxemburgo","México",
-    "Noruega","Nueva Zelanda","Países Bajos","Polonia","Portugal","Reino Unido","República Checa","Suecia",
-    "Suiza","Turquía"
-  ];
-  const TOP10 = [
-    "España","Estados Unidos","Japón","Alemania","Francia","Italia","Reino Unido","Canadá","México","Corea del Sur"
-  ];
-
-  // Only Spain has real CP
-  const countryDataCP = {
-    "España": { C: 21.3, P: 9.3 } // millions
-  };
-
-  // Age bins (0-4 ... 100+)
-  const AGE_LABELS = [
-    "0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
-    "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95-99","100+"
-  ];
-
-  // =============================
-  // State
-  // =============================
-  const state = {
-    selectedCountry: "España",
-    popTotalM: 47.0,
-    k: 0.36,
-
-    // pyramid controls:
-    peakIdx: 9,    // 45-49 by default
-    width: 18      // "sigma" in bins (bigger => wider)
-  };
-
-  // =============================
-  // DOM
-  // =============================
-  const els = {
-    top10: document.getElementById('top10'),
-    countrySelect: document.getElementById('countrySelect'),
-    selectedCountryMeta: document.getElementById('selectedCountryMeta'),
-
-    cpSvg: document.getElementById('cpSvg'),
-    cpReadout: document.getElementById('cpReadout'),
-    kReadout: document.getElementById('kReadout'),
-
-    pyrSvg: document.getElementById('pyrSvg'),
-    pyrMeta: document.getElementById('pyrMeta'),
-
-    peakSlider: document.getElementById('peakSlider'),
-    widthSlider: document.getElementById('widthSlider'),
-    widthVal: document.getElementById('widthVal'),
-
-    popSlider: document.getElementById('popSlider'),
-    popVal: document.getElementById('popVal'),
-
-    kSlider: document.getElementById('kSlider'),
-    kVal: document.getElementById('kVal'),
-  };
-
-  // =============================
-  // SVG helpers
-  // =============================
-  const svgEl = (name, attrs={}) => {
-    const el = document.createElementNS("http://www.w3.org/2000/svg", name);
-    for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
-    return el;
-  };
-  const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
-
-  // =============================
-  // Countries UI
-  // =============================
-  const COUNTRY_TAG = (name) => (name === "España" ? "datos" : "—");
-
-  function renderCountries(){
-    els.top10.innerHTML = "";
-    TOP10.forEach(name => {
-      const btn = document.createElement('button');
-      btn.className = 'country-btn';
-      btn.type = 'button';
-      btn.setAttribute('aria-selected', name === state.selectedCountry ? "true":"false");
-      btn.innerHTML = `<span>${name}</span><span class="tag">${COUNTRY_TAG(name)}</span>`;
-      btn.addEventListener('click', () => {
-        state.selectedCountry = name;
-        els.selectedCountryMeta.textContent = `Seleccionado: ${name}`;
-        syncCountrySelect();
-        renderCountries();
-        renderAll();
-      });
-      els.top10.appendChild(btn);
-    });
-
-    const rest = OECD.filter(c => !TOP10.includes(c));
-    els.countrySelect.innerHTML =
-      `<option value="">— Elegir país —</option>` +
-      rest.map(c => `<option value="${c}">${c}</option>`).join("");
-  }
-
-  function syncCountrySelect(){
-    if (!TOP10.includes(state.selectedCountry)) els.countrySelect.value = state.selectedCountry;
-    else els.countrySelect.value = "";
-  }
-
-  els.countrySelect.addEventListener('change', (e) => {
-    const v = e.target.value;
-    if (!v) return;
-    state.selectedCountry = v;
-    els.selectedCountryMeta.textContent = `Seleccionado: ${v}`;
-    renderCountries();
-    renderAll();
-  });
-
-  // =============================
-  // CP chart (Spain only)
-  // =============================
-  function getCountryCP(){
-    const d = countryDataCP[state.selectedCountry];
-    return d ? {C:d.C, P:d.P} : null;
-  }
-
-  function renderCPChart(){
-    const svg = els.cpSvg;
-    clearSvg(svg);
-
-    const W = 1000, H = 700;
-    const pad = {l: 90, r: 30, t: 26, b: 70};
-    const innerW = W - pad.l - pad.r;
-    const innerH = H - pad.t - pad.b;
-
-    const xMin=0, xMax=30;
-    const yMin=0, yMax=15;
-
-    const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
-    const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
-
-    // Grid + ticks
-    const yTicks = [0,3,6,9,12,15];
-    const xTicks = [0,5,10,15,20,25,30];
-
-    yTicks.forEach(v => {
-      svg.appendChild(svgEl('line',{
-        x1: pad.l, y1: yToPx(v), x2: pad.l+innerW, y2: yToPx(v),
-        stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.45",
-        "stroke-dasharray":"6 6"
-      }));
-      svg.appendChild(svgEl('text',{
-        x: pad.l - 10, y: yToPx(v) + 4,
-        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
-        "text-anchor":"end", "opacity":"0.90"
-      })).textContent = String(v);
-    });
-
-    xTicks.forEach(v => {
-      svg.appendChild(svgEl('line',{
-        x1: xToPx(v), y1: pad.t, x2: xToPx(v), y2: pad.t+innerH,
-        stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.35"
-      }));
-      svg.appendChild(svgEl('text',{
-        x: xToPx(v), y: pad.t + innerH + 26,
-        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
-        "text-anchor":"middle", "opacity":"0.90"
-      })).textContent = String(v);
-    });
-
-    // Axes
-    svg.appendChild(svgEl('line',{
-      x1: pad.l, y1: pad.t+innerH, x2: pad.l+innerW, y2: pad.t+innerH,
-      stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
-    }));
-    svg.appendChild(svgEl('line',{
-      x1: pad.l, y1: pad.t, x2: pad.l, y2: pad.t+innerH,
-      stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
-    }));
-
-    // Labels
-    svg.appendChild(svgEl('text',{
-      x: pad.l + innerW/2, y: H - 20,
-      fill: COLORS.text, "font-size":"14", "font-family":"Arial, sans-serif",
-      "text-anchor":"middle", "opacity":"0.95"
-    })).textContent = "Cotizantes (millones)";
-
-    const yl = svgEl('text',{
-      x: 20, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size":"14", "font-family":"Arial, sans-serif",
-      "text-anchor":"middle", "opacity":"0.95",
-      transform: `rotate(-90 20 ${pad.t + innerH/2})`
-    });
-    yl.textContent = "Pensionistas (millones)";
-    svg.appendChild(yl);
-
-    // Equilibrium line y = kx
-    const k = state.k;
-    els.kReadout.textContent = `k: ${k.toFixed(2)}`;
-    els.kVal.textContent = k.toFixed(2);
-
-    const xAtTop = yMax / k;
-    let xEnd, yEnd;
-    if (xAtTop <= xMax){ xEnd = xAtTop; yEnd = yMax; }
-    else { xEnd = xMax; yEnd = k*xMax; }
-
-    svg.appendChild(svgEl('line',{
-      x1: xToPx(0), y1: yToPx(0),
-      x2: xToPx(xEnd), y2: yToPx(yEnd),
-      stroke: COLORS.primary, "stroke-width":"4", "stroke-opacity":"0.95"
-    }));
-
-    // Point: Spain only
-    const cp = getCountryCP();
-    if (!cp){
-      els.cpReadout.textContent = `Datos C/P no disponibles para ${state.selectedCountry}`;
-      const badge = svgEl('text',{
-        x: pad.l + innerW - 10, y: pad.t + 18,
-        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
-        "text-anchor":"end", "opacity":"0.85"
-      });
-      badge.textContent = "Punto C/P: solo España (por ahora)";
-      svg.appendChild(badge);
-      return;
-    }
-
-    const C = cp.C, P = cp.P;
-    els.cpReadout.textContent = `C: ${C.toFixed(1)} M | P: ${P.toFixed(1)} M`;
-
-    // projections
-    svg.appendChild(svgEl('line',{
-      x1: xToPx(0), y1: yToPx(P),
-      x2: xToPx(C), y2: yToPx(P),
-      stroke: COLORS.retired, "stroke-width":"2", "stroke-opacity":"0.85",
-      "stroke-dasharray":"6 6"
-    }));
-    svg.appendChild(svgEl('line',{
-      x1: xToPx(C), y1: yToPx(0),
-      x2: xToPx(C), y2: yToPx(P),
-      stroke: COLORS.workers, "stroke-width":"2", "stroke-opacity":"0.85",
-      "stroke-dasharray":"6 6"
-    }));
-
-    // dot + label
-    svg.appendChild(svgEl('circle',{
-      cx: xToPx(C), cy: yToPx(P), r: 7.5,
-      fill: COLORS.retired, "fill-opacity":"0.95"
-    }));
-
-    const lab = svgEl('text',{
-      x: xToPx(C) + 10, y: yToPx(P) - 10,
-      fill: COLORS.retired, "font-size":"14",
-      "font-family":"Arial, sans-serif", "opacity":"0.95"
-    });
-    lab.textContent = state.selectedCountry;
-    svg.appendChild(lab);
-
-    // status badge
-    const above = (P > k*C + 1e-9);
-    const badge = svgEl('text',{
-      x: pad.l + innerW - 10, y: pad.t + 18,
-      fill: above ? COLORS.retired : COLORS.primary,
-      "font-size":"12", "font-family":"Arial, sans-serif",
-      "text-anchor":"end", "opacity":"0.95"
-    });
-    badge.textContent = above ? "Por encima: tensión (impuestos/deuda)" : "Por debajo: dentro del límite";
-    svg.appendChild(badge);
-  }
-
-  // =============================
-  // Pyramid: synthetic (single bump)
-  // Controls:
-  // - peakIdx: which bin has max
-  // - width: sigma in bins (bigger => smoother/wider)
-  //
-  // Shape:
-  //   base = exp(-0.5*((i-peak)/sigma)^2)
-  //   add mild asymmetry + elderly tail control to avoid ugly "needles"
-  // Normalize to sum=1.
-  //
-  // Male/Female split:
-  //   female slightly higher for older ages.
-  // =============================
-  function gaussian(x, mu, sigma){
-    const z = (x - mu) / Math.max(1e-6, sigma);
-    return Math.exp(-0.5 * z * z);
-  }
-
-  function buildSyntheticShares(){
-    const n = AGE_LABELS.length;
-    const peak = state.peakIdx;
-    const sigma = state.width / 6.0; // map slider [6..40] to sigma ~ [1..6.7]
-
-    const total = new Array(n).fill(0);
-
-    for (let i=0;i<n;i++){
-      // main bump
-      let v = gaussian(i, peak, sigma);
-
-      // mild "youth base" so it doesn't collapse to a line when peak is old
-      v += 0.22 * gaussian(i, 2.0, sigma * 1.6);
-
-      // elderly tail (smooth, avoids hard cutoff)
-      const tailStart = Math.max(0, peak + 4);
-      if (i >= tailStart){
-        const t = (i - tailStart);
-        v += 0.10 * Math.exp(-t / Math.max(1.5, sigma*1.2));
-      }
-
-      total[i] = v;
-    }
-
-    // normalize
-    let s = total.reduce((a,b)=>a+b,0);
-    if (s <= 0) s = 1;
-    for (let i=0;i<n;i++) total[i] /= s;
-
-    // split M/F:
-    // base 50/50, but female share increases with age
-    const m = new Array(n).fill(0);
-    const f = new Array(n).fill(0);
-
-    for (let i=0;i<n;i++){
-      const ageFactor = i / (n-1); // 0 young -> 1 old
-      const femaleBias = 0.50 + 0.10 * Math.pow(ageFactor, 1.6); // up to ~0.60
-      const fb = Math.min(0.62, Math.max(0.50, femaleBias));
-      f[i] = total[i] * fb;
-      m[i] = total[i] * (1 - fb);
-    }
-
-    return {m, f, total};
-  }
-
-  function renderPyramid(){
-    const svg = els.pyrSvg;
-    clearSvg(svg);
-
-    const W = 520, H = 520;
-    const pad = {l: 86, r: 30, t: 44, b: 24};
-    const innerW = W - pad.l - pad.r;
-    const innerH = H - pad.t - pad.b;
-    const cx = pad.l + innerW/2;
-
-    const {m,f,total} = buildSyntheticShares();
-
-    // grid
-    const gGrid = svgEl('g', {opacity:"0.9"});
-    svg.appendChild(gGrid);
-    const gridLines = 6;
-    for (let k=0;k<=gridLines;k++){
-      const x = pad.l + (innerW * k/gridLines);
-      gGrid.appendChild(svgEl('line', {
-        x1:x, y1:pad.t, x2:x, y2:pad.t+innerH,
-        stroke: COLORS.grid, "stroke-width":1, "stroke-opacity":"0.30"
-      }));
-    }
-
-    // center line
-    svg.appendChild(svgEl('line',{
-      x1: cx, y1: pad.t, x2: cx, y2: pad.t+innerH,
-      stroke: COLORS.text, "stroke-width":1.2, "stroke-opacity":"0.65"
-    }));
-
-    // title
-    const title = svgEl('text',{
-      x: pad.l, y: 24,
-      fill: COLORS.primary,
-      "font-size":"13",
-      "font-family":"Futura, Trebuchet MS, Arial, sans-serif",
-      "letter-spacing":"0.35",
-      "opacity":"0.95"
-    });
-    title.textContent = "Distribución por edad (quinquenios)";
-    svg.appendChild(title);
-
-    // Hombre / Mujer
-    const labL = svgEl('text',{
-      x: cx - 10, y: 40,
-      fill: COLORS.workers,
-      "font-size":"12",
-      "font-family":"Arial, sans-serif",
-      "text-anchor":"end",
-      "opacity":"0.90"
-    });
-    labL.textContent = "Hombre";
-    svg.appendChild(labL);
-
-    const labR = svgEl('text',{
-      x: cx + 10, y: 40,
-      fill: COLORS.retired,
-      "font-size":"12",
-      "font-family":"Arial, sans-serif",
-      "text-anchor":"start",
-      "opacity":"0.90"
-    });
-    labR.textContent = "Mujer";
-    svg.appendChild(labR);
-
-    // peak indicator (subtle horizontal line across the plot)
-    const n = AGE_LABELS.length;
-    const barH = innerH / n;
-    const yPeak = pad.t + state.peakIdx*barH + barH/2;
-    svg.appendChild(svgEl('line',{
-      x1: pad.l, y1: yPeak, x2: pad.l+innerW, y2: yPeak,
-      stroke: COLORS.primary, "stroke-width":"1.2", "stroke-opacity":"0.35"
-    }));
-
-    // bars scale
-    let maxBin = 0;
-    for (let i=0;i<n;i++){
-      maxBin = Math.max(maxBin, m[i], f[i]);
-    }
-    if (maxBin <= 0) maxBin = 1;
-    const maxPx = (innerW/2) * 0.92;
-
-    // bars
-    for (let i=0;i<n;i++){
-      const y = pad.t + i*barH + 1;
-      const h = Math.max(1, barH - 2);
-
-      const wL = (m[i] / maxBin) * maxPx;
-      const wR = (f[i] / maxBin) * maxPx;
-
-      svg.appendChild(svgEl('rect',{
-        x: cx - wL, y, width: wL, height: h,
-        fill: COLORS.workers, "fill-opacity":"0.78"
-      }));
-      svg.appendChild(svgEl('rect',{
-        x: cx, y, width: wR, height: h,
-        fill: COLORS.retired, "fill-opacity":"0.78"
-      }));
-
-      // age labels (left)
-      const t = svgEl('text',{
-        x: 12, y: y + h*0.72,
-        fill: COLORS.text,
-        "font-size":"11",
-        "font-family":"Arial, sans-serif",
-        "opacity":"0.90"
-      });
-      t.textContent = AGE_LABELS[i];
-      svg.appendChild(t);
-    }
-
-    // Update readouts
-    els.widthVal.textContent = String(state.width);
-    els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
-  }
-
-  // =============================
-  // Controls
-  // =============================
-  function syncUI(){
-    els.selectedCountryMeta.textContent = `Seleccionado: ${state.selectedCountry}`;
-
-    els.popSlider.value = state.popTotalM;
-    els.popVal.textContent = state.popTotalM.toFixed(1);
-
-    els.kSlider.value = state.k;
-    els.kVal.textContent = state.k.toFixed(2);
-
-    els.peakSlider.value = state.peakIdx;
-    els.widthSlider.value = state.width;
-    els.widthVal.textContent = String(state.width);
-
-    syncCountrySelect();
-  }
-
-  els.peakSlider.addEventListener('input', (e) => {
-    state.peakIdx = Number(e.target.value);
-    renderPyramid();
-  });
-
-  els.widthSlider.addEventListener('input', (e) => {
-    state.width = Number(e.target.value);
-    els.widthVal.textContent = String(state.width);
-    renderPyramid();
-  });
-
-  els.popSlider.addEventListener('input', (e) => {
-    state.popTotalM = Number(e.target.value);
-    els.popVal.textContent = state.popTotalM.toFixed(1);
-    els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
-    // Total population is a displayed scalar; shape remains driven by peak/width.
-  });
-
-  els.kSlider.addEventListener('input', (e) => {
-    state.k = Number(e.target.value);
-    els.kVal.textContent = state.k.toFixed(2);
-    renderCPChart();
-  });
-
-  function renderAll(){
-    syncUI();
-    renderPyramid();
-    renderCPChart();
-  }
-
-  // =============================
-  // init
-  // =============================
-  renderCountries();
-  renderAll();
-
-})();
-</script>
-
 </body>
 </html>
