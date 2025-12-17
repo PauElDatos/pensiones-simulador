@@ -4,8 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Pensiones — Sostenibilidad OCDE</title>
+
   <style>
     :root{
+      /* === NUEVO: CONTROL GLOBAL DE TAMAÑO DE FUENTE ===
+         Cambia este valor para hacer TODO más grande/pequeño.
+         Ejemplos: 1.00 (base), 1.10, 1.20, 1.30
+      */
+      --uiScale: 1.20;
+
       --bg:#252525;
       --primary:#FEF702;
       --text:#B0B0B0;
@@ -24,7 +31,15 @@
 
     *{box-sizing:border-box}
     html, body{ height:100%; }
-    body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--fontText); }
+
+    /* NUEVO: escalado global de tipografías */
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--fontText);
+      font-size: calc(14px * var(--uiScale));
+    }
 
     header{
       padding:18px 18px 8px 18px;
@@ -38,11 +53,20 @@
       margin:0;
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size:22px;
+      font-size: calc(22px * var(--uiScale));
       letter-spacing:.3px;
     }
-    .h-title p{ margin:6px 0 0 0; font-size:13px; opacity:.9; }
-    .h-meta{ font-size:12px; opacity:.85; text-align:right; max-width:62ch; }
+    .h-title p{
+      margin:6px 0 0 0;
+      font-size: calc(13px * var(--uiScale));
+      opacity:.9;
+    }
+    .h-meta{
+      font-size: calc(12px * var(--uiScale));
+      opacity:.85;
+      text-align:right;
+      max-width:62ch;
+    }
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       padding:8px 10px;
@@ -95,19 +119,19 @@
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      min-height:44px; /* para que entren sin cambiar el alto visual del bloque */
+      min-height:44px;
     }
     .ttl{
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size:13px;
+      font-size: calc(13px * var(--uiScale));
       letter-spacing:.35px;
       text-transform:uppercase;
       white-space:nowrap;
       flex:0 0 auto;
     }
     .sub{
-      font-size:12px;
+      font-size: calc(12px * var(--uiScale));
       opacity:.85;
       text-align:right;
       max-width:56ch;
@@ -115,7 +139,6 @@
       flex:0 0 auto;
     }
 
-    /* NUEVO: grupo de botones en la cabecera del panel derecho (sin cambiar tamaño del bloque) */
     .ph-actions{
       flex:1 1 auto;
       display:flex;
@@ -131,13 +154,13 @@
       color:var(--text);
       border-radius:999px;
       padding:7px 10px;
-      font-size:12px;
+      font-size: calc(12px * var(--uiScale));
       line-height:1;
       cursor:pointer;
       white-space:nowrap;
       flex:1 1 0;
       min-width:0;
-      max-width:220px; /* “alargados”, pero sin romper el header */
+      max-width:220px;
       text-overflow:ellipsis;
       overflow:hidden;
     }
@@ -152,20 +175,18 @@
       color:#fff;
     }
     @media (max-width: 900px){
-      /* en pantallas pequeñas el header se satura; apilamos sin cambiar el panel */
       .ph{ flex-wrap:wrap; }
       .ph-actions{ width:100%; order:3; justify-content:stretch; }
       .sub{ width:100%; order:2; text-align:left; }
     }
 
-    /* LEFT: countries (scroll list, same height as right) */
     .countries{ display:flex; flex-direction:column; height:100%; min-height:0; }
     .countries .body{
       padding:10px 10px 12px 10px;
       display:flex;
       flex-direction:column;
       gap:10px;
-      overflow:auto;   /* scroll */
+      overflow:auto;
       min-height:0;
       flex:1 1 auto;
     }
@@ -179,7 +200,7 @@
       background:rgba(255,255,255,.02);
       color:var(--text);
       cursor:pointer;
-      font-size:13px;
+      font-size: calc(13px * var(--uiScale));
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -194,7 +215,7 @@
       background:rgba(254,247,2,.08);
     }
     .tag{
-      font-size:11px;
+      font-size: calc(11px * var(--uiScale));
       padding:4px 8px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.09);
@@ -202,12 +223,11 @@
       white-space:nowrap;
     }
     .note{
-      font-size:11px;
+      font-size: calc(11px * var(--uiScale));
       opacity:.75;
       line-height:1.35;
     }
 
-    /* CENTER (chart) + RIGHT (explain) */
     .viz{
       display:grid;
       grid-template-columns: minmax(0, 1fr) 330px;
@@ -233,7 +253,8 @@
     .chart-legend{
       display:flex; flex-wrap:wrap; gap:10px;
       align-items:center; justify-content:space-between;
-      font-size:12px; opacity:.92;
+      font-size: calc(12px * var(--uiScale));
+      opacity:.92;
       flex:0 0 auto;
     }
     .legend-left{ display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
@@ -255,7 +276,7 @@
     }
 
     .caption{
-      font-size:12px;
+      font-size: calc(12px * var(--uiScale));
       opacity:.82;
       line-height:1.35;
       border-top:1px solid rgba(255,255,255,.06);
@@ -263,7 +284,6 @@
       flex:0 0 auto;
     }
 
-    /* RIGHT: explanation panel */
     .explain{
       display:flex;
       flex-direction:column;
@@ -279,7 +299,6 @@
       gap:10px;
     }
 
-    /* Taller pyramid */
     .pyrwrap{
       border:1px solid rgba(255,255,255,.08);
       border-radius:12px;
@@ -294,7 +313,7 @@
       align-items:baseline;
       justify-content:space-between;
       gap:10px;
-      font-size:12px;
+      font-size: calc(12px * var(--uiScale));
       opacity:.92;
     }
     .pyrtitle .l{
@@ -302,7 +321,7 @@
       letter-spacing:.35px;
       text-transform:uppercase;
       color:var(--primary);
-      font-size:12px;
+      font-size: calc(12px * var(--uiScale));
     }
     .pyrsvg{
       width:100%;
@@ -315,7 +334,7 @@
       display:block;
     }
     .pyrnote{
-      font-size:11px;
+      font-size: calc(11px * var(--uiScale));
       opacity:.72;
       line-height:1.35;
     }
@@ -330,8 +349,8 @@
       border-radius:12px;
       background:rgba(255,255,255,.02);
     }
-    .k{ font-size:12px; opacity:.9; }
-    .v{ font-size:12px; color:#fff; font-variant-numeric: tabular-nums; }
+    .k{ font-size: calc(12px * var(--uiScale)); opacity:.9; }
+    .v{ font-size: calc(12px * var(--uiScale)); color:#fff; font-variant-numeric: tabular-nums; }
     .badge{
       display:inline-flex;
       align-items:center;
@@ -340,7 +359,7 @@
       border-radius:12px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(0,0,0,.14);
-      font-size:12px;
+      font-size: calc(12px * var(--uiScale));
       line-height:1.25;
     }
     .badge .dot2{
@@ -352,7 +371,7 @@
     .badge.warn .dot2{ background:var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.14); }
     .badge.ok .dot2{ background:var(--primary); }
     .txt{
-      font-size:12px;
+      font-size: calc(12px * var(--uiScale));
       opacity:.9;
       line-height:1.45;
     }
@@ -364,7 +383,7 @@
     }
     .math{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:12px;
+      font-size: calc(12px * var(--uiScale));
       color:#e8e8e8;
       background:rgba(0,0,0,.18);
       border:1px solid rgba(255,255,255,.08);
@@ -383,7 +402,7 @@
       border-radius:12px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(0,0,0,.14);
-      font-size:12px;
+      font-size: calc(12px * var(--uiScale));
       opacity:.9;
     }
     .spinner{
@@ -424,12 +443,11 @@
     </div>
   </section>
 
-  <!-- RIGHT: chart + explanation -->
+  <!-- RIGHT -->
   <section class="panel" aria-label="Visualización y explicación">
     <div class="ph">
       <div class="ttl">Gráfica C–P</div>
 
-      <!-- NUEVO: 3 botones alargados entre el título y el readout (sin cambiar tamaño del bloque) -->
       <div class="ph-actions" aria-label="Clasificación de países">
         <button class="ph-btn" id="btnSortProductivity" type="button" aria-pressed="false" title="Ordena por pendiente k=τ/ρ (mayor a menor)">
           Productividad (k) ↓
@@ -475,7 +493,6 @@
 
         <div class="body">
 
-          <!-- PIRÁMIDE -->
           <div class="pyrwrap" aria-label="Pirámide poblacional">
             <div class="pyrtitle">
               <span class="l">Pirámide</span>
@@ -487,7 +504,6 @@
             </div>
           </div>
 
-          <!-- RESULTADO -->
           <div class="badge ok" id="resultBadge">
             <span class="dot2"></span>
             <span id="resultBadgeText">Selecciona un país</span>
@@ -539,7 +555,6 @@
 
 <script>
 (() => {
-  // Rutas (en tu repo)
   const DATA_URL = "oecd_pensions_merged.json";
   const POP_CSV_URL = "OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,1.0+.POP.PS._T..H.csv";
 
@@ -552,7 +567,9 @@
     retired: CSS('--retired'),
   };
 
-  // Nombre UI -> ISO3 (REF_AREA CSV)
+  // NUEVO: factor de escala de fuentes para SVG (coherente con --uiScale)
+  const UI_SCALE = Number(getComputedStyle(document.documentElement).getPropertyValue('--uiScale')) || 1;
+
   const NAME_TO_ISO3 = {
     "Alemania":"DEU","Australia":"AUS","Austria":"AUT","Bélgica":"BEL","Canadá":"CAN","Chile":"CHL","Colombia":"COL",
     "Corea del Sur":"KOR","Costa Rica":"CRI","Dinamarca":"DNK","Eslovaquia":"SVK","Eslovenia":"SVN","España":"ESP",
@@ -574,12 +591,12 @@
 
   const state = {
     selectedCountry: null,
-    countriesByName: new Map(), // nombre -> entry JSON
+    countriesByName: new Map(),
     oecdNames: [],
-    popByIso3: new Map(),        // iso3 -> Map(year -> Map(age -> value))
+    popByIso3: new Map(),
     popYears: new Set(),
     popPreferredYear: null,
-    sortMode: "default"          // NUEVO
+    sortMode: "default"
   };
 
   const els = {
@@ -593,7 +610,6 @@
     cpReadout: document.getElementById('cpReadout'),
     kReadout: document.getElementById('kReadout'),
 
-    // NUEVO: botones
     btnSortProductivity: document.getElementById('btnSortProductivity'),
     btnSortMostProfitable: document.getElementById('btnSortMostProfitable'),
     btnSortLeastSustainable: document.getElementById('btnSortLeastSustainable'),
@@ -616,7 +632,6 @@
     pyrNote: document.getElementById('pyrNote')
   };
 
-  // ---------- utils ----------
   const safeNum = (x) => (typeof x === "number" && isFinite(x)) ? x : null;
   const toMillions = (people) => {
     const p = safeNum(people);
@@ -671,7 +686,6 @@
     return (m && m.C_m !== null && m.P_m !== null && m.tau !== null && m.rho !== null && m.k !== null);
   }
 
-  // ---------- SVG helpers ----------
   const svgEl = (name, attrs={}) => {
     const el = document.createElementNS("http://www.w3.org/2000/svg", name);
     for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
@@ -679,7 +693,6 @@
   };
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
 
-  // ---------- LEFT list ----------
   function countryTag(name){
     const entry = state.countriesByName.get(name);
     if (!entry) return "—";
@@ -700,17 +713,12 @@
     });
   }
 
-  // ---------- NUEVO: ordenaciones ----------
   function setSortButtons(mode){
     els.btnSortProductivity.setAttribute("aria-pressed", mode === "productivity" ? "true" : "false");
     els.btnSortMostProfitable.setAttribute("aria-pressed", mode === "profitable" ? "true" : "false");
     els.btnSortLeastSustainable.setAttribute("aria-pressed", mode === "unsustainable" ? "true" : "false");
   }
 
-  // score helpers:
-  // - productivity: k (más alto = “más productivo” por tu criterio de línea amarilla)
-  // - profitable: margen relativo (k·C − P) / (k·C) (más alto = más margen)
-  // - unsustainable: tensión relativa (P − k·C) / (k·C) (más alto = menos sostenible)
   function sortCountries(mode){
     state.sortMode = mode;
     setSortButtons(mode);
@@ -723,22 +731,19 @@
       let score = -Infinity;
 
       if (m && m.C_m !== null && m.P_m !== null && m.k !== null && m.k > 0){
-        const pStar = m.k * m.C_m; // P* = k·C
+        const pStar = m.k * m.C_m;
         if (mode === "productivity"){
           score = m.k;
         } else if (mode === "profitable"){
-          // margen relativo (solo tiene sentido si pStar > 0)
           score = (pStar > 0) ? ((pStar - m.P_m) / pStar) : -Infinity;
         } else if (mode === "unsustainable"){
           score = (pStar > 0) ? ((m.P_m - pStar) / pStar) : -Infinity;
         }
       }
-
       return { name, score };
     });
 
     decorated.sort((a,b) => {
-      // mayor a menor; si empatan, alfabético ES
       if (b.score !== a.score) return (b.score - a.score);
       return a.name.localeCompare(b.name, "es");
     });
@@ -746,7 +751,6 @@
     state.oecdNames = decorated.map(d => d.name);
     renderCountryList();
 
-    // Mantener selección si existe; si no, seleccionar el primero
     if (state.selectedCountry && state.countriesByName.has(state.selectedCountry)){
       renderCPChart();
     } else if (state.oecdNames.length){
@@ -761,7 +765,6 @@
     setSortButtons(state.sortMode);
   }
 
-  // ---------- Pirámide ----------
   function getPyramidForCountry(countryName){
     const iso3 = NAME_TO_ISO3[countryName] || null;
     if (!iso3) return null;
@@ -791,7 +794,7 @@
       const t = svgEl('text', {
         x: 20, y: 60,
         fill: COLORS.text,
-        "font-size":"13",
+        "font-size": String(13 * UI_SCALE),
         "font-family":"Arial, sans-serif",
         "opacity":"0.85"
       });
@@ -812,8 +815,8 @@
     const maxPx = (innerW/2) * 0.90;
 
     const gridLines = 6;
-    for (let k=0;k<=gridLines;k++){
-      const x = pad.l + (innerW * k/gridLines);
+    for (let kk=0;kk<=gridLines;kk++){
+      const x = pad.l + (innerW * kk/gridLines);
       svg.appendChild(svgEl('line', {
         x1:x, y1:pad.t, x2:x, y2:pad.t+innerH,
         stroke: COLORS.grid, "stroke-width":1, "stroke-opacity":"0.25"
@@ -826,7 +829,9 @@
 
     const labL = svgEl('text',{
       x: cx - 8, y: 30,
-      fill: COLORS.workers, "font-size":"12", "font-family":"Arial, sans-serif",
+      fill: COLORS.workers,
+      "font-size": String(12 * UI_SCALE),
+      "font-family":"Arial, sans-serif",
       "text-anchor":"end", "opacity":"0.88"
     });
     labL.textContent = "Total";
@@ -834,7 +839,9 @@
 
     const labR = svgEl('text',{
       x: cx + 8, y: 30,
-      fill: COLORS.retired, "font-size":"12", "font-family":"Arial, sans-serif",
+      fill: COLORS.retired,
+      "font-size": String(12 * UI_SCALE),
+      "font-family":"Arial, sans-serif",
       "text-anchor":"start", "opacity":"0.88"
     });
     labR.textContent = "Total";
@@ -848,18 +855,13 @@
 
       const w = (v / maxV) * maxPx;
 
-      svg.appendChild(svgEl('rect',{
-        x: cx - w, y, width: w, height: h,
-        fill: COLORS.workers, "fill-opacity":"0.70"
-      }));
-      svg.appendChild(svgEl('rect',{
-        x: cx, y, width: w, height: h,
-        fill: COLORS.retired, "fill-opacity":"0.70"
-      }));
+      svg.appendChild(svgEl('rect',{ x: cx - w, y, width: w, height: h, fill: COLORS.workers, "fill-opacity":"0.70" }));
+      svg.appendChild(svgEl('rect',{ x: cx,     y, width: w, height: h, fill: COLORS.retired, "fill-opacity":"0.70" }));
 
       const t = svgEl('text',{
         x: 10, y: y + h*0.72,
-        fill: COLORS.text, "font-size":"11",
+        fill: COLORS.text,
+        "font-size": String(11 * UI_SCALE),
         "font-family":"Arial, sans-serif",
         "opacity":"0.88"
       });
@@ -872,7 +874,6 @@
     els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F en este CSV).`;
   }
 
-  // ---------- panel derecho ----------
   function setExplainPanel(metrics){
     const name = state.selectedCountry || "—";
     els.resultMini.textContent = `${name} (último dato)`;
@@ -926,7 +927,7 @@
       : `Aquí se cumple <span class="mono">(P/C) &lt; (τ/ρ)</span>: con este τ y ρ habría margen (superávit del esquema simple).`;
   }
 
-  // ---------- EJES ----------
+  // ========= EJES (X ya estaba) =========
   function xMaxFromC(C){
     if (C === null) return 30;
     if (C < 1.5) return 2;
@@ -937,7 +938,6 @@
     if (Math.abs(x - C) < 1e-9) x += 10;
     return x;
   }
-
   function xStepFromXMax(xMax){
     if (xMax <= 2)  return 0.5;
     if (xMax <= 5)  return 1;
@@ -945,18 +945,25 @@
     return 10;
   }
 
-  function niceStep(max){
-    if (max <= 5)   return 1;
-    if (max <= 10)  return 2;
-    if (max <= 20)  return 5;
-    if (max <= 50)  return 10;
-    if (max <= 100) return 20;
-    if (max <= 200) return 50;
-    return 100;
-  }
+  // ========= NUEVO: MISMA LÓGICA PARA Y (usando P_max recomendado) =========
+  // Regla para Y (millones) igual que X:
+  // - Si Y >= 10: el eje termina SIEMPRE en el siguiente múltiplo de 10 (22→30, 30→40, 45.5→50).
+  // - Si Y < 10: techo “bonito” (2, 5 o 10).
+  function yMaxFromP(P){
+    if (P === null) return 30;
+    if (P < 1.5) return 2;
+    if (P < 3.5) return 5;
+    if (P < 10)  return 10;
 
-  function ceilToStep(x, step){
-    return Math.ceil(x / step) * step;
+    let y = Math.ceil(P / 10) * 10;
+    if (Math.abs(y - P) < 1e-9) y += 10;
+    return y;
+  }
+  function yStepFromYMax(yMax){
+    if (yMax <= 2)  return 0.5;
+    if (yMax <= 5)  return 1;
+    if (yMax <= 10) return 2;
+    return 10;
   }
 
   function buildTicks(max, step){
@@ -970,7 +977,6 @@
     return ticks;
   }
 
-  // ---------- chart ----------
   function renderCPChart(){
     const svg = els.cpSvg;
     clearSvg(svg);
@@ -994,21 +1000,31 @@
     const P = metrics?.P_m ?? null;
     const k = metrics?.k ?? null;
 
+    // X: tu regla
     const xMax = xMaxFromC(C);
     const xStep = xStepFromXMax(xMax);
     const xTicks = buildTicks(xMax, xStep);
 
-    let yMaxRaw = 15;
-    if (P !== null) yMaxRaw = Math.max(yMaxRaw, P * 1.20);
-    if (k !== null) yMaxRaw = Math.max(yMaxRaw, (k * xMax) * 1.05);
-    const yStep = niceStep(yMaxRaw);
-    const yMax = ceilToStep(yMaxRaw, yStep);
+    // Y: MISMA regla que X, pero asegurando que quepa el punto y (si hay k) la recta.
+    // Calculamos un "P recomendado" y lo pasamos por la lógica de redondeo.
+    let yNeed = 15;
+    if (P !== null) yNeed = Math.max(yNeed, P * 1.20);
+    if (k !== null) yNeed = Math.max(yNeed, (k * xMax) * 1.05);
+
+    const yMax = yMaxFromP(yNeed);
+    const yStep = yStepFromYMax(yMax);
     const yTicks = buildTicks(yMax, yStep);
 
     const xMin=0, yMin=0;
 
     const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
     const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
+
+    // tamaños de fuente SVG escalados
+    const fTick = 12 * UI_SCALE;
+    const fAxis = 14 * UI_SCALE;
+    const fBadge = 12 * UI_SCALE;
+    const fPoint = 14 * UI_SCALE;
 
     yTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
@@ -1018,7 +1034,9 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 10, y: yToPx(v) + 4,
-        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
+        fill: COLORS.text,
+        "font-size": String(fTick),
+        "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
       t.textContent = String(v);
@@ -1032,7 +1050,9 @@
       }));
       const t = svgEl('text',{
         x: xToPx(v), y: pad.t + innerH + 26,
-        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
+        fill: COLORS.text,
+        "font-size": String(fTick),
+        "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
       t.textContent = String(v);
@@ -1050,7 +1070,9 @@
 
     const xl = svgEl('text',{
       x: pad.l + innerW/2, y: H - 20,
-      fill: COLORS.text, "font-size":"14", "font-family":"Arial, sans-serif",
+      fill: COLORS.text,
+      "font-size": String(fAxis),
+      "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     });
     xl.textContent = "Cotizantes (millones)";
@@ -1058,7 +1080,9 @@
 
     const yl = svgEl('text',{
       x: 20, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size":"14", "font-family":"Arial, sans-serif",
+      fill: COLORS.text,
+      "font-size": String(fAxis),
+      "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 20 ${pad.t + innerH/2})`
     });
@@ -1072,7 +1096,9 @@
 
       const badge = svgEl('text',{
         x: pad.l + innerW - 10, y: pad.t + 18,
-        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
+        fill: COLORS.text,
+        "font-size": String(fBadge),
+        "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.85"
       });
       badge.textContent = "C/P no disponibles (o incompletos)";
@@ -1102,7 +1128,8 @@
       const badge = svgEl('text',{
         x: pad.l + innerW - 10, y: pad.t + 18,
         fill: above ? COLORS.retired : COLORS.primary,
-        "font-size":"12", "font-family":"Arial, sans-serif",
+        "font-size": String(fBadge),
+        "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.95"
       });
       badge.textContent = above ? "Por encima: tensión (impuestos/deuda)" : "Por debajo: dentro del equilibrio";
@@ -1128,7 +1155,8 @@
     }));
     const lab = svgEl('text',{
       x: xToPx(C) + 10, y: yToPx(P) - 10,
-      fill: COLORS.retired, "font-size":"14",
+      fill: COLORS.retired,
+      "font-size": String(fPoint),
       "font-family":"Arial, sans-serif", "opacity":"0.95"
     });
     lab.textContent = state.selectedCountry;
@@ -1142,7 +1170,6 @@
     renderCPChart();
   }
 
-  // ---------- CSV parse ----------
   function parseCSV(text){
     const rows = [];
     let row = [];
@@ -1174,7 +1201,6 @@
     return { header: rows[0].map(h => h.trim()), data: rows.slice(1) };
   }
 
-  // ---------- load POP CSV ----------
   async function loadPopulationCSV(){
     const res = await fetch(POP_CSV_URL, { cache: "no-store" });
     if (!res.ok) throw new Error(`CSV población: HTTP ${res.status}`);
@@ -1218,7 +1244,6 @@
     state.popPreferredYear = years.length ? String(years[years.length-1]) : null;
   }
 
-  // ---------- load pensions JSON ----------
   async function loadPensionsJSON(){
     const res = await fetch(DATA_URL, { cache: "no-store" });
     if (!res.ok) throw new Error(`JSON pensiones: HTTP ${res.status}`);
@@ -1237,14 +1262,12 @@
     state.oecdNames.sort((a,b)=>a.localeCompare(b, "es"));
   }
 
-  // ---------- init ----------
   async function init(){
     try{
       els.loadText.textContent = "Leyendo JSON + CSV…";
 
       await Promise.all([ loadPensionsJSON(), loadPopulationCSV() ]);
-
-      wireSortButtons(); // NUEVO (botones)
+      wireSortButtons();
 
       els.loadBox.style.display = "none";
       els.leftNote.textContent =
