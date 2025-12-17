@@ -7,7 +7,7 @@
 
   <style>
     :root{
-      /* === NUEVO: CONTROL GLOBAL DE TAMAÑO DE FUENTE ===
+      /* === CONTROL GLOBAL DE TAMAÑO DE FUENTE ===
          Cambia este valor para hacer TODO más grande/pequeño.
          Ejemplos: 1.00 (base), 1.10, 1.20, 1.30
       */
@@ -32,7 +32,6 @@
     *{box-sizing:border-box}
     html, body{ height:100%; }
 
-    /* NUEVO: escalado global de tipografías */
     body{
       margin:0;
       background:var(--bg);
@@ -567,7 +566,7 @@
     retired: CSS('--retired'),
   };
 
-  // NUEVO: factor de escala de fuentes para SVG (coherente con --uiScale)
+  // factor de escala para fuentes en SVG (coherente con --uiScale)
   const UI_SCALE = Number(getComputedStyle(document.documentElement).getPropertyValue('--uiScale')) || 1;
 
   const NAME_TO_ISO3 = {
@@ -927,7 +926,7 @@
       : `Aquí se cumple <span class="mono">(P/C) &lt; (τ/ρ)</span>: con este τ y ρ habría margen (superávit del esquema simple).`;
   }
 
-  // ========= EJES (X ya estaba) =========
+  // ====== EJES (X) ======
   function xMaxFromC(C){
     if (C === null) return 30;
     if (C < 1.5) return 2;
@@ -945,10 +944,7 @@
     return 10;
   }
 
-  // ========= NUEVO: MISMA LÓGICA PARA Y (usando P_max recomendado) =========
-  // Regla para Y (millones) igual que X:
-  // - Si Y >= 10: el eje termina SIEMPRE en el siguiente múltiplo de 10 (22→30, 30→40, 45.5→50).
-  // - Si Y < 10: techo “bonito” (2, 5 o 10).
+  // ====== EJES (Y) — MISMA LÓGICA QUE X ======
   function yMaxFromP(P){
     if (P === null) return 30;
     if (P < 1.5) return 2;
@@ -1000,16 +996,16 @@
     const P = metrics?.P_m ?? null;
     const k = metrics?.k ?? null;
 
-    // X: tu regla
+    // X: tu regla (sin márgenes “extra”)
     const xMax = xMaxFromC(C);
     const xStep = xStepFromXMax(xMax);
     const xTicks = buildTicks(xMax, xStep);
 
-    // Y: MISMA regla que X, pero asegurando que quepa el punto y (si hay k) la recta.
-    // Calculamos un "P recomendado" y lo pasamos por la lógica de redondeo.
+    // Y: MISMA regla que X (clave: NO multiplicamos P por 1.2)
+    // Solo exigimos que quepa el punto (P) y la recta (k*xMax) si existe.
     let yNeed = 15;
-    if (P !== null) yNeed = Math.max(yNeed, P * 1.20);
-    if (k !== null) yNeed = Math.max(yNeed, (k * xMax) * 1.05);
+    if (P !== null) yNeed = Math.max(yNeed, P);
+    if (k !== null) yNeed = Math.max(yNeed, (k * xMax));
 
     const yMax = yMaxFromP(yNeed);
     const yStep = yStepFromYMax(yMax);
@@ -1020,7 +1016,6 @@
     const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
     const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
 
-    // tamaños de fuente SVG escalados
     const fTick = 12 * UI_SCALE;
     const fAxis = 14 * UI_SCALE;
     const fBadge = 12 * UI_SCALE;
