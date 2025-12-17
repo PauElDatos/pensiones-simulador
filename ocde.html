@@ -942,19 +942,22 @@
     return 10;
   }
 
-  // ====== EJES (Y) ======
-  // Requisito: TODO P < 10 millones -> eje Y llega EXACTAMENTE a 10.
-  // Si P >= 10 -> redondea al siguiente múltiplo de 10 (36->40, 81->90, 40->40).
-  // Nota: el eje Y depende SOLO de P (no de k*xMax), así la recta se recorta al techo.
+  // ====== EJES (Y) — MISMA LÓGICA QUE X ======
   function yMaxFromP(P){
     if (P === null) return 30;
-    if (P < 10) return 10;
-    return Math.ceil(P / 10) * 10;
+    if (P < 1.5) return 2;
+    if (P < 3.5) return 5;
+    if (P < 10)  return 10;
+    return Math.ceil(P / 10) * 10; // 36->40, 81->90, 40->40
   }
+
   function yStepFromYMax(yMax){
-    if (yMax <= 10) return 2;  // 0,2,4,6,8,10
-    return 10;                 // 0,10,20,...
+    if (yMax <= 2)  return 0.5;
+    if (yMax <= 5)  return 1;
+    if (yMax <= 10) return 2;
+    return 10;
   }
+
 
   function buildTicks(max, step){
     const ticks = [];
@@ -999,6 +1002,7 @@
     const yMax = yMaxFromP(P);
     const yStep = yStepFromYMax(yMax);
     const yTicks = buildTicks(yMax, yStep);
+
 
     const xMin=0, yMin=0;
 
