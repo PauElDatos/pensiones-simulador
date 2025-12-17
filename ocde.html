@@ -380,18 +380,40 @@
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum" 1, "ss01" 1;
     }
-    .math{
+
+    /* Caja “tipo hoja” (fondo claro) para definiciones */
+    .whitebox{
+      background:#ffffff;
+      color:#111;
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:12px;
+      padding:10px 12px;
+      line-height:1.45;
+      box-shadow: 0 8px 18px rgba(0,0,0,.18);
+    }
+    .whitebox .sym{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: calc(12px * var(--uiScale));
-      color:#e8e8e8;
-      background:rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.08);
+      font-weight:700;
+      margin-right:6px;
+    }
+    .whitebox ul{
+      margin:0;
+      padding-left:18px;
+    }
+    .whitebox li{
+      margin:6px 0;
+    }
+    .formula{
+      margin-top:10px;
+      padding:10px 12px;
       border-radius:10px;
-      padding:8px 10px;
+      border:1px solid rgba(0,0,0,.10);
+      background:#f6f6f6;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      color:#111;
       overflow:auto;
       white-space:nowrap;
     }
-    .muted{ opacity:.78; }
 
     .loader{
       display:inline-flex;
@@ -538,12 +560,19 @@
             <div class="v mono" id="PStar">—</div>
           </div>
 
-          <div class="txt">
-            <div class="math">Equilibrio (reparto puro):&nbsp;&nbsp;τ · w · C = B · P</div>
-            <div class="math">Con ρ = B/w:&nbsp;&nbsp;P/C = τ/ρ&nbsp;&nbsp;⇒&nbsp;&nbsp;P = (τ/ρ)·C</div>
+          <!-- MODIFICACIÓN: se eliminan las ecuaciones dinámicas del final y se sustituyen por definiciones (fondo blanco) -->
+          <div class="whitebox" aria-label="Definiciones de variables">
+            <ul>
+              <li><span class="sym">C</span> C: número de cotizantes (personas)</li>
+              <li><span class="sym">P</span> P: número de pensionistas (personas)</li>
+              <li><span class="sym">w</span> w: salario medio por cotizante (euros/año)</li>
+              <li><span class="sym">B</span> B: pensión media por pensionista (euros/año)</li>
+              <li><span class="sym">τ</span> τ: tipo efectivo que se recauda “para financiar” (proporción del salario/base)</li>
+              <li><span class="sym">ρ</span> ρ: tasa de reemplazo, definida como:</li>
+            </ul>
+            <div class="formula">ρ = B / w</div>
           </div>
 
-          <div class="txt muted" id="explainText">Cargando datos…</div>
         </div>
       </aside>
 
@@ -624,7 +653,6 @@
     rhoVal: document.getElementById('rhoVal'),
     kVal: document.getElementById('kVal'),
     PStar: document.getElementById('PStar'),
-    explainText: document.getElementById('explainText'),
 
     pyrSvg: document.getElementById('pyrSvg'),
     pyrMeta: document.getElementById('pyrMeta'),
@@ -891,9 +919,6 @@
       els.rhoVal.textContent = metrics?.rho !== null ? metrics.rho.toFixed(2) : "—";
       els.kVal.textContent = metrics?.k !== null ? metrics.k.toFixed(2) : "—";
       els.PStar.textContent = "—";
-
-      els.explainText.textContent =
-        "Para este país falta algún componente (C, P, τ o ρ). El JSON puede tener datos parciales.";
       return;
     }
 
@@ -920,10 +945,6 @@
     els.resultBadgeText.textContent = above
       ? "Por encima de la línea → tensión (impuestos/deuda)"
       : "Por debajo de la línea → margen (sin tensión fiscal)";
-
-    els.explainText.innerHTML = above
-      ? `Aquí se cumple <span class="mono">(P/C) &gt; (τ/ρ)</span>: con las cotizaciones actuales no alcanza y se completa con impuestos/deuda o reformas.`
-      : `Aquí se cumple <span class="mono">(P/C) &lt; (τ/ρ)</span>: con este τ y ρ habría margen (superávit del esquema simple).`;
   }
 
   // ====== EJES (X) ======
@@ -957,7 +978,6 @@
     if (yMax <= 10) return 2;
     return 10;
   }
-
 
   function buildTicks(max, step){
     const ticks = [];
@@ -998,11 +1018,10 @@
     const xStep = xStepFromXMax(xMax);
     const xTicks = buildTicks(xMax, xStep);
 
-    // Y: SOLO depende de P (requisito del usuario)
+    // Y: SOLO depende de P
     const yMax = yMaxFromP(P);
     const yStep = yStepFromYMax(yMax);
     const yTicks = buildTicks(yMax, yStep);
-
 
     const xMin=0, yMin=0;
 
@@ -1277,8 +1296,8 @@
       els.resultBadge.classList.remove('warn','ok');
       els.resultBadge.classList.add('warn');
       els.resultBadgeText.textContent = "No se pudo cargar el dataset.";
-      els.explainText.textContent = `Error: ${String(err?.message || err)}`;
       renderCPChart();
+      console.error(err);
     }
   }
 
