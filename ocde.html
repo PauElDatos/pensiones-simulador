@@ -7,7 +7,6 @@
 
   <style>
     :root{
-      /* === CONTROL GLOBAL DE TAMAÑO DE FUENTE === */
       --uiScale: 1.35;
 
       --bg:#252525;
@@ -52,11 +51,8 @@
       font-size: calc(22px * var(--uiScale));
       letter-spacing:.3px;
     }
-    .h-title p{
-      margin:6px 0 0 0;
-      font-size: calc(13px * var(--uiScale));
-      opacity:.9;
-    }
+    .h-title p{ margin:6px 0 0 0; font-size: calc(13px * var(--uiScale)); opacity:.9; }
+
     .h-meta{
       font-size: calc(12px * var(--uiScale));
       opacity:.85;
@@ -224,7 +220,7 @@
       line-height:1.35;
     }
 
-    /* --- Selector móvil (desplegable) --- */
+    /* Selector móvil */
     .country-select-wrap{ display:none; }
     .country-select{
       width:100%;
@@ -246,8 +242,6 @@
       opacity:.75;
       line-height:1.35;
     }
-
-    /* En móvil: ocultar lista scrolleable y mostrar desplegable */
     @media (max-width: 1100px){
       .country-list-wrap{ display:none; }
       .country-select-wrap{ display:flex; flex-direction:column; gap:10px; }
@@ -299,15 +293,6 @@
       border:1px solid rgba(255,255,255,.05);
       background:rgba(0,0,0,.08);
       display:block;
-    }
-
-    .caption{
-      font-size: calc(12px * var(--uiScale));
-      opacity:.82;
-      line-height:1.35;
-      border-top:1px solid rgba(255,255,255,.06);
-      padding-top:8px;
-      flex:0 0 auto;
     }
 
     .explain{
@@ -365,14 +350,33 @@
       line-height:1.35;
     }
 
-    .kv-title{
-      font-family:var(--fontTitle);
-      color:var(--primary);
+    /* Bloques con título “dentro”, estilo similar a Pirámide */
+    .blkwrap{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      background:rgba(255,255,255,.02);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .blktitle{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
       font-size: calc(12px * var(--uiScale));
+      opacity:.92;
+    }
+    .blktitle .l{
+      font-family:var(--fontTitle);
       letter-spacing:.35px;
       text-transform:uppercase;
-      padding:2px 2px 0 2px;
-      opacity:.98;
+      color:var(--primary);
+      font-size: calc(12px * var(--uiScale));
+      white-space:normal;              /* clave: no recortar */
+      line-height:1.15;
+      overflow-wrap:anywhere;
     }
 
     .kv{
@@ -387,6 +391,7 @@
     }
     .k{ font-size: calc(12px * var(--uiScale)); opacity:.9; }
     .v{ font-size: calc(12px * var(--uiScale)); color:#fff; font-variant-numeric: tabular-nums; }
+
     .badge{
       display:inline-flex;
       align-items:center;
@@ -406,6 +411,7 @@
     }
     .badge.warn .dot2{ background:var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.14); }
     .badge.ok .dot2{ background:var(--primary); }
+
     .hr{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
 
     .mono{
@@ -438,8 +444,8 @@
 <body>
 <header>
   <div class="h-title">
-    <!-- MODIFICACIÓN: se elimina "Sostenibilidad — países OCDE" -->
-    <p>Trabajadores (C) vs Pensionistas (P). La pendiente se calcula por país: k = τ/ρ.</p>
+    <!-- MODIFICACIÓN: mantener solo “Sostenibilidad — países OCDE” -->
+    <h1>Sostenibilidad — países OCDE</h1>
   </div>
   <div class="h-meta">
     <div class="pill"><span class="dot"></span><span><a class="back" href="index.html">Volver</a></span></div>
@@ -458,10 +464,9 @@
     <div class="body">
       <div class="loader" id="loadBox"><span class="spinner"></span><span id="loadText">Leyendo datasets…</span></div>
 
-      <!-- MODIFICACIÓN: en móvil se usa desplegable; en desktop se mantiene lista -->
       <div class="country-select-wrap" id="countrySelectWrap" aria-label="Selector de países">
         <select class="country-select" id="countrySelect" disabled>
-          <option> Cargando… </option>
+          <option>Cargando…</option>
         </select>
         <div class="select-hint" id="leftNoteMobile">Estado: esperando datos.</div>
       </div>
@@ -507,10 +512,7 @@
 
         <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
 
-        <div class="caption" id="cpCaption">
-          Interpretación: si el punto está <span style="color:var(--retired)">por encima</span> de la línea, con τ y ρ actuales
-          la caja de pensiones no cierra con cotizaciones y requiere impuestos adicionales y/o deuda. Si está por debajo, habría margen.
-        </div>
+        <!-- MODIFICACIÓN: se elimina el texto de interpretación bajo la gráfica -->
       </div>
 
       <!-- EXPLANATION -->
@@ -538,38 +540,44 @@
             <span id="resultBadgeText">Selecciona un país</span>
           </div>
 
-          <!-- MODIFICACIÓN: título amarillo para bloque C/P -->
-          <div class="kv-title">N cotizantes por Pensiónista</div>
-          <div class="kv">
-            <div class="k">Cotizantes (C)</div>
-            <div class="v mono" id="CVal">—</div>
+          <div class="blkwrap" aria-label="N cotizantes por pensionista">
+            <div class="blktitle">
+              <span class="l">N cotizantes por pensionista</span>
+            </div>
+            <div class="kv">
+              <div class="k">Cotizantes (C)</div>
+              <div class="v mono" id="CVal">—</div>
 
-            <div class="k">Pensionistas (P)</div>
-            <div class="v mono" id="PVal">—</div>
+              <div class="k">Pensionistas (P)</div>
+              <div class="v mono" id="PVal">—</div>
 
-            <div class="k">Ratio P/C</div>
-            <div class="v mono" id="PCRatio">—</div>
+              <div class="k">Ratio P/C</div>
+              <div class="v mono" id="PCRatio">—</div>
 
-            <div class="k">Trabajadores por pensionista (C/P)</div>
-            <div class="v mono" id="CPRatio">—</div>
+              <div class="k">Trabajadores por pensionista (C/P)</div>
+              <div class="v mono" id="CPRatio">—</div>
+            </div>
           </div>
 
           <div class="hr"></div>
 
-          <!-- MODIFICACIÓN: título amarillo para bloque τ/ρ/k -->
-          <div class="kv-title">Equilibrio de ingreso y gasto en pensiones</div>
-          <div class="kv">
-            <div class="k">τ (cotización a pensiones)</div>
-            <div class="v mono" id="tauVal">—</div>
+          <div class="blkwrap" aria-label="Equilibrio de ingreso y gasto en pensiones">
+            <div class="blktitle">
+              <span class="l">Equilibrio de ingreso y gasto en pensiones</span>
+            </div>
+            <div class="kv">
+              <div class="k">τ (cotización a pensiones)</div>
+              <div class="v mono" id="tauVal">—</div>
 
-            <div class="k">ρ (tasa de reemplazo)</div>
-            <div class="v mono" id="rhoVal">—</div>
+              <div class="k">ρ (tasa de reemplazo)</div>
+              <div class="v mono" id="rhoVal">—</div>
 
-            <div class="k">k = τ/ρ (pendiente de equilibrio)</div>
-            <div class="v mono" id="kVal">—</div>
+              <div class="k">k = τ/ρ (pendiente de equilibrio)</div>
+              <div class="v mono" id="kVal">—</div>
 
-            <div class="k">Equilibrio a C actual: P* = k·C</div>
-            <div class="v mono" id="PStar">—</div>
+              <div class="k">Equilibrio a C actual: P* = k·C</div>
+              <div class="v mono" id="PStar">—</div>
+            </div>
           </div>
 
         </div>
@@ -769,7 +777,6 @@
       const m = entry ? resolveCountryMetrics(entry) : null;
 
       let score = -Infinity;
-
       if (m && m.C_m !== null && m.P_m !== null && m.k !== null && m.k > 0){
         const pStar = m.k * m.C_m;
         if (mode === "productivity"){
@@ -920,7 +927,7 @@
     const totalPop = vals.reduce((a,b)=>a+b,0);
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
 
-    // Mantengo tu texto truncado (de la edición anterior)
+    // Mantengo el texto truncado como pediste
     els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F`;
   }
 
