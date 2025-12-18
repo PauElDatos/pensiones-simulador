@@ -7,10 +7,7 @@
 
   <style>
     :root{
-      /* === CONTROL GLOBAL DE TAMAÑO DE FUENTE ===
-         Cambia este valor para hacer TODO más grande/pequeño.
-         Ejemplos: 1.00 (base), 1.10, 1.20, 1.30
-      */
+      /* === CONTROL GLOBAL DE TAMAÑO DE FUENTE === */
       --uiScale: 1.35;
 
       --bg:#252525;
@@ -227,6 +224,36 @@
       line-height:1.35;
     }
 
+    /* --- Selector móvil (desplegable) --- */
+    .country-select-wrap{ display:none; }
+    .country-select{
+      width:100%;
+      appearance:none;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size: calc(13px * var(--uiScale));
+      outline:none;
+    }
+    .country-select:focus{
+      border-color: rgba(254,247,2,.35);
+      box-shadow: 0 0 0 3px rgba(254,247,2,.10);
+    }
+    .select-hint{
+      font-size: calc(11px * var(--uiScale));
+      opacity:.75;
+      line-height:1.35;
+    }
+
+    /* En móvil: ocultar lista scrolleable y mostrar desplegable */
+    @media (max-width: 1100px){
+      .country-list-wrap{ display:none; }
+      .country-select-wrap{ display:flex; flex-direction:column; gap:10px; }
+      .countries .body{ overflow:visible; }
+    }
+
     .viz{
       display:grid;
       grid-template-columns: minmax(0, 1fr) 330px;
@@ -338,6 +365,16 @@
       line-height:1.35;
     }
 
+    .kv-title{
+      font-family:var(--fontTitle);
+      color:var(--primary);
+      font-size: calc(12px * var(--uiScale));
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      padding:2px 2px 0 2px;
+      opacity:.98;
+    }
+
     .kv{
       display:grid;
       grid-template-columns: 1fr auto;
@@ -369,11 +406,6 @@
     }
     .badge.warn .dot2{ background:var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.14); }
     .badge.ok .dot2{ background:var(--primary); }
-    .txt{
-      font-size: calc(12px * var(--uiScale));
-      opacity:.9;
-      line-height:1.45;
-    }
     .hr{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
 
     .mono{
@@ -406,7 +438,7 @@
 <body>
 <header>
   <div class="h-title">
-    <h1>Sostenibilidad — países OCDE</h1>
+    <!-- MODIFICACIÓN: se elimina "Sostenibilidad — países OCDE" -->
     <p>Trabajadores (C) vs Pensionistas (P). La pendiente se calcula por país: k = τ/ρ.</p>
   </div>
   <div class="h-meta">
@@ -425,8 +457,19 @@
 
     <div class="body">
       <div class="loader" id="loadBox"><span class="spinner"></span><span id="loadText">Leyendo datasets…</span></div>
-      <div class="country-grid" id="countryList"></div>
-      <div class="note" id="leftNote">Estado: esperando datos.</div>
+
+      <!-- MODIFICACIÓN: en móvil se usa desplegable; en desktop se mantiene lista -->
+      <div class="country-select-wrap" id="countrySelectWrap" aria-label="Selector de países">
+        <select class="country-select" id="countrySelect" disabled>
+          <option> Cargando… </option>
+        </select>
+        <div class="select-hint" id="leftNoteMobile">Estado: esperando datos.</div>
+      </div>
+
+      <div class="country-list-wrap" id="countryListWrap">
+        <div class="country-grid" id="countryList"></div>
+        <div class="note" id="leftNote">Estado: esperando datos.</div>
+      </div>
     </div>
   </section>
 
@@ -495,6 +538,8 @@
             <span id="resultBadgeText">Selecciona un país</span>
           </div>
 
+          <!-- MODIFICACIÓN: título amarillo para bloque C/P -->
+          <div class="kv-title">N cotizantes por Pensiónista</div>
           <div class="kv">
             <div class="k">Cotizantes (C)</div>
             <div class="v mono" id="CVal">—</div>
@@ -511,6 +556,8 @@
 
           <div class="hr"></div>
 
+          <!-- MODIFICACIÓN: título amarillo para bloque τ/ρ/k -->
+          <div class="kv-title">Equilibrio de ingreso y gasto en pensiones</div>
           <div class="kv">
             <div class="k">τ (cotización a pensiones)</div>
             <div class="v mono" id="tauVal">—</div>
@@ -524,8 +571,6 @@
             <div class="k">Equilibrio a C actual: P* = k·C</div>
             <div class="v mono" id="PStar">—</div>
           </div>
-
-          <!-- Sección eliminada: definiciones en caja blanca -->
 
         </div>
       </aside>
@@ -549,7 +594,6 @@
     retired: CSS('--retired'),
   };
 
-  // factor de escala para fuentes en SVG (coherente con --uiScale)
   const UI_SCALE = Number(getComputedStyle(document.documentElement).getPropertyValue('--uiScale')) || 1;
 
   const NAME_TO_ISO3 = {
@@ -585,7 +629,9 @@
     loadBox: document.getElementById('loadBox'),
     loadText: document.getElementById('loadText'),
     leftNote: document.getElementById('leftNote'),
+    leftNoteMobile: document.getElementById('leftNoteMobile'),
     countryList: document.getElementById('countryList'),
+    countrySelect: document.getElementById('countrySelect'),
     selectedCountryMeta: document.getElementById('selectedCountryMeta'),
 
     cpSvg: document.getElementById('cpSvg'),
@@ -681,6 +727,19 @@
     return hasCoreData(m) ? "datos" : "parcial";
   }
 
+  function renderCountrySelect(){
+    if (!els.countrySelect) return;
+    els.countrySelect.innerHTML = "";
+    for (const name of state.oecdNames){
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = `${name} (${countryTag(name)})`;
+      if (name === state.selectedCountry) opt.selected = true;
+      els.countrySelect.appendChild(opt);
+    }
+    els.countrySelect.disabled = false;
+  }
+
   function renderCountryList(){
     els.countryList.innerHTML = "";
     state.oecdNames.forEach(name => {
@@ -689,7 +748,7 @@
       btn.type = 'button';
       btn.setAttribute('aria-selected', name === state.selectedCountry ? "true":"false");
       btn.innerHTML = `<span>${name}</span><span class="tag">${countryTag(name)}</span>`;
-      btn.addEventListener('click', () => selectCountry(name));
+      btn.addEventListener('click', () => selectCountry(name, {syncSelect:true}));
       els.countryList.appendChild(btn);
     });
   }
@@ -731,11 +790,12 @@
 
     state.oecdNames = decorated.map(d => d.name);
     renderCountryList();
+    renderCountrySelect();
 
     if (state.selectedCountry && state.countriesByName.has(state.selectedCountry)){
       renderCPChart();
     } else if (state.oecdNames.length){
-      selectCountry(state.oecdNames[0]);
+      selectCountry(state.oecdNames[0], {syncSelect:true});
     }
   }
 
@@ -744,6 +804,14 @@
     els.btnSortMostProfitable.addEventListener("click", () => sortCountries("profitable"));
     els.btnSortLeastSustainable.addEventListener("click", () => sortCountries("unsustainable"));
     setSortButtons(state.sortMode);
+  }
+
+  function wireCountrySelect(){
+    if (!els.countrySelect) return;
+    els.countrySelect.addEventListener('change', (e) => {
+      const name = e.target.value;
+      if (name) selectCountry(name, {syncSelect:false});
+    });
   }
 
   function getPyramidForCountry(countryName){
@@ -833,7 +901,6 @@
       const v = vals[i];
       const y = pad.t + (pyr.ageCodes.length - 1 - i) * barH + 1;
       const h = Math.max(1, barH - 2);
-
       const w = (v / maxV) * maxPx;
 
       svg.appendChild(svgEl('rect',{ x: cx - w, y, width: w, height: h, fill: COLORS.workers, "fill-opacity":"0.70" }));
@@ -853,7 +920,7 @@
     const totalPop = vals.reduce((a,b)=>a+b,0);
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
 
-    // MODIFICACIÓN: texto truncado tal y como pides
+    // Mantengo tu texto truncado (de la edición anterior)
     els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F`;
   }
 
@@ -903,13 +970,12 @@
       : "Por debajo de la línea → margen (sin tensión fiscal)";
   }
 
-  // ====== EJES (X) ======
   function xMaxFromC(C){
     if (C === null) return 30;
     if (C < 1.5) return 2;
     if (C < 3.5) return 5;
     if (C < 10)  return 10;
-    return Math.ceil(C / 10) * 10; // 36->40, 81->90, 40->40
+    return Math.ceil(C / 10) * 10;
   }
   function xStepFromXMax(xMax){
     if (xMax <= 2)  return 0.5;
@@ -917,23 +983,19 @@
     if (xMax <= 10) return 2;
     return 10;
   }
-
-  // ====== EJES (Y) — MISMA LÓGICA QUE X ======
   function yMaxFromP(P){
     if (P === null) return 30;
     if (P < 1.5) return 2;
     if (P < 3.5) return 5;
     if (P < 10)  return 10;
-    return Math.ceil(P / 10) * 10; // 36->40, 81->90, 40->40
+    return Math.ceil(P / 10) * 10;
   }
-
   function yStepFromYMax(yMax){
     if (yMax <= 2)  return 0.5;
     if (yMax <= 5)  return 1;
     if (yMax <= 10) return 2;
     return 10;
   }
-
   function buildTicks(max, step){
     const ticks = [];
     const n = Math.round(max / step);
@@ -1052,16 +1114,6 @@
       els.cpReadout.textContent = `Datos C/P no disponibles para ${state.selectedCountry}`;
       els.kReadout.textContent = `k: —`;
       setExplainPanel(metrics);
-
-      const badge = svgEl('text',{
-        x: pad.l + innerW - 10, y: pad.t + 18,
-        fill: COLORS.text,
-        "font-size": String(12 * UI_SCALE),
-        "font-family":"Arial, sans-serif",
-        "text-anchor":"end", "opacity":"0.85"
-      });
-      badge.textContent = "C/P no disponibles (o incompletos)";
-      svg.appendChild(badge);
       return;
     }
 
@@ -1081,12 +1133,9 @@
         x2: xToPx(xEnd), y2: yToPx(yEnd),
         stroke: COLORS.primary, "stroke-width":"4", "stroke-opacity":"0.95"
       }));
-
-      // MODIFICACIÓN: se eliminan los textos dentro de la gráfica
-      // ("Por encima: tensión..." / "Por debajo: dentro del equilibrio")
     }
 
-    // MODIFICACIÓN: ambas líneas punteadas (horizontal y vertical) en azul
+    // Líneas punteadas (azules)
     svg.appendChild(svgEl('line',{
       x1: xToPx(0), y1: yToPx(P),
       x2: xToPx(C), y2: yToPx(P),
@@ -1114,11 +1163,15 @@
     svg.appendChild(lab);
   }
 
-  function selectCountry(name){
+  function selectCountry(name, opts={syncSelect:true}){
     state.selectedCountry = name;
     els.selectedCountryMeta.textContent = `Seleccionado: ${name}`;
     renderCountryList();
     renderCPChart();
+
+    if (opts.syncSelect && els.countrySelect){
+      els.countrySelect.value = name;
+    }
   }
 
   function parseCSV(text){
@@ -1219,21 +1272,32 @@
 
       await Promise.all([ loadPensionsJSON(), loadPopulationCSV() ]);
       wireSortButtons();
+      wireCountrySelect();
 
       els.loadBox.style.display = "none";
-      els.leftNote.textContent =
+
+      const leftMsg =
         `Datos pensiones: ${state.oecdNames.length} países. Pirámides: ${state.popByIso3.size} códigos (año ${state.popPreferredYear || "—"}).`;
+      els.leftNote.textContent = leftMsg;
+      if (els.leftNoteMobile) els.leftNoteMobile.textContent = leftMsg;
 
       const defaultCountry = state.countriesByName.has("España") ? "España" : (state.oecdNames[0] || null);
       state.selectedCountry = defaultCountry;
 
       els.selectedCountryMeta.textContent = defaultCountry ? `Seleccionado: ${defaultCountry}` : `Sin países`;
+
       renderCountryList();
+      renderCountrySelect();
+      if (defaultCountry && els.countrySelect) els.countrySelect.value = defaultCountry;
+
       renderCPChart();
     }catch(err){
       els.loadText.textContent = "Error cargando datasets";
-      els.leftNote.textContent =
+
+      const msg =
         `No se pudo cargar "${DATA_URL}" o "${POP_CSV_URL}". Revisa que ambos existan en tu repo y se sirvan en GitHub Pages.`;
+      els.leftNote.textContent = msg;
+      if (els.leftNoteMobile) els.leftNoteMobile.textContent = msg;
 
       els.selectedCountryMeta.textContent = "Error";
       els.resultBadge.classList.remove('warn','ok');
