@@ -381,40 +381,6 @@
       font-feature-settings: "tnum" 1, "ss01" 1;
     }
 
-    /* Caja “tipo hoja” (fondo claro) para definiciones */
-    .whitebox{
-      background:#ffffff;
-      color:#111;
-      border:1px solid rgba(0,0,0,.10);
-      border-radius:12px;
-      padding:10px 12px;
-      line-height:1.45;
-      box-shadow: 0 8px 18px rgba(0,0,0,.18);
-    }
-    .whitebox .sym{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-weight:700;
-      margin-right:6px;
-    }
-    .whitebox ul{
-      margin:0;
-      padding-left:18px;
-    }
-    .whitebox li{
-      margin:6px 0;
-    }
-    .formula{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:10px;
-      border:1px solid rgba(0,0,0,.10);
-      background:#f6f6f6;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      color:#111;
-      overflow:auto;
-      white-space:nowrap;
-    }
-
     .loader{
       display:inline-flex;
       align-items:center;
@@ -492,7 +458,6 @@
           <div class="legend-left">
             <div class="legend-item"><span class="swatch primary"></span><span>Línea de equilibrio (k = τ/ρ)</span></div>
             <div class="legend-item"><span class="swatch retired"></span><span>Punto país</span></div>
-            <div class="legend-item"><span class="swatch workers"></span><span>Proyecciones</span></div>
           </div>
           <div class="legend-item mono" id="kReadout">k: —</div>
         </div>
@@ -560,18 +525,7 @@
             <div class="v mono" id="PStar">—</div>
           </div>
 
-          <!-- MODIFICACIÓN: se eliminan las ecuaciones dinámicas del final y se sustituyen por definiciones (fondo blanco) -->
-          <div class="whitebox" aria-label="Definiciones de variables">
-            <ul>
-              <li><span class="sym">C</span> C: número de cotizantes (personas)</li>
-              <li><span class="sym">P</span> P: número de pensionistas (personas)</li>
-              <li><span class="sym">w</span> w: salario medio por cotizante (euros/año)</li>
-              <li><span class="sym">B</span> B: pensión media por pensionista (euros/año)</li>
-              <li><span class="sym">τ</span> τ: tipo efectivo que se recauda “para financiar” (proporción del salario/base)</li>
-              <li><span class="sym">ρ</span> ρ: tasa de reemplazo, definida como:</li>
-            </ul>
-            <div class="formula">ρ = B / w</div>
-          </div>
+          <!-- Sección eliminada: definiciones en caja blanca -->
 
         </div>
       </aside>
@@ -898,7 +852,9 @@
 
     const totalPop = vals.reduce((a,b)=>a+b,0);
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
-    els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F en este CSV).`;
+
+    // MODIFICACIÓN: texto truncado tal y como pides
+    els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F`;
   }
 
   function setExplainPanel(metrics){
@@ -948,7 +904,6 @@
   }
 
   // ====== EJES (X) ======
-  // Regla: valores < 10 usan escalas "cortas"; >= 10 redondea a siguiente múltiplo de 10 (sin sumar +10 si ya es exacto).
   function xMaxFromC(C){
     if (C === null) return 30;
     if (C < 1.5) return 2;
@@ -1013,12 +968,10 @@
     const P = metrics?.P_m ?? null;
     const k = metrics?.k ?? null;
 
-    // X: regla existente (ajuste "bonito")
     const xMax = xMaxFromC(C);
     const xStep = xStepFromXMax(xMax);
     const xTicks = buildTicks(xMax, xStep);
 
-    // Y: SOLO depende de P
     const yMax = yMaxFromP(P);
     const yStep = yStepFromYMax(yMax);
     const yTicks = buildTicks(yMax, yStep);
@@ -1030,7 +983,6 @@
 
     const fTick = 12 * UI_SCALE;
     const fAxis = 14 * UI_SCALE;
-    const fBadge = 12 * UI_SCALE;
     const fPoint = 14 * UI_SCALE;
 
     yTicks.forEach(v => {
@@ -1104,7 +1056,7 @@
       const badge = svgEl('text',{
         x: pad.l + innerW - 10, y: pad.t + 18,
         fill: COLORS.text,
-        "font-size": String(fBadge),
+        "font-size": String(12 * UI_SCALE),
         "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.85"
       });
@@ -1119,7 +1071,6 @@
     setExplainPanel(metrics);
 
     if (k !== null){
-      // La recta se recorta al techo del eje Y (yMax) o al final del eje X (xMax)
       const xAtTop = yMax / k;
       let xEnd, yEnd;
       if (xAtTop <= xMax){ xEnd = xAtTop; yEnd = yMax; }
@@ -1131,23 +1082,15 @@
         stroke: COLORS.primary, "stroke-width":"4", "stroke-opacity":"0.95"
       }));
 
-      const pStar = k*C;
-      const above = (P > pStar + 1e-9);
-      const badge = svgEl('text',{
-        x: pad.l + innerW - 10, y: pad.t + 18,
-        fill: above ? COLORS.retired : COLORS.primary,
-        "font-size": String(fBadge),
-        "font-family":"Arial, sans-serif",
-        "text-anchor":"end", "opacity":"0.95"
-      });
-      badge.textContent = above ? "Por encima: tensión (impuestos/deuda)" : "Por debajo: dentro del equilibrio";
-      svg.appendChild(badge);
+      // MODIFICACIÓN: se eliminan los textos dentro de la gráfica
+      // ("Por encima: tensión..." / "Por debajo: dentro del equilibrio")
     }
 
+    // MODIFICACIÓN: ambas líneas punteadas (horizontal y vertical) en azul
     svg.appendChild(svgEl('line',{
       x1: xToPx(0), y1: yToPx(P),
       x2: xToPx(C), y2: yToPx(P),
-      stroke: COLORS.retired, "stroke-width":"2", "stroke-opacity":"0.85",
+      stroke: COLORS.workers, "stroke-width":"2", "stroke-opacity":"0.85",
       "stroke-dasharray":"6 6"
     }));
     svg.appendChild(svgEl('line',{
