@@ -24,7 +24,7 @@
       --radius:14px;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
 
-      /* MODIFICACIÓN: extra espacio al final del scroll para que no “corte” el último bloque */
+      /* Extra espacio al final del scroll para que no “corte” el último bloque */
       --scrollPadBottom: 28px;
     }
 
@@ -54,7 +54,6 @@
       font-size: calc(22px * var(--uiScale));
       letter-spacing:.3px;
     }
-    .h-title p{ margin:6px 0 0 0; font-size: calc(13px * var(--uiScale)); opacity:.9; }
 
     .h-meta{
       font-size: calc(12px * var(--uiScale));
@@ -185,12 +184,11 @@
       min-height:0;
       flex:1 1 auto;
 
-      /* MODIFICACIÓN: padding extra para que el último elemento no quede “cortado” */
+      /* padding extra para que el último elemento no quede “cortado” */
       padding-bottom: calc(12px + var(--scrollPadBottom));
       scroll-padding-bottom: var(--scrollPadBottom);
     }
     .countries .body::after{
-      /* MODIFICACIÓN: “spacer” final para garantizar scroll hasta el final */
       content:"";
       display:block;
       height: var(--scrollPadBottom);
@@ -324,12 +322,11 @@
       flex-direction:column;
       gap:10px;
 
-      /* MODIFICACIÓN: padding extra para que el último bloque no quede cortado */
+      /* padding extra para que el último bloque no quede cortado */
       padding-bottom: calc(12px + var(--scrollPadBottom));
       scroll-padding-bottom: var(--scrollPadBottom);
     }
     .explain .body::after{
-      /* MODIFICACIÓN: “spacer” final para garantizar scroll completo */
       content:"";
       display:block;
       height: var(--scrollPadBottom);
@@ -375,7 +372,6 @@
       line-height:1.35;
     }
 
-    /* Bloques con título “dentro”, estilo similar a Pirámide */
     .blkwrap{
       border:1px solid rgba(255,255,255,.08);
       border-radius:12px;
@@ -417,6 +413,7 @@
     .k{ font-size: calc(12px * var(--uiScale)); opacity:.9; }
     .v{ font-size: calc(12px * var(--uiScale)); color:#fff; font-variant-numeric: tabular-nums; }
 
+    /* MODIFICACIÓN: cajetín de resultado en amarillo y punto azul/naranja */
     .badge{
       display:inline-flex;
       align-items:center;
@@ -424,18 +421,25 @@
       padding:8px 10px;
       border-radius:12px;
       border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.14);
+      background: var(--primary);              /* amarillo */
+      color:#1a1a1a;                           /* texto oscuro sobre amarillo */
       font-size: calc(12px * var(--uiScale));
       line-height:1.25;
     }
     .badge .dot2{
       width:10px; height:10px; border-radius:999px;
-      background:var(--primary);
-      box-shadow:0 0 0 3px rgba(254,247,2,.12);
+      background: var(--workers);              /* por defecto azul */
+      box-shadow: 0 0 0 3px rgba(54,195,255,.22);
       flex:0 0 auto;
     }
-    .badge.warn .dot2{ background:var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.14); }
-    .badge.ok .dot2{ background:var(--primary); }
+    .badge.ok .dot2{
+      background: var(--workers);              /* azul */
+      box-shadow: 0 0 0 3px rgba(54,195,255,.22);
+    }
+    .badge.warn .dot2{
+      background: var(--retired);              /* naranja */
+      box-shadow: 0 0 0 3px rgba(255,106,0,.22);
+    }
 
     .hr{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
 
@@ -949,7 +953,6 @@
     const totalPop = vals.reduce((a,b)=>a+b,0);
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
 
-    // Mantengo el texto como pediste (solo cierro paréntesis para evitar cortes raros)
     els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F)`;
   }
 
@@ -1038,7 +1041,7 @@
 
   function renderCPChart(){
     const svg = els.cpSvg;
-    clearSvg(svg);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
 
     const W = 1000, H = 700;
     const pad = {l: 90, r: 30, t: 26, b: 70};
@@ -1304,7 +1307,7 @@
 
       els.loadBox.style.display = "none";
 
-      /* MODIFICACIÓN: quitar el texto “Datos pensiones: … Pirámides: …” */
+      /* quitar el texto “Datos pensiones: … Pirámides: …” */
       els.leftNote.textContent = "";
       if (els.leftNoteMobile) els.leftNoteMobile.textContent = "";
 
