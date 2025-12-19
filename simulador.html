@@ -65,7 +65,7 @@
     main{
       min-height: calc(100vh - 70px);
       display:grid;
-      grid-template-columns: 1fr 480px; /* más ancho para pirámide */
+      grid-template-columns: 1fr 480px;
       gap:12px;
       padding:12px 12px 18px 12px;
     }
@@ -141,6 +141,7 @@
       opacity:.85;
       text-align:right;
       font-variant-numeric: tabular-nums;
+      line-height:1.2;
     }
     .chart-card .cb{
       padding:10px;
@@ -178,7 +179,7 @@
       -webkit-appearance: slider-vertical;
       writing-mode: bt-lr;
       width: 22px;
-      height: 420px; /* altura del selector (ajustado al nuevo layout) */
+      height: 420px;
       accent-color: var(--primary);
     }
 
@@ -239,26 +240,26 @@
     .right-body{ padding:12px; display:flex; flex-direction:column; gap:12px; }
     .pyr-frame{
       display:grid;
-      grid-template-columns: 64px 1fr; /* un poco más ancho para el slider */
+      grid-template-columns: 64px 1fr;
       gap:10px;
       align-items:stretch;
     }
     .pyr-svg{
       width:100%;
       height:auto;
-      aspect-ratio: 520 / 650; /* más alto */
+      aspect-ratio: 520 / 650;
       border-radius:12px;
       border:1px solid rgba(255,255,255,.05);
       background:rgba(0,0,0,.08);
       display:block;
     }
     .pyr-frame .vslider-shell input[type="range"]{
-      height: 560px; /* el selector ya no debe ser más alto que la pirámide */
+      height: 560px;
     }
 
     .ctl{ display:grid; gap:6px; }
     .ctl label{
-      font-size:13px; /* textos un poco más grandes */
+      font-size:13px;
       opacity:.92;
       display:flex;
       align-items:center;
@@ -312,6 +313,29 @@
     }
     .result-dot.bad{ background: var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.12); }
     .result-dot.ok{ background: var(--workers); box-shadow:0 0 0 3px rgba(54,195,255,.12); }
+
+    /* mini-pill para el chart C-P */
+    .mini-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 9px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      font-size:12px;
+      opacity:.95;
+      white-space:nowrap;
+    }
+    .mini-dot{
+      width:9px; height:9px; border-radius:999px;
+      background: var(--workers);
+      box-shadow:0 0 0 3px rgba(54,195,255,.12);
+    }
+    .mini-dot.bad{
+      background: var(--retired);
+      box-shadow:0 0 0 3px rgba(255,106,0,.12);
+    }
   </style>
 </head>
 
@@ -321,7 +345,7 @@
     <h1>Simulador</h1>
     <p>
       Dos gráficas: (1) evolución temporal de trabajadores vs jubilados con productividad (k = τ/ρ) y punto inicial (slider),
-      y (2) panel auxiliar (placeholder) preparado para la siguiente iteración. A la derecha: pirámide sintética ampliada.
+      y (2) C–P con línea de equilibrio (k = τ/ρ) y el punto del “país simulado” moviéndose con la animación. A la derecha: pirámide sintética ampliada.
     </p>
   </div>
   <div class="h-meta">
@@ -356,7 +380,7 @@
               <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
             </div>
 
-            <!-- Controles del sistema (mínimos necesarios para “productividad” y sostenibilidad) -->
+            <!-- Controles del sistema -->
             <div class="sys-controls" aria-label="Parámetros del sistema">
               <div class="sys-grid">
                 <div class="ctl">
@@ -434,7 +458,7 @@
               <div class="ratio-left">
                 <div class="ratio-metric">
                   <div><strong style="color:#fff;">Ratio C/P</strong> (trabajadores por jubilado): <span class="mono" id="cpRatio">—</span></div>
-                  <div style="opacity:.8">Equilibrio por país: <span class="mono" id="kReadout">k=—</span> (k=τ/ρ). Sostenible si <span class="mono">P ≤ k·C</span>.</div>
+                  <div style="opacity:.8">Equilibrio: <span class="mono" id="kReadout">k=—</span> (k=τ/ρ). Sostenible si <span class="mono">P ≤ k·C</span>.</div>
                 </div>
               </div>
 
@@ -449,16 +473,28 @@
           </div>
         </div>
 
-        <!-- Chart 2: placeholder / next iteration -->
-        <div class="chart-card" aria-label="Gráfica auxiliar (placeholder)">
+        <!-- Chart 2: C–P (con línea de equilibrio y punto del “país simulado”) -->
+        <div class="chart-card" aria-label="Gráfica C vs P (equilibrio)">
           <div class="ch">
-            <div class="cttl">Panel auxiliar</div>
-            <div class="csub mono">Preparado</div>
+            <div class="cttl">C–P y equilibrio</div>
+            <div class="csub mono">
+              <div id="cpReadoutSim">C: — | P: —</div>
+              <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:6px;">
+                <span class="mini-pill" title="Pendiente de la línea de equilibrio">
+                  <span class="dot" style="width:8px;height:8px;box-shadow:0 0 0 3px rgba(254,247,2,.10)"></span>
+                  <span class="mono" id="kReadoutSim">k: —</span>
+                </span>
+                <span class="mini-pill" id="cpStatusPill" title="Estado de sostenibilidad">
+                  <span class="mini-dot" id="cpStatusDot"></span>
+                  <span class="mono" id="cpStatusText">—</span>
+                </span>
+              </div>
+            </div>
           </div>
           <div class="cb">
-            <svg id="auxSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica auxiliar"></svg>
+            <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
             <div class="caption">
-              Espacio reservado para el siguiente paso (por ejemplo: punto (C,P) vs línea de equilibrio, o “deuda necesaria” para cerrar la caja).
+              Punto (C,P) del país simulado en cada t. Línea amarilla: equilibrio <span class="mono">P = k·C</span> con <span class="mono">k=τ/ρ</span>. Si el punto cae por encima → déficit/tensión; por debajo → margen.
             </div>
           </div>
         </div>
@@ -529,8 +565,7 @@
     retired: CSS('--retired'),
   };
 
-  // Puedes subir los SVG al repo (GitHub Pages sirve assets estáticos).
-  // Recomendación: /figuras/noun-person-8100160.svg y /figuras/noun-person-8104496.svg
+  // Iconos (assets estáticos)
   const ICONS = {
     retired: "figuras/noun-person-8100160.svg",
     worker:  "figuras/noun-person-8104496.svg",
@@ -549,7 +584,7 @@
     popTotalM: 47.0,
     peakIdx: 9,     // 45-49
     sigma: 18,      // slider [6..40] -> sigmaModel = sigma/6
-    density: 0.75,  // controls sharpness
+    density: 0.75,
 
     // sistema reparto
     retiredShare0: 0.20, // % jubilados inicial
@@ -569,9 +604,16 @@
   const els = {
     // charts
     timeSvg: document.getElementById('timeSvg'),
-    auxSvg: document.getElementById('auxSvg'),
     tReadout: document.getElementById('tReadout'),
     simMeta: document.getElementById('simMeta'),
+
+    // chart C-P
+    cpSvg: document.getElementById('cpSvg'),
+    cpReadoutSim: document.getElementById('cpReadoutSim'),
+    kReadoutSim: document.getElementById('kReadoutSim'),
+    cpStatusPill: document.getElementById('cpStatusPill'),
+    cpStatusDot: document.getElementById('cpStatusDot'),
+    cpStatusText: document.getElementById('cpStatusText'),
 
     // system sliders
     retiredShareSlider: document.getElementById('retiredShareSlider'),
@@ -626,17 +668,9 @@
 
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
-  function fmtPct(x){
-    return (x*100).toFixed(2).replace(/\.00$/,'') + "%";
-  }
-
   // ======================================================
-  // 1) MODELO SENCILLO (didáctico) para C vs P en el tiempo
+  // Modelo simple (didáctico) para C vs P en el tiempo
   // ======================================================
-  // - Población total evoluciona por popGrowth.
-  // - % jubilados evoluciona por agingPP (pp/año).
-  // - Trabajadores = total - jubilados.
-  // Nota: es un modelo “normativo” para experimentar.
   function buildSeries(){
     const T = state.years;
     const series = [];
@@ -648,17 +682,10 @@
       const retired = total * rShare;
       const workers = Math.max(0, total - retired);
 
-      series.push({
-        t,
-        total,
-        workers,
-        retired,
-        rShare
-      });
+      series.push({ t, total, workers, retired, rShare });
 
-      // avanzar
       total = total * (1 + state.popGrowth);
-      rShare = rShare + state.agingPP; // ya viene en unidades (0.002 => +0.2pp)
+      rShare = rShare + state.agingPP;
     }
     return series;
   }
@@ -670,7 +697,7 @@
   }
 
   // ======================================================
-  // 2) Render gráfico temporal (similar a tu Manim: línea total + áreas apiladas)
+  // Render gráfico temporal (áreas apiladas)
   // ======================================================
   function renderTimeChart(){
     const svg = els.timeSvg;
@@ -684,8 +711,7 @@
     const data = buildSeries();
     const T = state.years;
 
-    // escalas
-    const yMax = Math.max(...data.map(d => d.total)) / 1_000_000; // en millones
+    const yMax = Math.max(...data.map(d => d.total)) / 1_000_000; // millones
     const yNice = Math.ceil(yMax/5)*5 || 5;
 
     const xToPx = (x) => pad.l + (x / T) * innerW;
@@ -798,8 +824,8 @@
     }));
 
     // marcador temporal actual
-    const t = Math.round(state.t);
-    const cur = data[Math.min(data.length-1, t)];
+    const tNow = Math.round(state.t);
+    const cur = data[Math.min(data.length-1, tNow)];
     const xNow = xToPx(cur.t);
 
     svg.appendChild(svgEl('line', {
@@ -819,8 +845,9 @@
     els.tReadout.textContent = `t: ${cur.t}`;
     els.simMeta.textContent = `Año: ${cur.t} | Población: ${(cur.total/1_000_000).toFixed(1)} M`;
 
-    // update KPIs y ratio icons
+    // update KPIs + chart C-P
     updateKPIs(cur);
+    renderCPChartSim(cur, data);
   }
 
   function updateKPIs(cur){
@@ -829,25 +856,22 @@
     const k = kEquilibrium();
     const sustainable = (P <= k * C + 1e-9);
 
-    // ratio C/P
     const ratio = (P > 0) ? (C / P) : Infinity;
     els.cpRatio.textContent = (ratio === Infinity) ? "∞" : ratio.toFixed(2);
     els.kReadout.textContent = `k=${k.toFixed(2)}`;
 
-    // pill resultado (sostenibilidad)
     els.resultDot.classList.remove('ok','bad');
     if (sustainable){
       els.resultDot.classList.add('ok');
       els.resultText.textContent = `Sostenible en t=${cur.t} (P ≤ k·C).`;
     } else {
       els.resultDot.classList.add('bad');
-      // “gap” ilustrativo: cuántos trabajadores faltarían manteniendo P fijo
       const Cneeded = (k>0) ? (P / k) : Infinity;
       const missing = (Cneeded===Infinity) ? Infinity : Math.max(0, Cneeded - C);
       els.resultText.textContent = `No cierra en t=${cur.t}: faltan ${(missing/1_000_000).toFixed(2)} M cotizantes (a τ y ρ actuales).`;
     }
 
-    // iconos ratio: por cada 1 jubilado, N trabajadores (capado para no llenar de 200 iconos)
+    // iconos ratio (capados)
     const nW = clamp(Math.round(ratio), 0, 12);
     const nR = 1;
 
@@ -864,12 +888,9 @@
       els.ratioIcons.appendChild(box);
     };
 
-    // 1 jubilado
     for (let i=0;i<nR;i++) addIcon(ICONS.retired, "Jubilado");
-    // N trabajadores
     for (let i=0;i<nW;i++) addIcon(ICONS.worker, "Trabajador");
 
-    // si ratio muy alto, indicamos “+”
     if (ratio > 12.49){
       const more = document.createElement('div');
       more.className = "icon-box";
@@ -885,26 +906,192 @@
     }
   }
 
-  function renderAuxPlaceholder(){
-    const svg = els.auxSvg;
+  // ======================================================
+  // Chart 2 (C–P): línea de equilibrio + punto moviéndose con t
+  // ======================================================
+  function niceCeil(x, step){
+    if (!isFinite(x) || x <= 0) return step;
+    return Math.ceil(x / step) * step;
+  }
+
+  function ticksFrom(max, step){
+    const out = [];
+    const n = Math.round(max / step);
+    for (let i=0;i<=n;i++){
+      const v = i * step;
+      out.push(Math.abs(v) < 1e-12 ? 0 : v);
+    }
+    if (out[out.length-1] !== max) out.push(max);
+    return out;
+  }
+
+  function stepForMax(m){
+    if (m <= 2)  return 0.5;
+    if (m <= 5)  return 1;
+    if (m <= 10) return 2;
+    if (m <= 25) return 5;
+    if (m <= 50) return 10;
+    return 20;
+  }
+
+  function renderCPChartSim(cur, series){
+    const svg = els.cpSvg;
     clearSvg(svg);
 
-    const W=1000,H=700;
-    svg.appendChild(svgEl('text',{
-      x: 24, y: 44,
-      fill: COLORS.primary,
-      "font-size":"22",
-      "font-family":"Futura, Trebuchet MS, Arial, sans-serif",
-      "opacity":"0.95"
-    })).textContent = "Placeholder";
+    const W = 1000, H = 700;
+    const pad = {l: 90, r: 30, t: 26, b: 70};
+    const innerW = W - pad.l - pad.r;
+    const innerH = H - pad.t - pad.b;
 
+    // C y P en millones
+    const C = cur.workers / 1_000_000;
+    const P = cur.retired / 1_000_000;
+
+    const k = kEquilibrium();
+
+    // Rango fijo usando toda la serie (para que el punto "recorra" el plano sin que cambie la escala)
+    const CmaxRaw = Math.max(...series.map(d => d.workers/1_000_000));
+    const PmaxRaw = Math.max(...series.map(d => d.retired/1_000_000));
+
+    // Dejamos margen visual
+    const cStep = stepForMax(CmaxRaw);
+    const pStep = stepForMax(PmaxRaw);
+
+    const xMax = niceCeil(CmaxRaw * 1.05, cStep);
+    const yMax = niceCeil(PmaxRaw * 1.05, pStep);
+
+    const xTicks = ticksFrom(xMax, cStep);
+    const yTicks = ticksFrom(yMax, pStep);
+
+    const xToPx = (x) => pad.l + (x / xMax) * innerW;
+    const yToPx = (y) => pad.t + innerH - (y / yMax) * innerH;
+
+    // Grid Y
+    yTicks.forEach(v => {
+      svg.appendChild(svgEl('line',{
+        x1: pad.l, y1: yToPx(v), x2: pad.l+innerW, y2: yToPx(v),
+        stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.45",
+        "stroke-dasharray":"6 6"
+      }));
+      const t = svgEl('text',{
+        x: pad.l - 10, y: yToPx(v) + 4,
+        fill: COLORS.text,
+        "font-size":"12",
+        "font-family":"Arial, sans-serif",
+        "text-anchor":"end", "opacity":"0.90"
+      });
+      t.textContent = String(v);
+      svg.appendChild(t);
+    });
+
+    // Grid X
+    xTicks.forEach(v => {
+      svg.appendChild(svgEl('line',{
+        x1: xToPx(v), y1: pad.t, x2: xToPx(v), y2: pad.t+innerH,
+        stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.35"
+      }));
+      const t = svgEl('text',{
+        x: xToPx(v), y: pad.t + innerH + 26,
+        fill: COLORS.text,
+        "font-size":"12",
+        "font-family":"Arial, sans-serif",
+        "text-anchor":"middle", "opacity":"0.90"
+      });
+      t.textContent = String(v);
+      svg.appendChild(t);
+    });
+
+    // Ejes
+    svg.appendChild(svgEl('line',{
+      x1: pad.l, y1: pad.t+innerH, x2: pad.l+innerW, y2: pad.t+innerH,
+      stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
+    }));
+    svg.appendChild(svgEl('line',{
+      x1: pad.l, y1: pad.t, x2: pad.l, y2: pad.t+innerH,
+      stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
+    }));
+
+    // Labels
     svg.appendChild(svgEl('text',{
-      x: 24, y: 84,
+      x: pad.l + innerW/2, y: H - 20,
       fill: COLORS.text,
       "font-size":"14",
       "font-family":"Arial, sans-serif",
-      "opacity":"0.85"
-    })).textContent = "Aquí puedes añadir (C,P) vs línea de equilibrio, o déficit/superávit anual estimado.";
+      "text-anchor":"middle", "opacity":"0.95"
+    })).textContent = "Cotizantes (millones)";
+
+    svg.appendChild(svgEl('text',{
+      x: 20, y: pad.t + innerH/2,
+      fill: COLORS.text,
+      "font-size":"14",
+      "font-family":"Arial, sans-serif",
+      "text-anchor":"middle", "opacity":"0.95",
+      transform: `rotate(-90 20 ${pad.t + innerH/2})`
+    })).textContent = "Pensionistas (millones)";
+
+    // Línea de equilibrio: P = k*C
+    if (isFinite(k) && k > 0){
+      const xAtTop = yMax / k;
+      let xEnd, yEnd;
+      if (xAtTop <= xMax){ xEnd = xAtTop; yEnd = yMax; }
+      else { xEnd = xMax; yEnd = k * xMax; }
+
+      svg.appendChild(svgEl('line',{
+        x1: xToPx(0), y1: yToPx(0),
+        x2: xToPx(xEnd), y2: yToPx(yEnd),
+        stroke: COLORS.primary, "stroke-width":"4", "stroke-opacity":"0.95"
+      }));
+    }
+
+    // Proyecciones (guías)
+    svg.appendChild(svgEl('line',{
+      x1: xToPx(0), y1: yToPx(P),
+      x2: xToPx(C), y2: yToPx(P),
+      stroke: COLORS.workers, "stroke-width":"2", "stroke-opacity":"0.85",
+      "stroke-dasharray":"6 6"
+    }));
+    svg.appendChild(svgEl('line',{
+      x1: xToPx(C), y1: yToPx(0),
+      x2: xToPx(C), y2: yToPx(P),
+      stroke: COLORS.workers, "stroke-width":"2", "stroke-opacity":"0.85",
+      "stroke-dasharray":"6 6"
+    }));
+
+    // Punto
+    const cx = xToPx(C);
+    const cy = yToPx(P);
+
+    // halo según sostenibilidad
+    const sustainable = (cur.retired <= k * cur.workers + 1e-9);
+
+    svg.appendChild(svgEl('circle',{
+      cx, cy, r: 12,
+      fill: sustainable ? COLORS.workers : COLORS.retired,
+      "fill-opacity":"0.18"
+    }));
+
+    svg.appendChild(svgEl('circle',{
+      cx, cy, r: 7.5,
+      fill: COLORS.retired,
+      "fill-opacity":"0.95"
+    }));
+
+    const lab = svgEl('text',{
+      x: cx + 10, y: cy - 10,
+      fill: COLORS.retired,
+      "font-size":"14",
+      "font-family":"Arial, sans-serif", "opacity":"0.95"
+    });
+    lab.textContent = `t=${cur.t}`;
+    svg.appendChild(lab);
+
+    // HUD (arriba del card)
+    els.cpReadoutSim.textContent = `C: ${C.toFixed(2)} M | P: ${P.toFixed(2)} M`;
+    els.kReadoutSim.textContent = `k: ${k.toFixed(2)}`;
+
+    // mini-estado
+    els.cpStatusDot.classList.toggle("bad", !sustainable);
+    els.cpStatusText.textContent = sustainable ? "SOSTENIBLE" : "NO SOSTENIBLE";
   }
 
   // ======================
@@ -919,7 +1106,7 @@
     state.lastTs = ts;
 
     const speed = state.speed;
-    state.t = state.t + dt * 12 * speed; // 12 “años” por segundo * speed
+    state.t = state.t + dt * 12 * speed;
     if (state.t > state.years) state.t = state.years;
 
     renderTimeChart();
@@ -935,7 +1122,7 @@
   }
 
   // ======================
-  // Pirámide (más grande)
+  // Pirámide
   // ======================
   function gaussian(x, mu, sigma){
     const z = (x - mu) / Math.max(1e-6, sigma);
@@ -943,7 +1130,6 @@
   }
 
   function applyDensity(v, density){
-    // map density [0.35..1.25] to p ~ [0.65..2.20]
     const p = 0.65 + (density - 0.35) * (2.20 - 0.65) / (1.25 - 0.35);
     return Math.pow(v, p);
   }
@@ -957,7 +1143,6 @@
 
     for (let i=0;i<n;i++){
       let v = gaussian(i, peak, sigmaModel);
-
       v += 0.22 * gaussian(i, 2.0, sigmaModel * 1.6);
 
       const tailStart = Math.max(0, peak + 4);
@@ -1015,7 +1200,6 @@
       stroke: COLORS.text, "stroke-width":1.2, "stroke-opacity":"0.65"
     }));
 
-    // title (más grande)
     const title = svgEl('text',{
       x: pad.l, y: 30,
       fill: COLORS.primary,
@@ -1027,7 +1211,6 @@
     title.textContent = "Distribución por edad (quinquenios)";
     svg.appendChild(title);
 
-    // labels Hombre / Mujer (más grandes)
     const labL = svgEl('text',{
       x: cx - 10, y: 50,
       fill: COLORS.workers,
@@ -1050,7 +1233,6 @@
     labR.textContent = "Mujer";
     svg.appendChild(labR);
 
-    // scale
     let maxBin = 0;
     for (let i=0;i<m.length;i++){
       maxBin = Math.max(maxBin, m[i], f[i]);
@@ -1077,7 +1259,6 @@
         fill: COLORS.retired, "fill-opacity":"0.80"
       }));
 
-      // Age labels (un poco más grandes)
       const t = svgEl('text',{
         x: 12, y: y + h*0.72,
         fill: COLORS.text,
@@ -1212,7 +1393,6 @@
   // ======================
   syncUI();
   renderPyramid();
-  renderAuxPlaceholder();
   renderTimeChart();
   requestAnimationFrame(rafLoop);
 })();
