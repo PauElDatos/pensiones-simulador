@@ -12,6 +12,7 @@
       --grid:#4A4A4A;
       --workers:#36C3FF;
       --retired:#FF6A00;
+      --other:#7f7f7f;
       --panel:#2b2b2b;
       --stroke:#3a3a3a;
 
@@ -183,7 +184,7 @@
       accent-color: var(--primary);
     }
 
-    /* leyenda/ratio debajo */
+    /* leyenda/ratio debajo (del chart 1) */
     .ratio-row{
       display:flex;
       align-items:center;
@@ -223,10 +224,6 @@
       opacity:.9;
       line-height:1.35;
     }
-    .ratio-metric .mono{
-      font-variant-numeric: tabular-nums;
-      font-feature-settings: "tnum" 1, "ss01" 1;
-    }
 
     .caption{
       font-size:12px;
@@ -236,7 +233,7 @@
       padding-top:8px;
     }
 
-    /* RIGHT: pirámide + controles (más grande) */
+    /* RIGHT: pirámide + controles */
     .right-body{ padding:12px; display:flex; flex-direction:column; gap:12px; }
     .pyr-frame{
       display:grid;
@@ -270,12 +267,9 @@
     input[type="range"]{ width:100%; accent-color: var(--primary); }
     .divider{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
     .note{ font-size:11px; opacity:.75; line-height:1.35; }
-    .mono{
-      font-variant-numeric: tabular-nums;
-      font-feature-settings: "tnum" 1, "ss01" 1;
-    }
+    .mono{ font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1, "ss01" 1; }
 
-    /* controles del sistema (bajo el gráfico 1) */
+    /* controles del sistema */
     .sys-controls{
       display:grid;
       gap:10px;
@@ -294,7 +288,7 @@
     }
     .ctl small{ opacity:.75; }
 
-    /* badge de resultado */
+    /* resultado (chart 1) */
     .result-pill{
       display:inline-flex;
       align-items:center;
@@ -314,7 +308,7 @@
     .result-dot.bad{ background: var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.12); }
     .result-dot.ok{ background: var(--workers); box-shadow:0 0 0 3px rgba(54,195,255,.12); }
 
-    /* mini-pill para el chart C-P */
+    /* mini estado (chart C-P header) */
     .mini-pill{
       display:inline-flex;
       align-items:center;
@@ -336,6 +330,92 @@
       background: var(--retired);
       box-shadow:0 0 0 3px rgba(255,106,0,.12);
     }
+
+    /* Bloque bajo C-P: ratio visual + métricas */
+    .cp-below{
+      display:grid;
+      gap:10px;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:12px;
+      background:rgba(0,0,0,.08);
+    }
+
+    .cp-ratio-hero{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:12px;
+      background:rgba(0,0,0,.08);
+    }
+    .cp-ratio-hero .left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:240px;
+    }
+    .cp-ratio-hero .label{
+      font-size:12px;
+      opacity:.85;
+      margin-bottom:4px;
+    }
+    .cp-ratio-hero .big{
+      font-size:22px;
+      color:#fff;
+      font-family:var(--fontTitle);
+      letter-spacing:.3px;
+      line-height:1.1;
+    }
+    .cp-ratio-hero .right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .hero-icon{
+      width:48px;
+      height:48px;
+      display:block;
+      filter: invert(1) brightness(2) saturate(0); /* fuerza blanco */
+      opacity:.98;
+    }
+    .worker-icon{
+      width:28px;
+      height:28px;
+      display:block;
+      filter: invert(1) brightness(2) saturate(0); /* blanco */
+      opacity:.92;
+    }
+    .cp-workers-number{
+      font-size:18px;
+      color:#fff;
+      font-variant-numeric: tabular-nums;
+    }
+    .cp-workers-number small{
+      font-size:12px;
+      opacity:.8;
+      color:var(--text);
+      margin-left:6px;
+    }
+
+    .cp-kv{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:8px 10px;
+      align-items:baseline;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:12px;
+      background:rgba(0,0,0,.08);
+      font-size:12px;
+    }
+    .cp-kv .k{ opacity:.85; }
+    .cp-kv .v{ color:#fff; font-variant-numeric: tabular-nums; }
   </style>
 </head>
 
@@ -344,8 +424,9 @@
   <div class="h-title">
     <h1>Simulador</h1>
     <p>
-      Dos gráficas: (1) evolución temporal de trabajadores vs jubilados con productividad (k = τ/ρ) y punto inicial (slider),
-      y (2) C–P con línea de equilibrio (k = τ/ρ) y el punto del “país simulado” moviéndose con la animación. A la derecha: pirámide sintética ampliada.
+      (1) Evolución temporal con pirámide sintética: jubilados (65+), trabajadores (20–64) y otros (0–19).
+      El slider vertical controla el nivel de “cotización efectiva” (participación) de los trabajadores.
+      (2) C–P y equilibrio: línea P=k·C (k=τ/ρ) y punto moviéndose con la animación.
     </p>
   </div>
   <div class="h-meta">
@@ -355,7 +436,7 @@
 
 <main>
 
-  <!-- LEFT: 2 charts in a row -->
+  <!-- LEFT -->
   <section class="panel" aria-label="Gráficas del simulador">
     <div class="ph">
       <div class="ttl">Simulación</div>
@@ -363,24 +444,24 @@
     </div>
 
     <div class="chart-area">
-
       <div class="charts-row">
 
-        <!-- Chart 1: time series stacked areas -->
+        <!-- Chart 1 -->
         <div class="chart-card" aria-label="Evolución temporal (trabajadores vs jubilados)">
           <div class="ch">
             <div class="cttl">Evolución en el tiempo</div>
             <div class="csub mono" id="tReadout">t: 0</div>
           </div>
+
           <div class="cb">
             <div class="sim-wrap">
-              <div class="vslider-shell" title="Composición inicial: % jubilados">
-                <input id="retiredShareSlider" type="range" min="5" max="70" step="1" value="20" />
+              <div class="vslider-shell" title="Participación / empleo: % de población 20–64 que cotiza">
+                <!-- CAMBIO: ahora controla trabajadores (participación), no jubilados -->
+                <input id="participationSlider" type="range" min="30" max="98" step="1" value="78" />
               </div>
               <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
             </div>
 
-            <!-- Controles del sistema -->
             <div class="sys-controls" aria-label="Parámetros del sistema">
               <div class="sys-grid">
                 <div class="ctl">
@@ -389,16 +470,16 @@
                     <span class="val mono" id="rhoVal">0.80</span>
                   </label>
                   <input id="rhoSlider" type="range" min="0.40" max="1.40" step="0.01" value="0.80" />
-                  <small>Más ρ ⇒ con los mismos cotizantes se puede sostener a más jubilados (línea más “vertical”).</small>
+                  <small>Más ρ ⇒ por cada cotizante, se puede sostener a más pensionistas (sube k=τ/ρ).</small>
                 </div>
 
                 <div class="ctl">
                   <label>
-                    <span>Tipo de cotización (τ): % del output destinado a pensiones</span>
+                    <span>Tipo de cotización (τ)</span>
                     <span class="val mono" id="tauVal">0.29</span>
                   </label>
                   <input id="tauSlider" type="range" min="0.05" max="0.45" step="0.01" value="0.29" />
-                  <small>Más τ ⇒ más recursos para pagar pensiones, pero implica mayor carga contributiva.</small>
+                  <small>Más τ ⇒ más recursos para pensiones, pero mayor carga contributiva.</small>
                 </div>
 
                 <div class="ctl">
@@ -411,10 +492,11 @@
 
                 <div class="ctl">
                   <label>
-                    <span>Envejecimiento anual (Δ % jubilados)</span>
+                    <span>Envejecimiento anual (Δ share jubilados)</span>
                     <span class="val mono" id="agingVal">+0.20 pp</span>
                   </label>
                   <input id="agingSlider" type="range" min="-0.50" max="0.80" step="0.01" value="0.20" />
+                  <small>Modela el paso neto hacia 65+ (afecta el punto en C–P al avanzar el tiempo).</small>
                 </div>
 
                 <div class="ctl">
@@ -454,26 +536,23 @@
               </div>
             </div>
 
-            <div class="ratio-row" aria-label="Ratio trabajadores por jubilado">
+            <div class="ratio-row" aria-label="Ratio trabajadores por jubilado (t actual)">
               <div class="ratio-left">
                 <div class="ratio-metric">
                   <div><strong style="color:#fff;">Ratio C/P</strong> (trabajadores por jubilado): <span class="mono" id="cpRatio">—</span></div>
                   <div style="opacity:.8">Equilibrio: <span class="mono" id="kReadout">k=—</span> (k=τ/ρ). Sostenible si <span class="mono">P ≤ k·C</span>.</div>
                 </div>
               </div>
-
-              <div class="ratio-icons" id="ratioIcons" aria-label="Iconos ratio">
-                <!-- se rellena por JS -->
-              </div>
+              <div class="ratio-icons" id="ratioIcons" aria-label="Iconos ratio"><!-- JS --></div>
             </div>
 
             <div class="caption">
-              La franja azul representa trabajadores y la naranja jubilados (suma = población total). Con τ y ρ defines la línea de equilibrio: cuanto mayor es k=τ/ρ, más pensionistas pueden sostenerse por cotizante.
+              Áreas apiladas: trabajadores (azul), jubilados (naranja) y otros (gris). El slider vertical controla qué parte de 20–64 está “cotizando” (participación).
             </div>
           </div>
         </div>
 
-        <!-- Chart 2: C–P (con línea de equilibrio y punto del “país simulado”) -->
+        <!-- Chart 2: C–P -->
         <div class="chart-card" aria-label="Gráfica C vs P (equilibrio)">
           <div class="ch">
             <div class="cttl">C–P y equilibrio</div>
@@ -491,10 +570,58 @@
               </div>
             </div>
           </div>
+
           <div class="cb">
             <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
+
+            <!-- NUEVO: debajo del C-P: ratio visual + métricas -->
+            <div class="cp-below" aria-label="Indicadores C–P">
+              <div class="cp-ratio-hero">
+                <div class="left">
+                  <img class="hero-icon" id="heroRetiredIcon" src="figuras/noun-person-8100160.svg" alt="Jubilado" />
+                  <div>
+                    <div class="label">Ratio C/P</div>
+                    <div class="big mono" id="heroCP">—</div>
+                  </div>
+                </div>
+
+                <div class="right" aria-label="Trabajadores necesarios">
+                  <img class="worker-icon" src="figuras/noun-person-8104496.svg" alt="Trabajador" />
+                  <div class="cp-workers-number mono">
+                    <span id="heroWorkersNeeded">—</span><small>trabajadores</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cp-kv" aria-label="Métricas del sistema (t actual)">
+                <div class="k">Cotizantes (C)</div>
+                <div class="v mono" id="CVal">—</div>
+
+                <div class="k">Pensionistas (P)</div>
+                <div class="v mono" id="PVal">—</div>
+
+                <div class="k">Ratio P/C</div>
+                <div class="v mono" id="PCRatio">—</div>
+
+                <div class="k">Trabajadores por pensionista (C/P)</div>
+                <div class="v mono" id="CPRatio2">—</div>
+
+                <div class="k">τ</div>
+                <div class="v mono" id="tauVal2">—</div>
+
+                <div class="k">ρ</div>
+                <div class="v mono" id="rhoVal2">—</div>
+
+                <div class="k">k = τ/ρ</div>
+                <div class="v mono" id="kVal2">—</div>
+
+                <div class="k">Equilibrio a C actual: P* = k·C</div>
+                <div class="v mono" id="PStar2">—</div>
+              </div>
+            </div>
+
             <div class="caption">
-              Punto (C,P) del país simulado en cada t. Línea amarilla: equilibrio <span class="mono">P = k·C</span> con <span class="mono">k=τ/ρ</span>. Si el punto cae por encima → déficit/tensión; por debajo → margen.
+              Punto (C,P) del país simulado en cada t. Línea amarilla: equilibrio <span class="mono">P = k·C</span>, con <span class="mono">k=τ/ρ</span>.
             </div>
           </div>
         </div>
@@ -503,7 +630,7 @@
     </div>
   </section>
 
-  <!-- RIGHT: pyramid + controls -->
+  <!-- RIGHT -->
   <section class="panel" aria-label="Pirámide poblacional y controles">
     <div class="ph">
       <div class="ttl">Pirámide</div>
@@ -546,8 +673,7 @@
       </div>
 
       <div class="note">
-        Pirámide sintética: perfil base (campana) con pico desplazable y control de dispersión (σ). La densidad ajusta la “concentración” del máximo.
-        Escala vertical invertida: 0–4 abajo, 95–99 arriba.
+        La pirámide define shares iniciales: jubilados (65+), trabajadores (20–64) y otros (0–19). Esos shares alimentan la dinámica del punto en la gráfica C–P.
       </div>
     </div>
   </section>
@@ -563,9 +689,9 @@
     grid: CSS('--grid'),
     workers: CSS('--workers'),
     retired: CSS('--retired'),
+    other: CSS('--other')
   };
 
-  // Iconos (assets estáticos)
   const ICONS = {
     retired: "figuras/noun-person-8100160.svg",
     worker:  "figuras/noun-person-8104496.svg",
@@ -577,23 +703,25 @@
   ];
 
   // ======================
-  // Estado del simulador
+  // Estado
   // ======================
   const state = {
     // pirámide
     popTotalM: 47.0,
-    peakIdx: 9,     // 45-49
-    sigma: 18,      // slider [6..40] -> sigmaModel = sigma/6
+    peakIdx: 9,
+    sigma: 18,
     density: 0.75,
 
     // sistema reparto
-    retiredShare0: 0.20, // % jubilados inicial
-    rho: 0.80,           // productividad por trabajador (ρ)
-    tau: 0.29,           // tipo cotización (τ)
-    popGrowth: 0.003,    // crecimiento población anual
-    agingPP: 0.002,      // +pp jubilados / año (0.002 => +0.2 pp)
+    rho: 0.80,
+    tau: 0.29,
+    popGrowth: 0.003,
+    agingPP: 0.002, // fracción anual (0.002 = +0.2pp)
     years: 80,
     speed: 1.00,
+
+    // slider vertical: participación de la población 20–64 que cotiza
+    participation: 0.78,
 
     // anim
     t: 0,
@@ -602,21 +730,18 @@
   };
 
   const els = {
-    // charts
     timeSvg: document.getElementById('timeSvg'),
     tReadout: document.getElementById('tReadout'),
     simMeta: document.getElementById('simMeta'),
 
-    // chart C-P
     cpSvg: document.getElementById('cpSvg'),
     cpReadoutSim: document.getElementById('cpReadoutSim'),
     kReadoutSim: document.getElementById('kReadoutSim'),
-    cpStatusPill: document.getElementById('cpStatusPill'),
     cpStatusDot: document.getElementById('cpStatusDot'),
     cpStatusText: document.getElementById('cpStatusText'),
 
-    // system sliders
-    retiredShareSlider: document.getElementById('retiredShareSlider'),
+    participationSlider: document.getElementById('participationSlider'),
+
     rhoSlider: document.getElementById('rhoSlider'),
     tauSlider: document.getElementById('tauSlider'),
     popGrowthSlider: document.getElementById('popGrowthSlider'),
@@ -639,11 +764,9 @@
     kReadout: document.getElementById('kReadout'),
     ratioIcons: document.getElementById('ratioIcons'),
 
-    resultPill: document.getElementById('resultPill'),
     resultDot: document.getElementById('resultDot'),
     resultText: document.getElementById('resultText'),
 
-    // pyramid
     pyrSvg: document.getElementById('pyrSvg'),
     pyrMeta: document.getElementById('pyrMeta'),
 
@@ -654,10 +777,22 @@
     densityVal: document.getElementById('densityVal'),
     popSlider: document.getElementById('popSlider'),
     popVal: document.getElementById('popVal'),
+
+    // debajo C-P
+    heroCP: document.getElementById('heroCP'),
+    heroWorkersNeeded: document.getElementById('heroWorkersNeeded'),
+    CVal: document.getElementById('CVal'),
+    PVal: document.getElementById('PVal'),
+    PCRatio: document.getElementById('PCRatio'),
+    CPRatio2: document.getElementById('CPRatio2'),
+    tauVal2: document.getElementById('tauVal2'),
+    rhoVal2: document.getElementById('rhoVal2'),
+    kVal2: document.getElementById('kVal2'),
+    PStar2: document.getElementById('PStar2'),
   };
 
   // ======================
-  // Helpers SVG
+  // Helpers
   // ======================
   const svgEl = (name, attrs={}) => {
     const el = document.createElementNS("http://www.w3.org/2000/svg", name);
@@ -665,40 +800,134 @@
     return el;
   };
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
-
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
-  // ======================================================
-  // Modelo simple (didáctico) para C vs P en el tiempo
-  // ======================================================
-  function buildSeries(){
-    const T = state.years;
-    const series = [];
-    let total = state.popTotalM * 1_000_000; // personas
-    let rShare = state.retiredShare0;        // 0..1
-
-    for (let t=0; t<=T; t++){
-      rShare = clamp(rShare, 0.02, 0.80);
-      const retired = total * rShare;
-      const workers = Math.max(0, total - retired);
-
-      series.push({ t, total, workers, retired, rShare });
-
-      total = total * (1 + state.popGrowth);
-      rShare = rShare + state.agingPP;
-    }
-    return series;
-  }
-
-  // equilibrio: P <= k*C con k = tau/rho
   function kEquilibrium(){
     const rho = Math.max(1e-6, state.rho);
     return state.tau / rho;
   }
 
-  // ======================================================
-  // Render gráfico temporal (áreas apiladas)
-  // ======================================================
+  function toM(x){ return x / 1_000_000; }
+
+  // ======================
+  // Pirámide sintética -> shares por edad
+  // ======================
+  function gaussian(x, mu, sigma){
+    const z = (x - mu) / Math.max(1e-6, sigma);
+    return Math.exp(-0.5 * z * z);
+  }
+  function applyDensity(v, density){
+    const p = 0.65 + (density - 0.35) * (2.20 - 0.65) / (1.25 - 0.35);
+    return Math.pow(v, p);
+  }
+
+  function buildSyntheticTotalShares(){
+    const n = AGE_LABELS.length;
+    const peak = state.peakIdx;
+    const sigmaModel = state.sigma / 6.0;
+
+    const total = new Array(n).fill(0);
+
+    for (let i=0;i<n;i++){
+      let v = gaussian(i, peak, sigmaModel);
+      v += 0.22 * gaussian(i, 2.0, sigmaModel * 1.6);
+
+      const tailStart = Math.max(0, peak + 4);
+      if (i >= tailStart){
+        const t = (i - tailStart);
+        v += 0.10 * Math.exp(-t / Math.max(1.5, sigmaModel*1.2));
+      }
+
+      v = applyDensity(v, state.density);
+      total[i] = v;
+    }
+
+    let s = total.reduce((a,b)=>a+b,0);
+    if (s <= 0) s = 1;
+    for (let i=0;i<n;i++) total[i] /= s;
+
+    return total; // shares que suman 1
+  }
+
+  function sharesFromPyramid(){
+    const shares = buildSyntheticTotalShares();
+
+    // índices por quinquenios:
+    // 0:0-4 ... 3:15-19, 4:20-24 ... 12:60-64, 13:65-69 ... 20:100+
+    const idxWorkerStart = 4;   // 20-24
+    const idxWorkerEnd   = 12;  // 60-64
+    const idxRetiredStart = 13; // 65-69
+
+    let sW = 0, sR = 0;
+    for (let i=idxWorkerStart; i<=idxWorkerEnd; i++) sW += shares[i];
+    for (let i=idxRetiredStart; i<shares.length; i++) sR += shares[i];
+
+    const sO = clamp(1 - sW - sR, 0, 1);
+
+    // “presión de envejecimiento” (aprox): share 55-64 (i=11,12) relativo al share de trabajadores.
+    const nearRet = (shares[11] || 0) + (shares[12] || 0);
+    const pressure = (sW > 1e-9) ? (nearRet / sW) : 0;
+
+    return { sW, sR, sO, pressure };
+  }
+
+  // ======================
+  // Serie temporal (usa pirámide)
+  // ======================
+  function buildSeries(){
+    const T = state.years;
+    const series = [];
+
+    let total = state.popTotalM * 1_000_000;
+
+    // shares iniciales desde pirámide
+    const base = sharesFromPyramid();
+    let sW = clamp(base.sW, 0.02, 0.85);
+    let sR = clamp(base.sR, 0.02, 0.85);
+    let sO = clamp(1 - sW - sR, 0.0, 0.95);
+
+    // normaliza si hay error numérico
+    const norm0 = sW + sR + sO;
+    sW /= norm0; sR /= norm0; sO /= norm0;
+
+    for (let t=0; t<=T; t++){
+      const workers = total * sW * clamp(state.participation, 0, 1);
+      const retired = total * sR;
+
+      // “otros” = resto (incluye niños + inactivos 20–64 fuera de participación)
+      const others = Math.max(0, total - workers - retired);
+
+      series.push({ t, total, workers, retired, others, sW, sR, sO });
+
+      // avanzar
+      total = total * (1 + state.popGrowth);
+
+      // envejecimiento: sube sR en agingPP (fracción)
+      const dR = state.agingPP;
+
+      // quitar primero de sW (envejecen trabajadores), si no alcanza, de sO
+      let takeFromW = Math.min(sW, dR);
+      sW -= takeFromW;
+      let rem = dR - takeFromW;
+      if (rem > 0){
+        let takeFromO = Math.min(sO, rem);
+        sO -= takeFromO;
+        rem -= takeFromO;
+      }
+      sR = clamp(sR + dR, 0.02, 0.85);
+
+      // renormaliza a 1
+      const norm = sW + sR + sO;
+      if (norm > 1e-9){
+        sW /= norm; sR /= norm; sO /= norm;
+      }
+    }
+    return series;
+  }
+
+  // ======================
+  // Render Chart 1 (áreas apiladas)
+  // ======================
   function renderTimeChart(){
     const svg = els.timeSvg;
     clearSvg(svg);
@@ -711,7 +940,7 @@
     const data = buildSeries();
     const T = state.years;
 
-    const yMax = Math.max(...data.map(d => d.total)) / 1_000_000; // millones
+    const yMax = Math.max(...data.map(d => d.total)) / 1_000_000;
     const yNice = Math.ceil(yMax/5)*5 || 5;
 
     const xToPx = (x) => pad.l + (x / T) * innerW;
@@ -763,33 +992,33 @@
     }));
 
     // labels
-    const xl = svgEl('text',{
+    svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: H - 24,
       fill: COLORS.text, "font-size":"14", "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
-    });
-    xl.textContent = "Años / turnos";
-    svg.appendChild(xl);
+    })).textContent = "Años / turnos";
 
-    const yl = svgEl('text',{
+    svg.appendChild(svgEl('text',{
       x: 20, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size":"14", "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 20 ${pad.t + innerH/2})`
-    });
-    yl.textContent = "Número de personas (millones)";
-    svg.appendChild(yl);
+    })).textContent = "Personas (millones)";
 
-    // paths: areas
-    const workersPtsTop = [];
-    const totalPtsTop = [];
+    // puntos para áreas apiladas: workers, retired, others (suma=total)
+    const workersTop = [];
+    const retiredTop = []; // workers + retired
+    const totalTop = [];   // workers + retired + others = total
     const basePts = [];
+
     data.forEach(d => {
       const x = xToPx(d.t);
-      const wM = d.workers/1_000_000;
-      const totM = d.total/1_000_000;
-      workersPtsTop.push([x, yToPx(wM)]);
-      totalPtsTop.push([x, yToPx(totM)]);
+      const wM = toM(d.workers);
+      const rM = toM(d.retired);
+      const oM = toM(d.others);
+      workersTop.push([x, yToPx(wM)]);
+      retiredTop.push([x, yToPx(wM + rM)]);
+      totalTop.push([x, yToPx(wM + rM + oM)]);
       basePts.push([x, yToPx(0)]);
     });
 
@@ -798,25 +1027,33 @@
       return "M " + pts.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L ") + " Z";
     }
 
-    // workers area (to 0)
+    // workers area (0 -> workers)
     svg.appendChild(svgEl('path', {
-      d: polyPath(workersPtsTop, basePts),
+      d: polyPath(workersTop, basePts),
       fill: COLORS.workers,
       "fill-opacity":"0.50",
       stroke: "none"
     }));
 
-    // retired area (between total and workers)
+    // retired area (workers -> workers+retired)
     svg.appendChild(svgEl('path', {
-      d: polyPath(totalPtsTop, workersPtsTop),
+      d: polyPath(retiredTop, workersTop),
       fill: COLORS.retired,
       "fill-opacity":"0.50",
       stroke: "none"
     }));
 
+    // others area (workers+retired -> total)
+    svg.appendChild(svgEl('path', {
+      d: polyPath(totalTop, retiredTop),
+      fill: COLORS.other,
+      "fill-opacity":"0.35",
+      stroke: "none"
+    }));
+
     // total line
     svg.appendChild(svgEl('path', {
-      d: "M " + totalPtsTop.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L "),
+      d: "M " + totalTop.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L "),
       fill: "none",
       stroke: "#FFFFFF",
       "stroke-width":"3",
@@ -837,15 +1074,14 @@
     }));
 
     svg.appendChild(svgEl('circle', {
-      cx: xNow, cy: yToPx(cur.total/1_000_000), r: "5.5",
+      cx: xNow, cy: yToPx(toM(cur.total)), r: "5.5",
       fill: COLORS.primary, "fill-opacity":"0.95"
     }));
 
     // HUD lecturas
     els.tReadout.textContent = `t: ${cur.t}`;
-    els.simMeta.textContent = `Año: ${cur.t} | Población: ${(cur.total/1_000_000).toFixed(1)} M`;
+    els.simMeta.textContent = `Año: ${cur.t} | Población: ${toM(cur.total).toFixed(1)} M`;
 
-    // update KPIs + chart C-P
     updateKPIs(cur);
     renderCPChartSim(cur, data);
   }
@@ -868,13 +1104,11 @@
       els.resultDot.classList.add('bad');
       const Cneeded = (k>0) ? (P / k) : Infinity;
       const missing = (Cneeded===Infinity) ? Infinity : Math.max(0, Cneeded - C);
-      els.resultText.textContent = `No cierra en t=${cur.t}: faltan ${(missing/1_000_000).toFixed(2)} M cotizantes (a τ y ρ actuales).`;
+      els.resultText.textContent = `No cierra en t=${cur.t}: faltan ${toM(missing).toFixed(2)} M cotizantes (a τ y ρ actuales).`;
     }
 
     // iconos ratio (capados)
     const nW = clamp(Math.round(ratio), 0, 12);
-    const nR = 1;
-
     els.ratioIcons.innerHTML = "";
 
     const addIcon = (src, title) => {
@@ -884,11 +1118,13 @@
       img.src = src;
       img.alt = title;
       img.title = title;
+      // Blanco en esta fila también (mejor contraste)
+      img.style.filter = "invert(1) brightness(2) saturate(0) drop-shadow(0 6px 12px rgba(0,0,0,.25))";
       box.appendChild(img);
       els.ratioIcons.appendChild(box);
     };
 
-    for (let i=0;i<nR;i++) addIcon(ICONS.retired, "Jubilado");
+    addIcon(ICONS.retired, "Jubilado");
     for (let i=0;i<nW;i++) addIcon(ICONS.worker, "Trabajador");
 
     if (ratio > 12.49){
@@ -906,14 +1142,13 @@
     }
   }
 
-  // ======================================================
-  // Chart 2 (C–P): línea de equilibrio + punto moviéndose con t
-  // ======================================================
+  // ======================
+  // Chart 2: C–P
+  // ======================
   function niceCeil(x, step){
     if (!isFinite(x) || x <= 0) return step;
     return Math.ceil(x / step) * step;
   }
-
   function ticksFrom(max, step){
     const out = [];
     const n = Math.round(max / step);
@@ -924,7 +1159,6 @@
     if (out[out.length-1] !== max) out.push(max);
     return out;
   }
-
   function stepForMax(m){
     if (m <= 2)  return 0.5;
     if (m <= 5)  return 1;
@@ -943,22 +1177,19 @@
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
-    // C y P en millones
-    const C = cur.workers / 1_000_000;
-    const P = cur.retired / 1_000_000;
-
+    const C = toM(cur.workers);
+    const P = toM(cur.retired);
     const k = kEquilibrium();
 
-    // Rango fijo usando toda la serie (para que el punto "recorra" el plano sin que cambie la escala)
-    const CmaxRaw = Math.max(...series.map(d => d.workers/1_000_000));
-    const PmaxRaw = Math.max(...series.map(d => d.retired/1_000_000));
+    // escala fija en base a la serie
+    const CmaxRaw = Math.max(...series.map(d => toM(d.workers)));
+    const PmaxRaw = Math.max(...series.map(d => toM(d.retired)));
 
-    // Dejamos margen visual
     const cStep = stepForMax(CmaxRaw);
     const pStep = stepForMax(PmaxRaw);
 
-    const xMax = niceCeil(CmaxRaw * 1.05, cStep);
-    const yMax = niceCeil(PmaxRaw * 1.05, pStep);
+    const xMax = niceCeil(CmaxRaw * 1.10, cStep);
+    const yMax = niceCeil(PmaxRaw * 1.10, pStep);
 
     const xTicks = ticksFrom(xMax, cStep);
     const yTicks = ticksFrom(yMax, pStep);
@@ -966,7 +1197,7 @@
     const xToPx = (x) => pad.l + (x / xMax) * innerW;
     const yToPx = (y) => pad.t + innerH - (y / yMax) * innerH;
 
-    // Grid Y
+    // grid Y
     yTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
         x1: pad.l, y1: yToPx(v), x2: pad.l+innerW, y2: yToPx(v),
@@ -975,8 +1206,7 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 10, y: yToPx(v) + 4,
-        fill: COLORS.text,
-        "font-size":"12",
+        fill: COLORS.text, "font-size":"12",
         "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
@@ -984,7 +1214,7 @@
       svg.appendChild(t);
     });
 
-    // Grid X
+    // grid X
     xTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
         x1: xToPx(v), y1: pad.t, x2: xToPx(v), y2: pad.t+innerH,
@@ -992,8 +1222,7 @@
       }));
       const t = svgEl('text',{
         x: xToPx(v), y: pad.t + innerH + 26,
-        fill: COLORS.text,
-        "font-size":"12",
+        fill: COLORS.text, "font-size":"12",
         "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
@@ -1001,7 +1230,7 @@
       svg.appendChild(t);
     });
 
-    // Ejes
+    // ejes
     svg.appendChild(svgEl('line',{
       x1: pad.l, y1: pad.t+innerH, x2: pad.l+innerW, y2: pad.t+innerH,
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
@@ -1011,25 +1240,23 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    // Labels
+    // labels
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: H - 20,
-      fill: COLORS.text,
-      "font-size":"14",
+      fill: COLORS.text, "font-size":"14",
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
     svg.appendChild(svgEl('text',{
       x: 20, y: pad.t + innerH/2,
-      fill: COLORS.text,
-      "font-size":"14",
+      fill: COLORS.text, "font-size":"14",
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 20 ${pad.t + innerH/2})`
     })).textContent = "Pensionistas (millones)";
 
-    // Línea de equilibrio: P = k*C
+    // línea equilibrio
     if (isFinite(k) && k > 0){
       const xAtTop = yMax / k;
       let xEnd, yEnd;
@@ -1043,7 +1270,7 @@
       }));
     }
 
-    // Proyecciones (guías)
+    // guías
     svg.appendChild(svgEl('line',{
       x1: xToPx(0), y1: yToPx(P),
       x2: xToPx(C), y2: yToPx(P),
@@ -1057,107 +1284,60 @@
       "stroke-dasharray":"6 6"
     }));
 
-    // Punto
-    const cx = xToPx(C);
-    const cy = yToPx(P);
-
-    // halo según sostenibilidad
+    // punto
     const sustainable = (cur.retired <= k * cur.workers + 1e-9);
 
     svg.appendChild(svgEl('circle',{
-      cx, cy, r: 12,
+      cx: xToPx(C), cy: yToPx(P), r: 12,
       fill: sustainable ? COLORS.workers : COLORS.retired,
       "fill-opacity":"0.18"
     }));
-
     svg.appendChild(svgEl('circle',{
-      cx, cy, r: 7.5,
-      fill: COLORS.retired,
-      "fill-opacity":"0.95"
+      cx: xToPx(C), cy: yToPx(P), r: 7.5,
+      fill: COLORS.retired, "fill-opacity":"0.95"
     }));
-
-    const lab = svgEl('text',{
-      x: cx + 10, y: cy - 10,
-      fill: COLORS.retired,
-      "font-size":"14",
+    svg.appendChild(svgEl('text',{
+      x: xToPx(C) + 10, y: yToPx(P) - 10,
+      fill: COLORS.retired, "font-size":"14",
       "font-family":"Arial, sans-serif", "opacity":"0.95"
-    });
-    lab.textContent = `t=${cur.t}`;
-    svg.appendChild(lab);
+    })).textContent = `t=${cur.t}`;
 
-    // HUD (arriba del card)
+    // HUD
     els.cpReadoutSim.textContent = `C: ${C.toFixed(2)} M | P: ${P.toFixed(2)} M`;
     els.kReadoutSim.textContent = `k: ${k.toFixed(2)}`;
 
-    // mini-estado
     els.cpStatusDot.classList.toggle("bad", !sustainable);
     els.cpStatusText.textContent = sustainable ? "SOSTENIBLE" : "NO SOSTENIBLE";
+
+    // Bloque debajo (métricas)
+    const PC = (C > 0) ? (P / C) : NaN;
+    const CP = (P > 0) ? (C / P) : NaN;
+    const PStar = k * C;
+
+    els.CVal.textContent = `${C.toFixed(2)} M`;
+    els.PVal.textContent = `${P.toFixed(2)} M`;
+    els.PCRatio.textContent = isFinite(PC) ? PC.toFixed(2) : "—";
+    els.CPRatio2.textContent = isFinite(CP) ? CP.toFixed(2) : "—";
+
+    els.tauVal2.textContent = state.tau.toFixed(3);
+    els.rhoVal2.textContent = state.rho.toFixed(2);
+    els.kVal2.textContent = k.toFixed(2);
+    els.PStar2.textContent = `${PStar.toFixed(2)} M`;
+
+    // Ratio hero: “un anciano + N trabajadores”
+    els.heroCP.textContent = isFinite(CP) ? CP.toFixed(2) : "—";
+
+    // número de trabajadores “necesarios” (mostramos CP redondeado, mínimo 0)
+    const needed = isFinite(CP) ? Math.max(0, Math.round(CP)) : 0;
+    els.heroWorkersNeeded.textContent = isFinite(CP) ? String(needed) : "—";
   }
 
   // ======================
-  // Animación
+  // Pirámide render
   // ======================
-  function tick(ts){
-    if (!state.playing){
-      state.lastTs = ts;
-      return;
-    }
-    const dt = Math.min(0.05, (ts - state.lastTs) / 1000);
-    state.lastTs = ts;
-
-    const speed = state.speed;
-    state.t = state.t + dt * 12 * speed;
-    if (state.t > state.years) state.t = state.years;
-
-    renderTimeChart();
-
-    if (state.t >= state.years){
-      state.playing = false;
-    }
-  }
-
-  function rafLoop(ts){
-    tick(ts);
-    requestAnimationFrame(rafLoop);
-  }
-
-  // ======================
-  // Pirámide
-  // ======================
-  function gaussian(x, mu, sigma){
-    const z = (x - mu) / Math.max(1e-6, sigma);
-    return Math.exp(-0.5 * z * z);
-  }
-
-  function applyDensity(v, density){
-    const p = 0.65 + (density - 0.35) * (2.20 - 0.65) / (1.25 - 0.35);
-    return Math.pow(v, p);
-  }
-
-  function buildSyntheticShares(){
-    const n = AGE_LABELS.length;
-    const peak = state.peakIdx;
-    const sigmaModel = state.sigma / 6.0;
-
-    const total = new Array(n).fill(0);
-
-    for (let i=0;i<n;i++){
-      let v = gaussian(i, peak, sigmaModel);
-      v += 0.22 * gaussian(i, 2.0, sigmaModel * 1.6);
-
-      const tailStart = Math.max(0, peak + 4);
-      if (i >= tailStart){
-        const t = (i - tailStart);
-        v += 0.10 * Math.exp(-t / Math.max(1.5, sigmaModel*1.2));
-      }
-
-      v = applyDensity(v, state.density);
-      total[i] = v;
-    }
-
-    let s = total.reduce((a,b)=>a+b,0);
-    if (s <= 0) s = 1;
-    for (let i=0;i<n;i++) total[i] /= s;
+  function buildSyntheticSharesMF(){
+    const total = buildSyntheticTotalShares();
+    const n = total.length;
 
     const m = new Array(n).fill(0);
     const f = new Array(n).fill(0);
@@ -1168,8 +1348,7 @@
       f[i] = total[i] * fb;
       m[i] = total[i] * (1 - fb);
     }
-
-    return {m, f};
+    return {m,f};
   }
 
   function renderPyramid(){
@@ -1182,7 +1361,7 @@
     const innerH = H - pad.t - pad.b;
     const cx = pad.l + innerW/2;
 
-    const {m,f} = buildSyntheticShares();
+    const {m,f} = buildSyntheticSharesMF();
 
     // grid
     const gridLines = 6;
@@ -1193,50 +1372,40 @@
         stroke: COLORS.grid, "stroke-width":1, "stroke-opacity":"0.30"
       }));
     }
-
-    // center line
     svg.appendChild(svgEl('line',{
       x1: cx, y1: pad.t, x2: cx, y2: pad.t+innerH,
       stroke: COLORS.text, "stroke-width":1.2, "stroke-opacity":"0.65"
     }));
 
-    const title = svgEl('text',{
+    svg.appendChild(svgEl('text',{
       x: pad.l, y: 30,
       fill: COLORS.primary,
       "font-size":"15",
       "font-family":"Futura, Trebuchet MS, Arial, sans-serif",
       "letter-spacing":"0.35",
       "opacity":"0.95"
-    });
-    title.textContent = "Distribución por edad (quinquenios)";
-    svg.appendChild(title);
+    })).textContent = "Distribución por edad (quinquenios)";
 
-    const labL = svgEl('text',{
+    svg.appendChild(svgEl('text',{
       x: cx - 10, y: 50,
       fill: COLORS.workers,
       "font-size":"13",
       "font-family":"Arial, sans-serif",
       "text-anchor":"end",
       "opacity":"0.92"
-    });
-    labL.textContent = "Hombre";
-    svg.appendChild(labL);
+    })).textContent = "Hombre";
 
-    const labR = svgEl('text',{
+    svg.appendChild(svgEl('text',{
       x: cx + 10, y: 50,
       fill: COLORS.retired,
       "font-size":"13",
       "font-family":"Arial, sans-serif",
       "text-anchor":"start",
       "opacity":"0.92"
-    });
-    labR.textContent = "Mujer";
-    svg.appendChild(labR);
+    })).textContent = "Mujer";
 
     let maxBin = 0;
-    for (let i=0;i<m.length;i++){
-      maxBin = Math.max(maxBin, m[i], f[i]);
-    }
+    for (let i=0;i<m.length;i++) maxBin = Math.max(maxBin, m[i], f[i]);
     if (maxBin <= 0) maxBin = 1;
     const maxPx = (innerW/2) * 0.92;
 
@@ -1274,6 +1443,31 @@
   }
 
   // ======================
+  // Animación
+  // ======================
+  function tick(ts){
+    if (!state.playing){
+      state.lastTs = ts;
+      return;
+    }
+    const dt = Math.min(0.05, (ts - state.lastTs) / 1000);
+    state.lastTs = ts;
+
+    state.t = state.t + dt * 12 * state.speed;
+    if (state.t > state.years) state.t = state.years;
+
+    renderTimeChart();
+
+    if (state.t >= state.years){
+      state.playing = false;
+    }
+  }
+  function rafLoop(ts){
+    tick(ts);
+    requestAnimationFrame(rafLoop);
+  }
+
+  // ======================
   // Sync UI
   // ======================
   function syncUI(){
@@ -1287,7 +1481,8 @@
     els.densityVal.textContent = state.density.toFixed(2);
 
     // sistema
-    els.retiredShareSlider.value = Math.round(state.retiredShare0*100);
+    els.participationSlider.value = Math.round(state.participation * 100);
+
     els.rhoSlider.value = state.rho;
     els.tauSlider.value = state.tau;
     els.popGrowthSlider.value = (state.popGrowth*100).toFixed(2);
@@ -1304,40 +1499,44 @@
   }
 
   // ======================
-  // Event handlers
+  // Handlers
   // ======================
   // pirámide
   els.peakSlider.addEventListener('input', (e) => {
     state.peakIdx = Number(e.target.value);
     renderPyramid();
+    renderTimeChart(); // afecta shares -> afecta C-P y evolución
   });
 
   els.sigmaSlider.addEventListener('input', (e) => {
     state.sigma = Number(e.target.value);
     els.sigmaVal.textContent = String(state.sigma);
     renderPyramid();
+    renderTimeChart();
   });
 
   els.densitySlider.addEventListener('input', (e) => {
     state.density = Number(e.target.value);
     els.densityVal.textContent = state.density.toFixed(2);
     renderPyramid();
+    renderTimeChart();
   });
 
   els.popSlider.addEventListener('input', (e) => {
     state.popTotalM = Number(e.target.value);
     els.popVal.textContent = state.popTotalM.toFixed(1);
     els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
-    renderTimeChart();
     renderPyramid();
+    renderTimeChart();
+  });
+
+  // CAMBIO: slider vertical controla participación (trabajadores)
+  els.participationSlider.addEventListener('input', (e) => {
+    state.participation = Number(e.target.value) / 100.0;
+    renderTimeChart();
   });
 
   // sistema
-  els.retiredShareSlider.addEventListener('input', (e) => {
-    state.retiredShare0 = Number(e.target.value) / 100.0;
-    renderTimeChart();
-  });
-
   els.rhoSlider.addEventListener('input', (e) => {
     state.rho = Number(e.target.value);
     els.rhoVal.textContent = state.rho.toFixed(2);
@@ -1358,7 +1557,7 @@
   });
 
   els.agingSlider.addEventListener('input', (e) => {
-    const v = Number(e.target.value); // en pp
+    const v = Number(e.target.value);
     state.agingPP = v / 100.0;
     els.agingVal.textContent = v.toFixed(2) + " pp";
     renderTimeChart();
@@ -1376,12 +1575,8 @@
     els.speedVal.textContent = state.speed.toFixed(2) + "×";
   });
 
-  els.playBtn.addEventListener('click', () => {
-    state.playing = true;
-  });
-  els.pauseBtn.addEventListener('click', () => {
-    state.playing = false;
-  });
+  els.playBtn.addEventListener('click', () => { state.playing = true; });
+  els.pauseBtn.addEventListener('click', () => { state.playing = false; });
   els.resetBtn.addEventListener('click', () => {
     state.playing = false;
     state.t = 0;
