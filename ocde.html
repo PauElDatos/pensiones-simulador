@@ -23,6 +23,9 @@
 
       --radius:14px;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
+
+      /* MODIFICACIÓN: extra espacio al final del scroll para que no “corte” el último bloque */
+      --scrollPadBottom: 28px;
     }
 
     *{box-sizing:border-box}
@@ -181,7 +184,18 @@
       overflow:auto;
       min-height:0;
       flex:1 1 auto;
+
+      /* MODIFICACIÓN: padding extra para que el último elemento no quede “cortado” */
+      padding-bottom: calc(12px + var(--scrollPadBottom));
+      scroll-padding-bottom: var(--scrollPadBottom);
     }
+    .countries .body::after{
+      /* MODIFICACIÓN: “spacer” final para garantizar scroll hasta el final */
+      content:"";
+      display:block;
+      height: var(--scrollPadBottom);
+    }
+
     .country-grid{ display:grid; grid-template-columns:1fr; gap:8px; }
     .country-btn{
       width:100%;
@@ -246,6 +260,7 @@
       .country-list-wrap{ display:none; }
       .country-select-wrap{ display:flex; flex-direction:column; gap:10px; }
       .countries .body{ overflow:visible; }
+      .countries .body::after{ display:none; }
     }
 
     .viz{
@@ -308,6 +323,16 @@
       display:flex;
       flex-direction:column;
       gap:10px;
+
+      /* MODIFICACIÓN: padding extra para que el último bloque no quede cortado */
+      padding-bottom: calc(12px + var(--scrollPadBottom));
+      scroll-padding-bottom: var(--scrollPadBottom);
+    }
+    .explain .body::after{
+      /* MODIFICACIÓN: “spacer” final para garantizar scroll completo */
+      content:"";
+      display:block;
+      height: var(--scrollPadBottom);
     }
 
     .pyrwrap{
@@ -374,7 +399,7 @@
       text-transform:uppercase;
       color:var(--primary);
       font-size: calc(12px * var(--uiScale));
-      white-space:normal;              /* clave: no recortar */
+      white-space:normal;
       line-height:1.15;
       overflow-wrap:anywhere;
     }
@@ -444,7 +469,6 @@
 <body>
 <header>
   <div class="h-title">
-    <!-- MODIFICACIÓN: mantener solo “Sostenibilidad — países OCDE” -->
     <h1>Sostenibilidad — países OCDE</h1>
   </div>
   <div class="h-meta">
@@ -511,8 +535,6 @@
         </div>
 
         <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
-
-        <!-- MODIFICACIÓN: se elimina el texto de interpretación bajo la gráfica -->
       </div>
 
       <!-- EXPLANATION -->
@@ -927,8 +949,8 @@
     const totalPop = vals.reduce((a,b)=>a+b,0);
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
 
-    // Mantengo el texto truncado como pediste
-    els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F`;
+    // Mantengo el texto como pediste (solo cierro paréntesis para evitar cortes raros)
+    els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F)`;
   }
 
   function setExplainPanel(metrics){
@@ -1142,7 +1164,6 @@
       }));
     }
 
-    // Líneas punteadas (azules)
     svg.appendChild(svgEl('line',{
       x1: xToPx(0), y1: yToPx(P),
       x2: xToPx(C), y2: yToPx(P),
@@ -1283,10 +1304,9 @@
 
       els.loadBox.style.display = "none";
 
-      const leftMsg =
-        `Datos pensiones: ${state.oecdNames.length} países. Pirámides: ${state.popByIso3.size} códigos (año ${state.popPreferredYear || "—"}).`;
-      els.leftNote.textContent = leftMsg;
-      if (els.leftNoteMobile) els.leftNoteMobile.textContent = leftMsg;
+      /* MODIFICACIÓN: quitar el texto “Datos pensiones: … Pirámides: …” */
+      els.leftNote.textContent = "";
+      if (els.leftNoteMobile) els.leftNoteMobile.textContent = "";
 
       const defaultCountry = state.countriesByName.has("España") ? "España" : (state.oecdNames[0] || null);
       state.selectedCountry = defaultCountry;
