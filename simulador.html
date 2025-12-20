@@ -10,19 +10,17 @@
       --fontScale: 1.35;
 
       /*
-        (NUEVO) Escalas SOLO para textos de ejes en SVG (ticks + labels de ejes).
-        En desktop quedan en 1 (sin efecto). En móvil se sobrescriben en @media.
+        (NUEVO) Distancia (misma para X e Y) entre los ejes y sus textos descriptivos
+        en las gráficas "Evolución en el tiempo" y "C–P y equilibrio".
+        Nota: distancia real en px respecto al eje (pad.l para Y y pad.t+innerH para X).
       */
-      --axisScaleTime: 1.45; /* Evolución en el tiempo */
-      --axisScaleCP:   1.45; /* C–P y equilibrio */
-      --axisScalePyr:  1.45; /* Pirámide */
+      --axisLabelGap: 60px;
 
       /*
-        (NUEVO) Distancia horizontal entre el eje Y (línea) y el texto descriptivo del eje (label rotado).
-        Se puede ajustar en móvil dentro del @media.
-        Nota: la distancia real = --yAxisLabelGap (en px) respecto a pad.l (x del eje Y).
+        (NUEVO) SOLO cuando el layout apila (móvil/una columna), escala de fuente
+        para los textos descriptivos de ejes (NO ticks) en "Evolución en el tiempo" y "C–P y equilibrio".
       */
-      --yAxisLabelGap: 60px;
+      --axisLabelFontScale: 1.5;
 
       --bg:#252525;
       --primary:#FEF702;
@@ -44,18 +42,13 @@
       --shadow: 0 10px 30px rgba(0,0,0,.25);
     }
 
-    /* Móvil: ajusta escala global y (NUEVO) escalas de ejes en SVG */
+    /* Móvil: ajusta escala global */
     @media (max-width: 640px){
       :root{
         --fontScale: 1.18;
 
-        /* Ajusta a tu gusto: SOLO afecta a ticks y labels de ejes en las 3 gráficas SVG */
-        --axisScaleTime: 1.25;
-        --axisScaleCP:   1.25;
-        --axisScalePyr:  1.25;
-
-        /* (NUEVO) Ajusta aquí la distancia del eje Y a su texto descriptivo (Evolución en el tiempo + C–P y equilibrio) */
-        --yAxisLabelGap: 70px;
+        /* Ajusta a tu gusto: afecta a la distancia de labels descriptivos respecto a sus ejes */
+        --axisLabelGap: 70px;
       }
     }
 
@@ -150,6 +143,10 @@
       align-items:start;
     }
     @media (max-width: 900px){
+      :root{
+        /* SOLO en esta disposición (bloques apilados): escala del texto descriptivo de ejes */
+        --axisLabelFontScale: 1.15;
+      }
       .charts-row{ grid-template-columns:1fr; }
     }
     .chart-card{
@@ -719,20 +716,19 @@
     noncot: CSS('--noncot')
   };
 
-  // (CAMBIO) Escalas dinámicas (responden a @media). Evita “capturar” un valor fijo.
+  // (CAMBIO) Escala dinámica (responde a @media). Evita “capturar” un valor fijo.
   const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
 
-  const getAxisScale = (which) => {
-    if (which === 'time') return parseFloat(CSS('--axisScaleTime')) || 1;
-    if (which === 'cp')   return parseFloat(CSS('--axisScaleCP'))   || 1;
-    if (which === 'pyr')  return parseFloat(CSS('--axisScalePyr'))  || 1;
-    return 1;
+  // (NUEVO) Gap unificado (mismo para X e Y) entre eje y texto descriptivo (solo Time + C–P)
+  const getAxisLabelGap = () => {
+    const v = parseFloat(CSS('--axisLabelGap'));
+    return isFinite(v) ? v : 60;
   };
 
-  // (NUEVO) Gap entre eje Y y su texto descriptivo (labels rotados)
-  const getYAxisLabelGap = () => {
-    const v = parseFloat(CSS('--yAxisLabelGap'));
-    return isFinite(v) ? v : 70;
+  // (NUEVO) Escala SOLO para textos descriptivos de ejes (solo en layout apilado; ver @media 900px)
+  const getAxisLabelFontScale = () => {
+    const v = parseFloat(CSS('--axisLabelFontScale'));
+    return isFinite(v) ? v : 1;
   };
 
   // Jubilado fijo (icono)
@@ -870,8 +866,11 @@
   // Escala general (UI / textos generales)
   const fs = (px) => (px * getFontScale()).toFixed(2);
 
-  // (NUEVO) Escala específica para textos de ejes por gráfica (ticks + labels de ejes)
-  const fsAxis = (px, which) => (px * getFontScale() * getAxisScale(which)).toFixed(2);
+  // (CAMBIO) Ticks (SVG) con escala global, sin variables específicas por gráfica
+  const fsTick = (px) => (px * getFontScale()).toFixed(2);
+
+  // (NUEVO) SOLO textos descriptivos de ejes (Time + C–P): escala adicional en layout apilado
+  const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale()).toFixed(2);
 
   function kEquilibrium(){
     const rho = Math.max(1e-6, state.rho);
@@ -1047,7 +1046,7 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 10, y: yToPx(yv) + 4,
-        fill: COLORS.text, "font-size": fsAxis(12,'time'), "font-family":"Arial, sans-serif",
+        fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
       t.textContent = String(Math.round(yv));
@@ -1063,7 +1062,7 @@
       }));
       const t = svgEl('text',{
         x: xToPx(xv), y: pad.t + innerH + 26,
-        fill: COLORS.text, "font-size": fsAxis(12,'time'), "font-family":"Arial, sans-serif",
+        fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
       t.textContent = String(xv);
@@ -1079,16 +1078,19 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
+    // (CAMBIO) Etiqueta descriptiva del eje X con gap unificado
+    const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
-      x: pad.l + innerW/2, y: H - 24,
-      fill: COLORS.text, "font-size": fsAxis(14,'time'), "font-family":"Arial, sans-serif",
+      x: pad.l + innerW/2, y: xAxisLabelY,
+      fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    const yLabelX = Math.max(10, pad.l - getYAxisLabelGap());
+    // (CAMBIO) Etiqueta descriptiva del eje Y con el mismo gap (unificado)
+    const yLabelX = Math.max(10, pad.l - getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size": fsAxis(14,'time'), "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
     })).textContent = "Personas (millones)";
@@ -1258,7 +1260,7 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 10, y: yToPx(v) + 4,
-        fill: COLORS.text, "font-size": fsAxis(12,'cp'),
+        fill: COLORS.text, "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
@@ -1273,7 +1275,7 @@
       }));
       const t = svgEl('text',{
         x: xToPx(v), y: pad.t + innerH + 26,
-        fill: COLORS.text, "font-size": fsAxis(12,'cp'),
+        fill: COLORS.text, "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
@@ -1290,17 +1292,20 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
+    // (CAMBIO) Etiqueta descriptiva del eje X con gap unificado
+    const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
-      x: pad.l + innerW/2, y: H - 20,
-      fill: COLORS.text, "font-size": fsAxis(14,'cp'),
+      x: pad.l + innerW/2, y: xAxisLabelY,
+      fill: COLORS.text, "font-size": fsAxisLabel(14),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
-    const yLabelX = Math.max(10, pad.l - getYAxisLabelGap());
+    // (CAMBIO) Etiqueta descriptiva del eje Y con el mismo gap (unificado)
+    const yLabelX = Math.max(10, pad.l - getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size": fsAxis(14,'cp'),
+      fill: COLORS.text, "font-size": fsAxisLabel(14),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
@@ -1466,7 +1471,7 @@
     svg.appendChild(svgEl('text',{
       x: cx - 10, y: 50,
       fill: COLORS.workers,
-      "font-size": fsAxis(13,'pyr'),
+      "font-size": fsTick(13),
       "font-family":"Arial, sans-serif",
       "text-anchor":"end",
       "opacity":"0.92"
@@ -1475,7 +1480,7 @@
     svg.appendChild(svgEl('text',{
       x: cx + 10, y: 50,
       fill: COLORS.retired,
-      "font-size": fsAxis(13,'pyr'),
+      "font-size": fsTick(13),
       "font-family":"Arial, sans-serif",
       "text-anchor":"start",
       "opacity":"0.92"
@@ -1505,11 +1510,11 @@
         fill: COLORS.retired, "fill-opacity":"0.80"
       }));
 
-      // (NUEVO) Labels de “eje” (edades) escalables en móvil
+      // Labels de edades (no son los textos descriptivos de ejes Time/C–P)
       const t = svgEl('text',{
         x: 12, y: y + h*0.72,
         fill: COLORS.text,
-        "font-size": fsAxis(12,'pyr'),
+        "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
         "opacity":"0.90"
       });
