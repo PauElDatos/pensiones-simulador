@@ -9,16 +9,10 @@
       /* MACRO: escala global de tipografías (1 = original) */
       --fontScale: 1.35;
 
-      /*
-        Distancia (misma para X e Y) entre los ejes y sus textos descriptivos
-        en las gráficas "Evolución en el tiempo" y "C–P y equilibrio".
-      */
+      /* Distancia (misma para X e Y) entre los ejes y sus textos descriptivos (Time + C–P) */
       --axisLabelGap: 60px;
 
-      /*
-        SOLO cuando el layout apila (móvil/una columna), escala de fuente
-        para los textos descriptivos de ejes (NO ticks) en "Evolución en el tiempo" y "C–P y equilibrio".
-      */
+      /* SOLO en layout apilado: escala de textos descriptivos de ejes (Time + C–P) */
       --axisLabelFontScale: 1.4;
 
       --bg:#252525;
@@ -41,7 +35,6 @@
       --shadow: 0 10px 30px rgba(0,0,0,.25);
     }
 
-    /* Móvil: ajusta escala global */
     @media (max-width: 640px){
       :root{
         --fontScale: 1.18;
@@ -89,7 +82,6 @@
     }
     a.back:hover{ border-bottom-color: rgba(254,247,2,.35); color:#fff; }
 
-    /* (CAMBIO) Ya no hay panel derecho separado: un solo panel "Simulación" */
     main{
       min-height: calc(100vh - 70px);
       padding:12px 12px 18px 12px;
@@ -129,7 +121,7 @@
       height:100%;
     }
 
-    /* (CAMBIO) 3 columnas: Evolución | C-P | Pirámide */
+    /* 3 columnas: Evolución | C-P | Pirámide */
     .charts-row{
       display:grid;
       grid-template-columns: 1fr 1fr 480px;
@@ -144,9 +136,7 @@
     }
 
     @media (max-width: 900px){
-      :root{
-        --axisLabelFontScale: 1.15;
-      }
+      :root{ --axisLabelFontScale: 1.15; }
       .charts-row{ grid-template-columns:1fr; }
       .pyr-in-sim{ grid-column:auto; }
     }
@@ -157,6 +147,7 @@
       background:rgba(0,0,0,.08);
       overflow:hidden;
     }
+
     .chart-card .ch{
       padding:10px 10px 8px 10px;
       border-bottom:1px solid rgba(255,255,255,.06);
@@ -165,6 +156,15 @@
       justify-content:space-between;
       gap:10px;
     }
+
+    /* (CAMBIO) Header del C–P: alinear el título con la fila de pills (no con la línea C|P) */
+    .chart-card .ch.cp-head{
+      align-items:flex-start;
+    }
+    .chart-card .ch.cp-head .cttl{
+      padding-top:2px; /* microajuste visual para igualar la altura percibida con las pills */
+    }
+
     .chart-card .ch .cttl{
       font-family:var(--fontTitle);
       color:var(--primary);
@@ -202,6 +202,7 @@
       gap:10px;
       align-items:stretch;
     }
+
     .vslider-shell{
       background:rgba(0,0,0,.10);
       border:1px solid rgba(255,255,255,.06);
@@ -210,19 +211,24 @@
       display:flex;
       align-items:center;
       justify-content:center;
-    }
-    .vslider-shell input[type="range"]{
-      -webkit-appearance: slider-vertical;
-      writing-mode: bt-lr;
-      width: 22px;
-      height: 420px;
-      accent-color: var(--primary);
+      overflow:hidden;
     }
 
-    /* Móvil: el slider vertical del chart 1 se adapta a la altura de la gráfica */
-    @media (max-width: 640px){
-      .sim-wrap .vslider-shell{ height: 100%; }
-      .sim-wrap .vslider-shell input[type="range"]{ height: 100%; }
+    /*
+      (CAMBIO) Sliders verticales con el MISMO estilo que los horizontales:
+      - Se elimina slider-vertical nativo
+      - Se rota un range horizontal (-90deg)
+      - El “relleno” amarillo se gestiona por JS con paintRange()
+    */
+    .vslider-shell input[type="range"]{
+      -webkit-appearance: none;
+      appearance: none;
+      width: 320px;         /* JS lo ajusta a la altura real del contenedor */
+      height: 4px;
+      transform: rotate(-90deg);
+      transform-origin: center;
+      cursor: pointer;
+      display:block;
     }
 
     .caption{
@@ -250,10 +256,6 @@
       display:block;
     }
 
-    /* Slider vertical de PIRÁMIDE adaptado a la altura real de la gráfica */
-    .pyr-frame .vslider-shell{ height: 100%; }
-    .pyr-frame .vslider-shell input[type="range"]{ height: 100%; }
-
     .ctl{ display:grid; gap:6px; }
     .ctl label{
       font-size: calc(13px * var(--fontScale));
@@ -265,17 +267,10 @@
     }
     .val{ font-variant-numeric: tabular-nums; opacity:.95; }
 
-    /* Espaciado de parámetros bajo "Evolución en el tiempo" */
-    .sys-controls{
-      display:grid;
-      gap:12px;
-    }
-    .sys-grid{
-      display:grid;
-      gap:12px;
-    }
+    .sys-controls{ display:grid; gap:12px; }
+    .sys-grid{ display:grid; gap:12px; }
 
-    /* Mantener “relleno” amarillo en sliders horizontales */
+    /* Sliders (estilo común) */
     input[type="range"]{
       width:100%;
       accent-color: var(--primary);
@@ -464,7 +459,6 @@
 
 <main>
 
-  <!-- SIMULACIÓN (incluye ahora la PIRÁMIDE a la derecha de C–P) -->
   <section class="panel" aria-label="Gráficas del simulador">
     <div class="ph">
       <div class="ttl">Simulación</div>
@@ -570,10 +564,9 @@
 
         <!-- Chart 2: C–P -->
         <div class="chart-card" aria-label="Gráfica C vs P (equilibrio)">
-          <div class="ch">
+          <div class="ch cp-head">
             <div class="cttl">C–P y equilibrio</div>
 
-            <!-- (CAMBIO) Reordenado: primero k + estado, debajo C: | P: -->
             <div class="csub mono">
               <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
                 <span class="mini-pill" title="Pendiente de la línea de equilibrio">
@@ -643,7 +636,7 @@
           </div>
         </div>
 
-        <!-- (CAMBIO) Pirámide movida dentro de "Simulación" (a la derecha de C–P) -->
+        <!-- Pirámide dentro de "Simulación" -->
         <div class="chart-card pyr-in-sim" aria-label="Pirámide poblacional y controles">
           <div class="ch">
             <div class="cttl">Pirámide</div>
@@ -719,27 +712,18 @@
     noncot: CSS('--noncot')
   };
 
-  // Escala dinámica (responde a @media)
   const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
 
-  // Gap unificado (mismo para X e Y) entre eje y texto descriptivo (solo Time + C–P)
   const getAxisLabelGap = () => {
     const v = parseFloat(CSS('--axisLabelGap'));
     return isFinite(v) ? v : 60;
   };
 
-  // Escala SOLO para textos descriptivos de ejes (solo en layout apilado; ver @media 900px)
   const getAxisLabelFontScale = () => {
     const v = parseFloat(CSS('--axisLabelFontScale'));
     return isFinite(v) ? v : 1;
   };
 
-  // Jubilado fijo (icono)
-  const ICONS = {
-    retired: "figuras/noun-person-8100160.svg",
-  };
-
-  // Pool de “trabajadores”
   const WORKER_POOL = [
     "figuras/noun-avatar-5116460.svg",
     "figuras/noun-avatar-5116462.svg",
@@ -774,12 +758,12 @@
     // sistema reparto
     rho: 0.80,
     tau: 0.29,
-    u: 0.10,        // paro (fracción)
+    u: 0.10,
     popGrowth: 0.003,
-    agingPP: 0.002, // fracción anual
+    agingPP: 0.002,
     years: 80,
 
-    // slider vertical: participación 18–64 que intenta cotizar
+    // slider vertical: participación 18–64
     participation: 0.78,
 
     // anim
@@ -787,7 +771,6 @@
     playing: false,
     lastTs: 0,
 
-    // iconos “fijos”
     workerIconSeq: [],
   };
 
@@ -866,7 +849,6 @@
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const toM = (x) => x / 1_000_000;
 
-  // Escala general
   const fs = (px) => (px * getFontScale()).toFixed(2);
   const fsTick = (px) => (px * getFontScale()).toFixed(2);
   const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale()).toFixed(2);
@@ -882,12 +864,9 @@
     return WORKER_POOL[i];
   }
 
-  // Slider “relleno” amarillo (horizontal)
+  // Relleno amarillo (ahora también para sliders "verticales" rotados)
   function paintRange(input){
     if (!input) return;
-    // no tocar sliders verticales
-    const isVertical = input.id === 'participationSlider' || input.id === 'peakSlider';
-    if (isVertical) return;
 
     const min = Number(input.min || 0);
     const max = Number(input.max || 100);
@@ -895,6 +874,31 @@
     const pct = ((val - min) / Math.max(1e-9, (max - min))) * 100;
 
     input.style.background = `linear-gradient(to right, ${CSS('--primary')} 0%, ${CSS('--primary')} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
+  }
+
+  // (NUEVO) Ajusta el "largo" de los sliders laterales (rotados) a la altura real del contenedor
+  function syncVerticalSliders(){
+    const pairs = [
+      { input: els.participationSlider, shell: els.participationSlider?.closest('.vslider-shell') },
+      { input: els.peakSlider,          shell: els.peakSlider?.closest('.vslider-shell') }
+    ];
+
+    pairs.forEach(({input, shell}) => {
+      if (!input || !shell) return;
+
+      const rect = shell.getBoundingClientRect();
+      const cs = getComputedStyle(shell);
+      const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+
+      // El slider se rota: su "width" define el largo vertical visible
+      const len = Math.max(160, rect.height - padY);
+      input.style.width = `${len}px`;
+      input.style.height = `4px`;
+    });
+
+    // actualiza relleno tras recalcular dimensiones
+    paintRange(els.participationSlider);
+    paintRange(els.peakSlider);
   }
 
   // ======================
@@ -1077,7 +1081,6 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    // Etiqueta descriptiva eje X
     const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
@@ -1085,7 +1088,6 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    // Etiqueta descriptiva eje Y
     const yLabelX = Math.max(10, pad.l - getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
@@ -1119,33 +1121,10 @@
       return "M " + pts.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L ") + " Z";
     }
 
-    svg.appendChild(svgEl('path', {
-      d: polyPath(minorsTop, basePts),
-      fill: COLORS.minors,
-      "fill-opacity":"0.35",
-      stroke: "none"
-    }));
-
-    svg.appendChild(svgEl('path', {
-      d: polyPath(cotTop, minorsTop),
-      fill: COLORS.workers,
-      "fill-opacity":"0.50",
-      stroke: "none"
-    }));
-
-    svg.appendChild(svgEl('path', {
-      d: polyPath(noncotTop, cotTop),
-      fill: COLORS.noncot,
-      "fill-opacity":"0.55",
-      stroke: "none"
-    }));
-
-    svg.appendChild(svgEl('path', {
-      d: polyPath(totalTop, noncotTop),
-      fill: COLORS.retired,
-      "fill-opacity":"0.50",
-      stroke: "none"
-    }));
+    svg.appendChild(svgEl('path', { d: polyPath(minorsTop, basePts), fill: COLORS.minors, "fill-opacity":"0.35", stroke:"none" }));
+    svg.appendChild(svgEl('path', { d: polyPath(cotTop, minorsTop),   fill: COLORS.workers,"fill-opacity":"0.50", stroke:"none" }));
+    svg.appendChild(svgEl('path', { d: polyPath(noncotTop, cotTop),   fill: COLORS.noncot, "fill-opacity":"0.55", stroke:"none" }));
+    svg.appendChild(svgEl('path', { d: polyPath(totalTop, noncotTop), fill: COLORS.retired,"fill-opacity":"0.50", stroke:"none" }));
 
     svg.appendChild(svgEl('path', {
       d: "M " + totalTop.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L "),
@@ -1291,7 +1270,6 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    // Etiqueta descriptiva eje X
     const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
@@ -1300,7 +1278,6 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
-    // Etiqueta descriptiva eje Y
     const yLabelX = Math.max(10, pad.l - getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
@@ -1323,7 +1300,6 @@
       }));
     }
 
-    // guías discontinuas azules
     svg.appendChild(svgEl('line',{
       x1: xToPx(0), y1: yToPx(P),
       x2: xToPx(C), y2: yToPx(P),
@@ -1390,10 +1366,7 @@
 
   function renderWorkersIcons(cp){
     els.heroWorkersIcons.innerHTML = "";
-
-    if (!isFinite(cp) || cp <= 0){
-      return;
-    }
+    if (!isFinite(cp) || cp <= 0) return;
 
     const N = Math.max(0, Math.round(cp));
     const CAP = 18;
@@ -1551,12 +1524,15 @@
   function syncUI(){
     els.popSlider.value = state.popTotalM;
     els.popVal.textContent = state.popTotalM.toFixed(1);
+
     els.peakSlider.value = state.peakIdx;
+
     els.sigmaSlider.value = state.sigma;
     els.sigmaVal.textContent = String(state.sigma);
 
     els.densityYoungSlider.value = state.densityYoung;
     els.densityYoungVal.textContent = state.densityYoung.toFixed(2);
+
     els.densityOldSlider.value = state.densityOld;
     els.densityOldVal.textContent = state.densityOld.toFixed(2);
 
@@ -1578,8 +1554,11 @@
     els.yearsVal.textContent = String(state.years);
 
     [
+      // horizontales
       els.rhoSlider, els.tauSlider, els.uSlider, els.popGrowthSlider, els.agingSlider, els.yearsSlider,
-      els.sigmaSlider, els.densityYoungSlider, els.densityOldSlider, els.popSlider
+      els.sigmaSlider, els.densityYoungSlider, els.densityOldSlider, els.popSlider,
+      // “verticales” rotados (también se pintan)
+      els.participationSlider, els.peakSlider
     ].forEach(paintRange);
   }
 
@@ -1588,6 +1567,7 @@
   // ======================
   els.peakSlider.addEventListener('input', (e) => {
     state.peakIdx = Number(e.target.value);
+    paintRange(els.peakSlider);
     renderPyramid();
     renderTimeChart();
   });
@@ -1627,6 +1607,7 @@
 
   els.participationSlider.addEventListener('input', (e) => {
     state.participation = Number(e.target.value) / 100.0;
+    paintRange(els.participationSlider);
     renderTimeChart();
   });
 
@@ -1684,14 +1665,30 @@
     renderTimeChart();
   });
 
+  // Resize: reajusta sliders laterales + re-render para que fuentes/gaps respondan a @media
+  window.addEventListener('resize', () => {
+    syncVerticalSliders();
+    syncUI();
+    renderPyramid();
+    renderTimeChart();
+  });
+
   // ======================
   // init
   // ======================
   ensureWorkerSeq(18);
 
+  // Render inicial
   syncUI();
   renderPyramid();
   renderTimeChart();
+
+  // Ajusta sliders laterales al tamaño real una vez el layout está calculado
+  requestAnimationFrame(() => {
+    syncVerticalSliders();
+    syncUI();
+  });
+
   requestAnimationFrame(rafLoop);
 })();
 </script>
