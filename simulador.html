@@ -4,12 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Pensiones — Simulador</title>
+
   <style>
     :root{
       /* MACRO: escala global de tipografías (1 = original) */
       --fontScale: 1.35;
 
-      /* Distancia (misma para X e Y) entre los ejes y sus textos descriptivos (Time + C–P) */
+      /* Gap unificado entre ejes y textos descriptivos (Time + C–P) */
       --axisLabelGap: 60px;
 
       /* SOLO en layout apilado: escala de textos descriptivos de ejes (Time + C–P) */
@@ -25,7 +26,6 @@
       --minors:#7f7f7f;      /* <18 */
       --noncot:#1f6d86;      /* desempleados */
 
-      --panel:#2b2b2b;
       --stroke:#3a3a3a;
 
       --fontTitle: "Futura","Trebuchet MS",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
@@ -33,6 +33,9 @@
 
       --radius:14px;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
+
+      /* (NUEVO) margen mínimo entre bloque izquierdo (jubilado/ratio) y fila de trabajadores */
+      --workersRowLeftGap: 18px;
     }
 
     @media (max-width: 640px){
@@ -112,7 +115,6 @@
     }
     .sub{ font-size: calc(12px * var(--fontScale)); opacity:.85; text-align:right; max-width:62ch; }
 
-    /* LEFT */
     .chart-area{
       padding:12px;
       display:flex;
@@ -157,14 +159,6 @@
       gap:10px;
     }
 
-    /* (CAMBIO) Header del C–P: alinear el título con la fila de pills (no con la línea C|P) */
-    .chart-card .ch.cp-head{
-      align-items:flex-start;
-    }
-    .chart-card .ch.cp-head .cttl{
-      padding-top:2px; /* microajuste visual para igualar la altura percibida con las pills */
-    }
-
     .chart-card .ch .cttl{
       font-family:var(--fontTitle);
       color:var(--primary);
@@ -179,12 +173,43 @@
       font-variant-numeric: tabular-nums;
       line-height:1.2;
     }
+
+    /* (CAMBIO) Header C–P: title | (k + estado) centrado | C|P a la derecha (todo en una sola fila y misma altura) */
+    .chart-card .ch.cp-head{
+      display:block;
+      align-items:unset;
+      justify-content:unset;
+    }
+    .cp-head-row{
+      display:grid;
+      grid-template-columns: auto 1fr auto;
+      align-items:center;
+      gap:12px;
+    }
+    .cp-mid{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      flex-wrap:nowrap;
+      min-width:0;
+    }
+    .cp-right{
+      text-align:right;
+      white-space:nowrap;
+      opacity:.85;
+      font-variant-numeric: tabular-nums;
+      line-height:1.2;
+      font-size: calc(12px * var(--fontScale));
+    }
+
     .chart-card .cb{
       padding:10px;
       display:flex;
       flex-direction:column;
       gap:10px;
     }
+
     .bigsvg{
       width:100%;
       height:auto;
@@ -200,7 +225,7 @@
       display:grid;
       grid-template-columns: 54px 1fr;
       gap:10px;
-      align-items:stretch;
+      align-items:start;
     }
 
     .vslider-shell{
@@ -215,15 +240,13 @@
     }
 
     /*
-      (CAMBIO) Sliders verticales con el MISMO estilo que los horizontales:
-      - Se elimina slider-vertical nativo
-      - Se rota un range horizontal (-90deg)
-      - El “relleno” amarillo se gestiona por JS con paintRange()
+      Sliders verticales: mismo estilo visual que los horizontales.
+      Se rota un range horizontal (-90deg) y el relleno se gestiona por JS.
     */
     .vslider-shell input[type="range"]{
       -webkit-appearance: none;
       appearance: none;
-      width: 320px;         /* JS lo ajusta a la altura real del contenedor */
+      width: 260px;       /* JS lo ajusta dinámicamente a la altura de su SVG */
       height: 4px;
       transform: rotate(-90deg);
       transform-origin: center;
@@ -244,7 +267,7 @@
       display:grid;
       grid-template-columns: 64px 1fr;
       gap:10px;
-      align-items:stretch;
+      align-items:start;
     }
     .pyr-svg{
       width:100%;
@@ -334,7 +357,7 @@
     .result-dot.bad{ background: var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.12); }
     .result-dot.ok{ background: var(--workers); box-shadow:0 0 0 3px rgba(54,195,255,.12); }
 
-    /* mini estado (chart C-P header) */
+    /* mini estado (k + sostenible) */
     .mini-pill{
       display:inline-flex;
       align-items:center;
@@ -382,6 +405,7 @@
       align-items:center;
       gap:12px;
       min-width:240px;
+      flex:0 0 auto;
     }
     .cp-ratio-hero .label{
       font-size: calc(12px * var(--fontScale));
@@ -395,12 +419,18 @@
       letter-spacing:.3px;
       line-height:1.1;
     }
+
+    /* (CAMBIO) Fila de trabajadores: SIEMPRE 1 fila, sin wrap, y con margen mínimo respecto al bloque izquierdo */
     .cp-ratio-hero .right{
+      flex:1 1 auto;
+      min-width:0;
       display:flex;
       align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
       justify-content:flex-end;
+      flex-wrap:nowrap;
+      gap:8px;
+      margin-left: var(--workersRowLeftGap);
+      overflow:hidden; /* evita que "invada" el bloque izquierdo */
     }
 
     .hero-icon{
@@ -409,14 +439,18 @@
       display:block;
       filter: invert(1) brightness(2) saturate(0);
       opacity:.98;
+      flex:0 0 auto;
     }
+
     .worker-icon{
       width:30px;
       height:30px;
       display:block;
       filter: invert(1) brightness(2) saturate(0);
       opacity:.92;
+      flex:0 0 auto;
     }
+
     .plus{
       width:30px; height:30px;
       display:flex;
@@ -428,6 +462,7 @@
       border:1px solid rgba(255,255,255,.10);
       border-radius:10px;
       background:rgba(255,255,255,.03);
+      flex:0 0 auto;
     }
 
     .cp-kv{
@@ -458,7 +493,6 @@
 </header>
 
 <main>
-
   <section class="panel" aria-label="Gráficas del simulador">
     <div class="ph">
       <div class="ttl">Simulación</div>
@@ -477,7 +511,7 @@
 
           <div class="cb">
             <div class="sim-wrap">
-              <div class="vslider-shell" title="Participación: % de población 18–64 que intenta cotizar">
+              <div class="vslider-shell" id="participationShell" title="Participación: % de población 18–64 que intenta cotizar">
                 <input id="participationSlider" type="range" min="30" max="98" step="1" value="78" />
               </div>
               <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
@@ -565,10 +599,11 @@
         <!-- Chart 2: C–P -->
         <div class="chart-card" aria-label="Gráfica C vs P (equilibrio)">
           <div class="ch cp-head">
-            <div class="cttl">C–P y equilibrio</div>
+            <div class="cp-head-row">
+              <div class="cttl">C–P y equilibrio</div>
 
-            <div class="csub mono">
-              <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
+              <!-- (CAMBIO) k + estado en el medio -->
+              <div class="cp-mid mono" aria-label="k y sostenibilidad">
                 <span class="mini-pill" title="Pendiente de la línea de equilibrio">
                   <span class="dot" style="width:8px;height:8px;box-shadow:0 0 0 3px rgba(254,247,2,.10)"></span>
                   <span class="mono" id="kReadoutSim">k: —</span>
@@ -578,7 +613,9 @@
                   <span class="mono" id="cpStatusText">—</span>
                 </span>
               </div>
-              <div id="cpReadoutSim" style="margin-top:6px;">C: — | P: —</div>
+
+              <!-- (CAMBIO) C|P a la derecha, en la misma altura del título -->
+              <div class="cp-right mono" id="cpReadoutSim">C: — | P: —</div>
             </div>
           </div>
 
@@ -586,7 +623,7 @@
             <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
 
             <div class="cp-below" aria-label="Indicadores C–P">
-              <div class="cp-ratio-hero">
+              <div class="cp-ratio-hero" id="cpRatioHero">
                 <div class="left">
                   <img class="hero-icon" id="heroRetiredIcon" src="figuras/noun-person-8100160.svg" alt="Jubilado" />
                   <div>
@@ -645,7 +682,7 @@
 
           <div class="cb">
             <div class="pyr-frame">
-              <div class="vslider-shell" title="Pico (quinquenio)">
+              <div class="vslider-shell" id="peakShell" title="Pico (quinquenio)">
                 <input id="peakSlider" type="range" min="0" max="20" step="1" value="9" />
               </div>
 
@@ -696,7 +733,6 @@
       </div>
     </div>
   </section>
-
 </main>
 
 <script>
@@ -748,14 +784,12 @@
   // Estado
   // ======================
   const state = {
-    // pirámide
     popTotalM: 47.0,
     peakIdx: 9,
     sigma: 18,
     densityYoung: 0.75,
     densityOld: 0.75,
 
-    // sistema reparto
     rho: 0.80,
     tau: 0.29,
     u: 0.10,
@@ -763,10 +797,8 @@
     agingPP: 0.002,
     years: 80,
 
-    // slider vertical: participación 18–64
     participation: 0.78,
 
-    // anim
     t: 0,
     playing: false,
     lastTs: 0,
@@ -786,6 +818,7 @@
     cpStatusText: document.getElementById('cpStatusText'),
 
     participationSlider: document.getElementById('participationSlider'),
+    participationShell: document.getElementById('participationShell'),
 
     rhoSlider: document.getElementById('rhoSlider'),
     tauSlider: document.getElementById('tauSlider'),
@@ -812,6 +845,8 @@
     pyrMeta: document.getElementById('pyrMeta'),
 
     peakSlider: document.getElementById('peakSlider'),
+    peakShell: document.getElementById('peakShell'),
+
     sigmaSlider: document.getElementById('sigmaSlider'),
     sigmaVal: document.getElementById('sigmaVal'),
 
@@ -823,9 +858,10 @@
     popSlider: document.getElementById('popSlider'),
     popVal: document.getElementById('popVal'),
 
-    // debajo C-P
     heroCP: document.getElementById('heroCP'),
     heroWorkersIcons: document.getElementById('heroWorkersIcons'),
+    cpRatioHero: document.getElementById('cpRatioHero'),
+
     CVal: document.getElementById('CVal'),
     PVal: document.getElementById('PVal'),
     uVal2: document.getElementById('uVal2'),
@@ -864,7 +900,7 @@
     return WORKER_POOL[i];
   }
 
-  // Relleno amarillo (ahora también para sliders "verticales" rotados)
+  // Relleno amarillo (vale para horizontales y para los “verticales” rotados)
   function paintRange(input){
     if (!input) return;
 
@@ -876,29 +912,32 @@
     input.style.background = `linear-gradient(to right, ${CSS('--primary')} 0%, ${CSS('--primary')} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
   }
 
-  // (NUEVO) Ajusta el "largo" de los sliders laterales (rotados) a la altura real del contenedor
-  function syncVerticalSliders(){
-    const pairs = [
-      { input: els.participationSlider, shell: els.participationSlider?.closest('.vslider-shell') },
-      { input: els.peakSlider,          shell: els.peakSlider?.closest('.vslider-shell') }
-    ];
+  /*
+    (CAMBIO) Cada barra lateral (slider vertical) se adapta a la ALTURA REAL de SU SVG:
+    - vslider-shell.height = svg.height
+    - input.width (rotado) = svg.height - paddingY
+  */
+  function syncSidebarToSvg({ shell, input, svg }){
+    if (!shell || !input || !svg) return;
 
-    pairs.forEach(({input, shell}) => {
-      if (!input || !shell) return;
+    const svgRect = svg.getBoundingClientRect();
+    if (!isFinite(svgRect.height) || svgRect.height < 50) return;
 
-      const rect = shell.getBoundingClientRect();
-      const cs = getComputedStyle(shell);
-      const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+    shell.style.height = `${svgRect.height}px`;
 
-      // El slider se rota: su "width" define el largo vertical visible
-      const len = Math.max(160, rect.height - padY);
-      input.style.width = `${len}px`;
-      input.style.height = `4px`;
-    });
+    const cs = getComputedStyle(shell);
+    const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
 
-    // actualiza relleno tras recalcular dimensiones
-    paintRange(els.participationSlider);
-    paintRange(els.peakSlider);
+    const len = Math.max(120, svgRect.height - padY);
+    input.style.width = `${len}px`;
+    input.style.height = `4px`;
+
+    paintRange(input);
+  }
+
+  function syncAllSidebars(){
+    syncSidebarToSvg({ shell: els.participationShell, input: els.participationSlider, svg: els.timeSvg });
+    syncSidebarToSvg({ shell: els.peakShell, input: els.peakSlider, svg: els.pyrSvg });
   }
 
   // ======================
@@ -1156,6 +1195,9 @@
 
     updateSystemPill(cur);
     renderCPChartSim(cur, data);
+
+    // (CAMBIO) ajustar la barra lateral a la altura REAL de esta gráfica
+    requestAnimationFrame(syncAllSidebars);
   }
 
   function updateSystemPill(cur){
@@ -1364,15 +1406,104 @@
     }
   }
 
+  /*
+    (CAMBIO) Siempre una fila.
+    Si hay “más trabajadores”, se reducen de tamaño para caber sin wrap.
+  */
   function renderWorkersIcons(cp){
     els.heroWorkersIcons.innerHTML = "";
+
     if (!isFinite(cp) || cp <= 0) return;
 
     const N = Math.max(0, Math.round(cp));
-    const CAP = 18;
+
+    // cap alto pero razonable: si llega a ser enorme, mostramos "+" para evitar iconos ilegibles
+    const CAP = 30;
     const show = Math.min(N, CAP);
+    const hasPlus = N > CAP;
 
     ensureWorkerSeq(CAP);
+
+    const avail = els.heroWorkersIcons.getBoundingClientRect().width || 0;
+
+    // Defaults
+    const maxIcon = 30;
+    const minIcon = 14;
+
+    // Ajuste de gap en función del tamaño (para exprimir espacio)
+    const baseGap = 8;
+
+    // Reservas (plus)
+    const plusReserve = hasPlus ? (maxIcon + baseGap) : 0;
+
+    // Si no hay ancho (aún no layout), pinta con tamaño default y sal
+    let iconSize = maxIcon;
+    let gap = baseGap;
+
+    if (avail > 50 && show > 0){
+      // probamos con gap base, y reducimos si hace falta
+      const tryCompute = (g) => {
+        const reserved = (show - 1) * g + (hasPlus ? (g + maxIcon) : 0);
+        const s = Math.floor((avail - reserved) / show);
+        return s;
+      };
+
+      let s = tryCompute(baseGap);
+      gap = baseGap;
+
+      if (s < 22){
+        s = tryCompute(6);
+        gap = 6;
+      }
+      if (s < 18){
+        s = tryCompute(4);
+        gap = 4;
+      }
+
+      iconSize = clamp(s, minIcon, maxIcon);
+
+      // si incluso con minIcon no cabe, reducimos cantidad visible y mantenemos "+"
+      // (esto solo pasa en pantallas muy estrechas)
+      if (iconSize <= minIcon && avail < (show * minIcon + (show-1)*gap + (hasPlus ? (gap + minIcon) : 0))){
+        // recalcular show dinámico para que quepa
+        let maxShow = Math.max(1, Math.floor((avail - (hasPlus ? (gap + minIcon) : 0) + gap) / (minIcon + gap)));
+        maxShow = clamp(maxShow, 1, CAP);
+        // re-render con maxShow
+        return renderWorkersIconsWithLayout(N, maxShow, hasPlus, minIcon, gap);
+      }
+    }
+
+    // Render normal con iconSize calculado
+    for (let i=0;i<show;i++){
+      const src = state.workerIconSeq[i] || randWorkerIcon();
+      if (!src) break;
+      const img = document.createElement('img');
+      img.className = "worker-icon";
+      img.src = src;
+      img.alt = "Trabajador";
+      img.title = "Trabajador";
+      img.style.width = `${iconSize}px`;
+      img.style.height = `${iconSize}px`;
+      els.heroWorkersIcons.appendChild(img);
+    }
+
+    if (hasPlus){
+      const plus = document.createElement('div');
+      plus.className = "plus";
+      plus.textContent = "+";
+      plus.style.width = `${iconSize}px`;
+      plus.style.height = `${iconSize}px`;
+      plus.style.fontSize = `${Math.max(12, iconSize * 0.6)}px`;
+      els.heroWorkersIcons.appendChild(plus);
+    }
+
+    // aplica gap final (sin tocar CSS global)
+    els.heroWorkersIcons.style.gap = `${gap}px`;
+  }
+
+  function renderWorkersIconsWithLayout(N, show, hasPlus, iconSize, gap){
+    els.heroWorkersIcons.innerHTML = "";
+    ensureWorkerSeq(30);
 
     for (let i=0;i<show;i++){
       const src = state.workerIconSeq[i] || randWorkerIcon();
@@ -1382,15 +1513,22 @@
       img.src = src;
       img.alt = "Trabajador";
       img.title = "Trabajador";
+      img.style.width = `${iconSize}px`;
+      img.style.height = `${iconSize}px`;
       els.heroWorkersIcons.appendChild(img);
     }
 
-    if (N > CAP){
+    if (hasPlus){
       const plus = document.createElement('div');
       plus.className = "plus";
       plus.textContent = "+";
+      plus.style.width = `${iconSize}px`;
+      plus.style.height = `${iconSize}px`;
+      plus.style.fontSize = `${Math.max(12, iconSize * 0.6)}px`;
       els.heroWorkersIcons.appendChild(plus);
     }
+
+    els.heroWorkersIcons.style.gap = `${gap}px`;
   }
 
   // ======================
@@ -1491,6 +1629,9 @@
     }
 
     els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
+
+    // (CAMBIO) ajustar la barra lateral a la altura REAL de esta gráfica
+    requestAnimationFrame(syncAllSidebars);
   }
 
   // ======================
@@ -1554,12 +1695,12 @@
     els.yearsVal.textContent = String(state.years);
 
     [
-      // horizontales
       els.rhoSlider, els.tauSlider, els.uSlider, els.popGrowthSlider, els.agingSlider, els.yearsSlider,
       els.sigmaSlider, els.densityYoungSlider, els.densityOldSlider, els.popSlider,
-      // “verticales” rotados (también se pintan)
       els.participationSlider, els.peakSlider
     ].forEach(paintRange);
+
+    requestAnimationFrame(syncAllSidebars);
   }
 
   // ======================
@@ -1665,28 +1806,30 @@
     renderTimeChart();
   });
 
-  // Resize: reajusta sliders laterales + re-render para que fuentes/gaps respondan a @media
+  // Resize: reajusta barras laterales (altura a svg) y re-render para layout estable
   window.addEventListener('resize', () => {
-    syncVerticalSliders();
-    syncUI();
-    renderPyramid();
-    renderTimeChart();
+    requestAnimationFrame(() => {
+      syncAllSidebars();
+      // Recalcular tamaño de iconos de trabajadores para mantener 1 fila
+      const cp = parseFloat(els.heroCP.textContent);
+      if (isFinite(cp)) renderWorkersIcons(cp);
+    });
   });
 
   // ======================
   // init
   // ======================
-  ensureWorkerSeq(18);
+  ensureWorkerSeq(30);
 
-  // Render inicial
   syncUI();
   renderPyramid();
   renderTimeChart();
 
-  // Ajusta sliders laterales al tamaño real una vez el layout está calculado
+  // Ajuste final cuando el layout ya está medido
   requestAnimationFrame(() => {
-    syncVerticalSliders();
-    syncUI();
+    syncAllSidebars();
+    const cp = parseFloat(els.heroCP.textContent);
+    if (isFinite(cp)) renderWorkersIcons(cp);
   });
 
   requestAnimationFrame(rafLoop);
