@@ -255,7 +255,6 @@
       height:100%;
       min-height:0;
       padding:12px;
-      align-items:stretch;
     }
     @media (max-width: 1300px){
       .viz{ grid-template-columns: minmax(0, 1fr) 300px; }
@@ -269,6 +268,7 @@
       flex-direction:column;
       gap:10px;
       min-height:0;
+      height:100%;
     }
 
     .chart-legend{
@@ -285,10 +285,9 @@
     .swatch.retired{ background:var(--retired); }
     .swatch.primary{ background:var(--primary); }
 
-    /* MODIFICACIÓN CLAVE:
-       - el SVG ocupa el alto disponible del panel (ya no “calcula” su alto a partir del ancho)
-       - así no se corta por abajo aunque el panel tenga overflow:hidden
-       - el redibujado usa el tamaño real del contenedor (sin distorsionar textos/círculos) */
+    /* MODIFICACIÓN CLAVE (sin deformar nada dentro):
+       - antes: height:auto => podía “pasarse” del alto disponible y el panel lo recortaba
+       - ahora: height:100% => el SVG usa el alto real del hueco disponible y NO se corta */
     .bigsvg{
       width:100%;
       height:100%;
@@ -355,7 +354,6 @@
       line-height:1.35;
     }
 
-    /* Bloques con título “dentro”, estilo similar a Pirámide */
     .blkwrap{
       border:1px solid rgba(255,255,255,.08);
       border-radius:12px;
@@ -514,12 +512,8 @@
           <div class="legend-item mono" id="kReadout">k: —</div>
         </div>
 
-        <!-- MODIFICACIÓN:
-             - eliminamos el viewBox fijo
-             - el JS lo ajusta al tamaño real del contenedor
-             - preserveAspectRatio="none" para que el “marco” se adapte; como redibujamos a tamaño real,
-               no hay “deformación” de textos/elementos por escalado -->
-        <svg id="cpSvg" class="bigsvg" preserveAspectRatio="none" aria-label="Gráfica C vs P"></svg>
+        <!-- VUELVE al enfoque “correcto”: no deformar el contenido interno -->
+        <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
       </div>
 
       <!-- EXPLANATION -->
@@ -933,7 +927,6 @@
 
     const totalPop = vals.reduce((a,b)=>a+b,0);
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
-
     els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F`;
   }
 
@@ -994,6 +987,8 @@
     if (xMax <= 2)  return 0.5;
     if (xMax <= 5)  return 1;
     if (xMax <= 10) return 2;
+    if (xMax <= 50) return 5;
+    if (xMax <= 100) return 10;
     return 10;
   }
   function yMaxFromP(P){
@@ -1007,6 +1002,8 @@
     if (yMax <= 2)  return 0.5;
     if (yMax <= 5)  return 1;
     if (yMax <= 10) return 2;
+    if (yMax <= 50) return 5;
+    if (yMax <= 100) return 10;
     return 10;
   }
   function buildTicks(max, step){
@@ -1020,25 +1017,21 @@
     return ticks;
   }
 
-  /* MODIFICACIÓN CLAVE:
-     - medimos el tamaño real del SVG en pantalla
-     - ajustamos su viewBox a ese tamaño
-     - renderizamos con W/H reales para que NUNCA se corte por abajo */
-  function getSvgViewportSize(svg, fallbackW=1000, fallbackH=700){
-    const w = Math.floor(svg.clientWidth || 0);
-    const h = Math.floor(svg.clientHeight || 0);
-    return {
-      W: (w > 0 ? w : fallbackW),
-      H: (h > 0 ? h : fallbackH)
-    };
+  /* Evita que se amontonen las etiquetas en móvil */
+  function thinTicksForWidth(ticks, innerPx, minPxPerLabel){
+    if (!Array.isArray(ticks) || ticks.length <= 2) return ticks;
+    const maxLabels = Math.max(2, Math.floor(innerPx / minPxPerLabel) + 1);
+    if (ticks.length <= maxLabels) return ticks;
+
+    const step = Math.ceil((ticks.length - 1) / (maxLabels - 1));
+    return ticks.filter((_, i) => (i % step === 0) || (i === ticks.length - 1));
   }
 
   function renderCPChart(){
     const svg = els.cpSvg;
     clearSvg(svg);
 
-    const { W, H } = getSvgViewportSize(svg, 1000, 700);
-    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const W = 1000, H = 700;
 
     const pad = {
       l: Math.round(90 * UI_SCALE),
@@ -1046,9 +1039,8 @@
       t: Math.round(26 * UI_SCALE),
       b: Math.round(70 * UI_SCALE)
     };
-
-    const innerW = Math.max(10, W - pad.l - pad.r);
-    const innerH = Math.max(10, H - pad.t - pad.b);
+    const innerW = W - pad.l - pad.r;
+    const innerH = H - pad.t - pad.b;
 
     if (!state.selectedCountry){
       els.cpReadout.textContent = `C: — | P: —`;
@@ -1066,11 +1058,18 @@
 
     const xMax = xMaxFromC(C);
     const xStep = xStepFromXMax(xMax);
-    const xTicks = buildTicks(xMax, xStep);
+    const xTicksAll = buildTicks(xMax, xStep);
 
     const yMax = yMaxFromP(P);
     const yStep = yStepFromYMax(yMax);
-    const yTicks = buildTicks(yMax, yStep);
+    const yTicksAll = buildTicks(yMax, yStep);
+
+    /* Thin ticks según ancho/alto real (en px) del SVG en pantalla */
+    const pxW = svg.clientWidth || 900;
+    const pxH = svg.clientHeight || 560;
+
+    const xTicks = thinTicksForWidth(xTicksAll, pxW * 0.78, 46 * UI_SCALE);
+    const yTicks = thinTicksForWidth(yTicksAll, pxH * 0.65, 34 * UI_SCALE);
 
     const xMin=0, yMin=0;
 
@@ -1088,7 +1087,8 @@
         "stroke-dasharray":"6 6"
       }));
       const t = svgEl('text',{
-        x: pad.l - 10, y: yToPx(v) + 4,
+        x: pad.l - Math.round(10 * UI_SCALE),
+        y: yToPx(v) + 4,
         fill: COLORS.text,
         "font-size": String(fTick),
         "font-family":"Arial, sans-serif",
@@ -1104,7 +1104,8 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.35"
       }));
       const t = svgEl('text',{
-        x: xToPx(v), y: pad.t + innerH + Math.round(26 * UI_SCALE),
+        x: xToPx(v),
+        y: pad.t + innerH + Math.round(26 * UI_SCALE),
         fill: COLORS.text,
         "font-size": String(fTick),
         "font-family":"Arial, sans-serif",
@@ -1124,7 +1125,8 @@
     }));
 
     const xl = svgEl('text',{
-      x: pad.l + innerW/2, y: H - Math.round(20 * UI_SCALE),
+      x: pad.l + innerW/2,
+      y: H - Math.round(20 * UI_SCALE),
       fill: COLORS.text,
       "font-size": String(fAxis),
       "font-family":"Arial, sans-serif",
@@ -1133,15 +1135,16 @@
     xl.textContent = "Cotizantes (millones)";
     svg.appendChild(xl);
 
-    const yAxisX = Math.round(20 * UI_SCALE);
-    const yAxisY = pad.t + innerH/2;
+    /* Acerca el texto “Pensionistas” al eje Y (evita que quede “lejísimos” en móvil) */
+    const yLabelX = Math.max(18, pad.l - Math.round(48 * UI_SCALE));
+    const yLabelY = pad.t + innerH/2;
     const yl = svgEl('text',{
-      x: yAxisX, y: yAxisY,
+      x: yLabelX, y: yLabelY,
       fill: COLORS.text,
       "font-size": String(fAxis),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
-      transform: `rotate(-90 ${yAxisX} ${yAxisY})`
+      transform: `rotate(-90 ${yLabelX} ${yLabelY})`
     });
     yl.textContent = "Pensionistas (millones)";
     svg.appendChild(yl);
@@ -1184,15 +1187,25 @@
       "stroke-dasharray":"6 6"
     }));
 
+    /* Círculo vuelve a ser círculo (no ovalado) porque NO deformamos el SVG */
     svg.appendChild(svgEl('circle',{
       cx: xToPx(C), cy: yToPx(P), r: 7.5,
       fill: COLORS.retired, "fill-opacity":"0.95"
     }));
+
+    /* Etiqueta país: si está cerca del borde derecho, la colocamos a la izquierda para que no se corte */
+    const pxX = xToPx(C);
+    const nearRight = (pxX > (pad.l + innerW - 140));
+    const labelX = nearRight ? (pxX - 10) : (pxX + 10);
+    const anchor = nearRight ? "end" : "start";
+
     const lab = svgEl('text',{
-      x: xToPx(C) + 10, y: yToPx(P) - 10,
+      x: labelX, y: yToPx(P) - 10,
       fill: COLORS.retired,
       "font-size": String(fPoint),
-      "font-family":"Arial, sans-serif", "opacity":"0.95"
+      "font-family":"Arial, sans-serif",
+      "text-anchor": anchor,
+      "opacity":"0.95"
     });
     lab.textContent = state.selectedCountry;
     svg.appendChild(lab);
@@ -1301,7 +1314,6 @@
     state.oecdNames.sort((a,b)=>a.localeCompare(b, "es"));
   }
 
-  /* MODIFICACIÓN: redibujar al cambiar tamaño de ventana/panel */
   function debounce(fn, wait=120){
     let t = null;
     return (...args) => {
@@ -1309,11 +1321,6 @@
       t = setTimeout(() => fn(...args), wait);
     };
   }
-  const onResize = debounce(() => {
-    // Importante: el SVG usa su tamaño real (clientWidth/Height)
-    // Así evitamos que se “corte” por overflow oculto del panel.
-    renderCPChart();
-  }, 120);
 
   async function init(){
     try{
@@ -1339,12 +1346,11 @@
       renderCountrySelect();
       if (defaultCountry && els.countrySelect) els.countrySelect.value = defaultCountry;
 
-      // Primer render cuando ya existe layout
-      requestAnimationFrame(() => {
-        renderCPChart();
-      });
+      /* render tras layout */
+      requestAnimationFrame(() => renderCPChart());
 
-      window.addEventListener("resize", onResize, { passive: true });
+      /* al redimensionar: recalculamos thinning de ticks y reposición de etiquetas */
+      window.addEventListener("resize", debounce(renderCPChart, 120), { passive: true });
     }catch(err){
       els.loadText.textContent = "Error cargando datasets";
 
