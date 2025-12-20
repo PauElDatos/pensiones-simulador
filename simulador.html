@@ -17,6 +17,13 @@
       --axisScaleCP:   2; /* C–P y equilibrio */
       --axisScalePyr:  2; /* Pirámide */
 
+      /*
+        (NUEVO) Distancia horizontal entre el eje Y (línea) y el texto descriptivo del eje (label rotado).
+        Se puede ajustar en móvil dentro del @media.
+        Nota: la distancia real = --yAxisLabelGap (en px) respecto a pad.l (x del eje Y).
+      */
+      --yAxisLabelGap: 40px;
+
       --bg:#252525;
       --primary:#FEF702;
       --text:#B0B0B0;
@@ -46,6 +53,9 @@
         --axisScaleTime: 1.25;
         --axisScaleCP:   1.25;
         --axisScalePyr:  1.25;
+
+        /* (NUEVO) Ajusta aquí la distancia del eje Y a su texto descriptivo (Evolución en el tiempo + C–P y equilibrio) */
+        --yAxisLabelGap: 70px;
       }
     }
 
@@ -241,9 +251,10 @@
       background:rgba(0,0,0,.08);
       display:block;
     }
-    .pyr-frame .vslider-shell input[type="range"]{
-      height: 560px;
-    }
+
+    /* (CAMBIO) Slider vertical de PIRÁMIDE adaptado a la altura real de la gráfica */
+    .pyr-frame .vslider-shell{ height: 100%; }
+    .pyr-frame .vslider-shell input[type="range"]{ height: 100%; }
 
     .ctl{ display:grid; gap:6px; }
     .ctl label{
@@ -718,6 +729,12 @@
     return 1;
   };
 
+  // (NUEVO) Gap entre eje Y y su texto descriptivo (labels rotados)
+  const getYAxisLabelGap = () => {
+    const v = parseFloat(CSS('--yAxisLabelGap'));
+    return isFinite(v) ? v : 70;
+  };
+
   // Jubilado fijo (icono)
   const ICONS = {
     retired: "figuras/noun-person-8100160.svg",
@@ -1068,11 +1085,12 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
+    const yLabelX = Math.max(10, pad.l - getYAxisLabelGap());
     svg.appendChild(svgEl('text',{
-      x: 20, y: pad.t + innerH/2,
+      x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxis(14,'time'), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
-      transform: `rotate(-90 20 ${pad.t + innerH/2})`
+      transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
     })).textContent = "Personas (millones)";
 
     const minorsTop = [];
@@ -1279,12 +1297,13 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
+    const yLabelX = Math.max(10, pad.l - getYAxisLabelGap());
     svg.appendChild(svgEl('text',{
-      x: 20, y: pad.t + innerH/2,
+      x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxis(14,'cp'),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
-      transform: `rotate(-90 20 ${pad.t + innerH/2})`
+      transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
     })).textContent = "Pensionistas (millones)";
 
     if (isFinite(k) && k > 0){
@@ -1441,14 +1460,7 @@
       stroke: COLORS.text, "stroke-width":1.2, "stroke-opacity":"0.65"
     }));
 
-    svg.appendChild(svgEl('text',{
-      x: pad.l, y: 30,
-      fill: COLORS.primary,
-      "font-size": fs(15),
-      "font-family":"Futura, Trebuchet MS, Arial, sans-serif",
-      "letter-spacing":"0.35",
-      "opacity":"0.95"
-    })).textContent = "Distribución por edad (quinquenios)";
+    // (CAMBIO) Eliminado el texto: "Distribución por edad (quinquenios)"
 
     // (NUEVO) Estos textos se tratan como “descriptivos” dentro del eje/encuadre de la pirámide
     svg.appendChild(svgEl('text',{
