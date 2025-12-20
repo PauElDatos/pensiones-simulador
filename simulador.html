@@ -34,7 +34,7 @@
       --radius:14px;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
 
-      /* (NUEVO) margen mínimo entre bloque izquierdo (jubilado/ratio) y fila de trabajadores */
+      /* margen mínimo entre bloque izquierdo (jubilado/ratio) y fila de trabajadores */
       --workersRowLeftGap: 18px;
     }
 
@@ -174,7 +174,7 @@
       line-height:1.2;
     }
 
-    /* (CAMBIO) Header C–P: title | (k + estado) centrado | C|P a la derecha (todo en una sola fila y misma altura) */
+    /* Header C–P: title | (k + estado) centrado | C|P a la derecha */
     .chart-card .ch.cp-head{
       display:block;
       align-items:unset;
@@ -420,7 +420,7 @@
       line-height:1.1;
     }
 
-    /* (CAMBIO) Fila de trabajadores: SIEMPRE 1 fila, sin wrap, y con margen mínimo respecto al bloque izquierdo */
+    /* Fila de trabajadores: SIEMPRE 1 fila, sin wrap, y con margen mínimo respecto al bloque izquierdo */
     .cp-ratio-hero .right{
       flex:1 1 auto;
       min-width:0;
@@ -430,7 +430,7 @@
       flex-wrap:nowrap;
       gap:8px;
       margin-left: var(--workersRowLeftGap);
-      overflow:hidden; /* evita que "invada" el bloque izquierdo */
+      overflow:hidden;
     }
 
     .hero-icon{
@@ -602,7 +602,6 @@
             <div class="cp-head-row">
               <div class="cttl">C–P y equilibrio</div>
 
-              <!-- (CAMBIO) k + estado en el medio -->
               <div class="cp-mid mono" aria-label="k y sostenibilidad">
                 <span class="mini-pill" title="Pendiente de la línea de equilibrio">
                   <span class="dot" style="width:8px;height:8px;box-shadow:0 0 0 3px rgba(254,247,2,.10)"></span>
@@ -614,7 +613,6 @@
                 </span>
               </div>
 
-              <!-- (CAMBIO) C|P a la derecha, en la misma altura del título -->
               <div class="cp-right mono" id="cpReadoutSim">C: — | P: —</div>
             </div>
           </div>
@@ -913,22 +911,29 @@
   }
 
   /*
-    (CAMBIO) Cada barra lateral (slider vertical) se adapta a la ALTURA REAL de SU SVG:
-    - vslider-shell.height = svg.height
-    - input.width (rotado) = svg.height - paddingY
+    BARRAS LATERALES: se adaptan a la ALTURA REAL del SVG asociado.
+    - shell.height = svg.height (en píxeles reales)
+    - input.width (rotado) = svg.height - (padding + border) del shell
   */
   function syncSidebarToSvg({ shell, input, svg }){
     if (!shell || !input || !svg) return;
 
     const svgRect = svg.getBoundingClientRect();
-    if (!isFinite(svgRect.height) || svgRect.height < 50) return;
+    if (!isFinite(svgRect.height) || svgRect.height < 30) return;
 
+    // Igualar altura visual (box-sizing: border-box ya está activo)
     shell.style.height = `${svgRect.height}px`;
 
     const cs = getComputedStyle(shell);
-    const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+    const padY =
+      (parseFloat(cs.paddingTop) || 0) +
+      (parseFloat(cs.paddingBottom) || 0);
 
-    const len = Math.max(120, svgRect.height - padY);
+    const borderY =
+      (parseFloat(cs.borderTopWidth) || 0) +
+      (parseFloat(cs.borderBottomWidth) || 0);
+
+    const len = Math.max(120, svgRect.height - padY - borderY);
     input.style.width = `${len}px`;
     input.style.height = `4px`;
 
@@ -938,6 +943,28 @@
   function syncAllSidebars(){
     syncSidebarToSvg({ shell: els.participationShell, input: els.participationSlider, svg: els.timeSvg });
     syncSidebarToSvg({ shell: els.peakShell, input: els.peakSlider, svg: els.pyrSvg });
+  }
+
+  /*
+    (MODIFICACIÓN CLAVE)
+    Observa cambios de tamaño REAL del SVG (por responsive/grid/font-load, etc.)
+    y sincroniza automáticamente las barras laterales, incluso si NO hay resize de window.
+  */
+  function setupSidebarObservers(){
+    if (!("ResizeObserver" in window)) return;
+
+    const ro = new ResizeObserver(() => {
+      // Mantener barras laterales pegadas a la altura del SVG
+      syncAllSidebars();
+
+      // Recalcular tamaño de iconos de trabajadores (para mantener 1 fila)
+      const cp = parseFloat(els.heroCP.textContent);
+      if (isFinite(cp)) renderWorkersIcons(cp);
+    });
+
+    // Observamos los SVG que definen la altura de cada barra lateral
+    ro.observe(els.timeSvg);
+    ro.observe(els.pyrSvg);
   }
 
   // ======================
@@ -1196,7 +1223,7 @@
     updateSystemPill(cur);
     renderCPChartSim(cur, data);
 
-    // (CAMBIO) ajustar la barra lateral a la altura REAL de esta gráfica
+    // Ajuste (por si el render cambió el layout)
     requestAnimationFrame(syncAllSidebars);
   }
 
@@ -1406,10 +1433,6 @@
     }
   }
 
-  /*
-    (CAMBIO) Siempre una fila.
-    Si hay “más trabajadores”, se reducen de tamaño para caber sin wrap.
-  */
   function renderWorkersIcons(cp){
     els.heroWorkersIcons.innerHTML = "";
 
@@ -1417,7 +1440,6 @@
 
     const N = Math.max(0, Math.round(cp));
 
-    // cap alto pero razonable: si llega a ser enorme, mostramos "+" para evitar iconos ilegibles
     const CAP = 30;
     const show = Math.min(N, CAP);
     const hasPlus = N > CAP;
@@ -1426,22 +1448,14 @@
 
     const avail = els.heroWorkersIcons.getBoundingClientRect().width || 0;
 
-    // Defaults
     const maxIcon = 30;
     const minIcon = 14;
-
-    // Ajuste de gap en función del tamaño (para exprimir espacio)
     const baseGap = 8;
 
-    // Reservas (plus)
-    const plusReserve = hasPlus ? (maxIcon + baseGap) : 0;
-
-    // Si no hay ancho (aún no layout), pinta con tamaño default y sal
     let iconSize = maxIcon;
     let gap = baseGap;
 
     if (avail > 50 && show > 0){
-      // probamos con gap base, y reducimos si hace falta
       const tryCompute = (g) => {
         const reserved = (show - 1) * g + (hasPlus ? (g + maxIcon) : 0);
         const s = Math.floor((avail - reserved) / show);
@@ -1462,18 +1476,13 @@
 
       iconSize = clamp(s, minIcon, maxIcon);
 
-      // si incluso con minIcon no cabe, reducimos cantidad visible y mantenemos "+"
-      // (esto solo pasa en pantallas muy estrechas)
       if (iconSize <= minIcon && avail < (show * minIcon + (show-1)*gap + (hasPlus ? (gap + minIcon) : 0))){
-        // recalcular show dinámico para que quepa
         let maxShow = Math.max(1, Math.floor((avail - (hasPlus ? (gap + minIcon) : 0) + gap) / (minIcon + gap)));
         maxShow = clamp(maxShow, 1, CAP);
-        // re-render con maxShow
         return renderWorkersIconsWithLayout(N, maxShow, hasPlus, minIcon, gap);
       }
     }
 
-    // Render normal con iconSize calculado
     for (let i=0;i<show;i++){
       const src = state.workerIconSeq[i] || randWorkerIcon();
       if (!src) break;
@@ -1497,7 +1506,6 @@
       els.heroWorkersIcons.appendChild(plus);
     }
 
-    // aplica gap final (sin tocar CSS global)
     els.heroWorkersIcons.style.gap = `${gap}px`;
   }
 
@@ -1630,7 +1638,6 @@
 
     els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
 
-    // (CAMBIO) ajustar la barra lateral a la altura REAL de esta gráfica
     requestAnimationFrame(syncAllSidebars);
   }
 
@@ -1806,11 +1813,10 @@
     renderTimeChart();
   });
 
-  // Resize: reajusta barras laterales (altura a svg) y re-render para layout estable
+  // Fallback: resize de ventana (sigue siendo útil), pero ya NO dependes solo de esto
   window.addEventListener('resize', () => {
     requestAnimationFrame(() => {
       syncAllSidebars();
-      // Recalcular tamaño de iconos de trabajadores para mantener 1 fila
       const cp = parseFloat(els.heroCP.textContent);
       if (isFinite(cp)) renderWorkersIcons(cp);
     });
@@ -1825,11 +1831,16 @@
   renderPyramid();
   renderTimeChart();
 
+  // Observadores para mantener altura exacta aunque cambie el layout sin "resize"
+  setupSidebarObservers();
+
   // Ajuste final cuando el layout ya está medido
-  requestAnimationFrame(() => {
-    syncAllSidebars();
-    const cp = parseFloat(els.heroCP.textContent);
-    if (isFinite(cp)) renderWorkersIcons(cp);
+  window.addEventListener('load', () => {
+    requestAnimationFrame(() => {
+      syncAllSidebars();
+      const cp = parseFloat(els.heroCP.textContent);
+      if (isFinite(cp)) renderWorkersIcons(cp);
+    });
   });
 
   requestAnimationFrame(rafLoop);
