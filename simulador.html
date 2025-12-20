@@ -7,7 +7,15 @@
   <style>
     :root{
       /* MACRO: escala global de tipografías (1 = original) */
-      --fontScale: 1;
+      --fontScale: 1.35;
+
+      /*
+        (NUEVO) Escalas SOLO para textos de ejes en SVG (ticks + labels de ejes).
+        En desktop quedan en 1 (sin efecto). En móvil se sobrescriben en @media.
+      */
+      --axisScaleTime: 2; /* Evolución en el tiempo */
+      --axisScaleCP:   2; /* C–P y equilibrio */
+      --axisScalePyr:  2; /* Pirámide */
 
       --bg:#252525;
       --primary:#FEF702;
@@ -29,9 +37,16 @@
       --shadow: 0 10px 30px rgba(0,0,0,.25);
     }
 
-    /* Mejora móvil: sube escala de fuentes sin tocar jerarquías */
+    /* Móvil: ajusta escala global y (NUEVO) escalas de ejes en SVG */
     @media (max-width: 640px){
-      :root{ --fontScale: 1.18; }
+      :root{
+        --fontScale: 1.18;
+
+        /* Ajusta a tu gusto: SOLO afecta a ticks y labels de ejes en las 3 gráficas SVG */
+        --axisScaleTime: 1.25;
+        --axisScaleCP:   1.25;
+        --axisScalePyr:  1.25;
+      }
     }
 
     *{box-sizing:border-box}
@@ -240,6 +255,16 @@
       gap:10px;
     }
     .val{ font-variant-numeric: tabular-nums; opacity:.95; }
+
+    /* (NUEVO) Espaciado de parámetros bajo "Evolución en el tiempo" como en "Pirámide" */
+    .sys-controls{
+      display:grid;
+      gap:12px; /* separación entre bloques (grid, resultado/botones, etc.) */
+    }
+    .sys-grid{
+      display:grid;
+      gap:12px; /* separación entre cada parámetro (ctl) */
+    }
 
     /* Mantener “relleno” amarillo en sliders horizontales */
     input[type="range"]{
@@ -683,7 +708,15 @@
     noncot: CSS('--noncot')
   };
 
-  const FONT_SCALE = parseFloat(CSS('--fontScale')) || 1;
+  // (CAMBIO) Escalas dinámicas (responden a @media). Evita “capturar” un valor fijo.
+  const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
+
+  const getAxisScale = (which) => {
+    if (which === 'time') return parseFloat(CSS('--axisScaleTime')) || 1;
+    if (which === 'cp')   return parseFloat(CSS('--axisScaleCP'))   || 1;
+    if (which === 'pyr')  return parseFloat(CSS('--axisScalePyr'))  || 1;
+    return 1;
+  };
 
   // Jubilado fijo (icono)
   const ICONS = {
@@ -816,7 +849,12 @@
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const toM = (x) => x / 1_000_000;
-  const fs = (px) => (px * FONT_SCALE).toFixed(2);
+
+  // Escala general (UI / textos generales)
+  const fs = (px) => (px * getFontScale()).toFixed(2);
+
+  // (NUEVO) Escala específica para textos de ejes por gráfica (ticks + labels de ejes)
+  const fsAxis = (px, which) => (px * getFontScale() * getAxisScale(which)).toFixed(2);
 
   function kEquilibrium(){
     const rho = Math.max(1e-6, state.rho);
@@ -992,7 +1030,7 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 10, y: yToPx(yv) + 4,
-        fill: COLORS.text, "font-size": fs(12), "font-family":"Arial, sans-serif",
+        fill: COLORS.text, "font-size": fsAxis(12,'time'), "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
       t.textContent = String(Math.round(yv));
@@ -1008,7 +1046,7 @@
       }));
       const t = svgEl('text',{
         x: xToPx(xv), y: pad.t + innerH + 26,
-        fill: COLORS.text, "font-size": fs(12), "font-family":"Arial, sans-serif",
+        fill: COLORS.text, "font-size": fsAxis(12,'time'), "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
       t.textContent = String(xv);
@@ -1026,13 +1064,13 @@
 
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: H - 24,
-      fill: COLORS.text, "font-size": fs(14), "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxis(14,'time'), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
     svg.appendChild(svgEl('text',{
       x: 20, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size": fs(14), "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxis(14,'time'), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 20 ${pad.t + innerH/2})`
     })).textContent = "Personas (millones)";
@@ -1202,7 +1240,7 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 10, y: yToPx(v) + 4,
-        fill: COLORS.text, "font-size": fs(12),
+        fill: COLORS.text, "font-size": fsAxis(12,'cp'),
         "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
@@ -1217,7 +1255,7 @@
       }));
       const t = svgEl('text',{
         x: xToPx(v), y: pad.t + innerH + 26,
-        fill: COLORS.text, "font-size": fs(12),
+        fill: COLORS.text, "font-size": fsAxis(12,'cp'),
         "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
@@ -1236,14 +1274,14 @@
 
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: H - 20,
-      fill: COLORS.text, "font-size": fs(14),
+      fill: COLORS.text, "font-size": fsAxis(14,'cp'),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
     svg.appendChild(svgEl('text',{
       x: 20, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size": fs(14),
+      fill: COLORS.text, "font-size": fsAxis(14,'cp'),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 20 ${pad.t + innerH/2})`
@@ -1412,10 +1450,11 @@
       "opacity":"0.95"
     })).textContent = "Distribución por edad (quinquenios)";
 
+    // (NUEVO) Estos textos se tratan como “descriptivos” dentro del eje/encuadre de la pirámide
     svg.appendChild(svgEl('text',{
       x: cx - 10, y: 50,
       fill: COLORS.workers,
-      "font-size": fs(13),
+      "font-size": fsAxis(13,'pyr'),
       "font-family":"Arial, sans-serif",
       "text-anchor":"end",
       "opacity":"0.92"
@@ -1424,7 +1463,7 @@
     svg.appendChild(svgEl('text',{
       x: cx + 10, y: 50,
       fill: COLORS.retired,
-      "font-size": fs(13),
+      "font-size": fsAxis(13,'pyr'),
       "font-family":"Arial, sans-serif",
       "text-anchor":"start",
       "opacity":"0.92"
@@ -1454,10 +1493,11 @@
         fill: COLORS.retired, "fill-opacity":"0.80"
       }));
 
+      // (NUEVO) Labels de “eje” (edades) escalables en móvil
       const t = svgEl('text',{
         x: 12, y: y + h*0.72,
         fill: COLORS.text,
-        "font-size": fs(12),
+        "font-size": fsAxis(12,'pyr'),
         "font-family":"Arial, sans-serif",
         "opacity":"0.90"
       });

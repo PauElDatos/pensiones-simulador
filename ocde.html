@@ -9,6 +9,12 @@
     :root{
       --uiScale: 1.35;
 
+      /* MODIFICACIÓN: escala SOLO para las fuentes de la gráfica C–P */
+      --cpFontScale: 1.00;
+
+      /* MODIFICACIÓN: distancia (offset) del label X “Cotizantes (millones)” respecto al eje X */
+      --cpXLabelOffset: 38;
+
       --bg:#252525;
       --primary:#FEF702;
       --text:#B0B0B0;
@@ -313,7 +319,7 @@
 
       /* MODIFICACIÓN (para que no se “corte” el final del BLOQUE PAÍS): */
       flex: 1 1 auto;
-      padding-bottom: 18px;
+      padding-bottom: 56px;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -418,6 +424,12 @@
     }
     .badge.warn .dot2{ background:var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.14); }
     .badge.ok .dot2{ background:var(--primary); }
+
+    /* MODIFICACIÓN: fondo amarillo para los mensajes “Por debajo/Por encima…” (badge bajo la pirámide) */
+    #resultBadge{
+      background: var(--primary);
+      color: #111;
+    }
 
     .hr{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
 
@@ -610,6 +622,12 @@
   };
 
   const UI_SCALE = Number(getComputedStyle(document.documentElement).getPropertyValue('--uiScale')) || 1;
+
+  /* MODIFICACIÓN: control independiente de tamaño de fuente en la gráfica C–P */
+  const CP_FONT_SCALE = Number(getComputedStyle(document.documentElement).getPropertyValue('--cpFontScale')) || 1;
+
+  /* MODIFICACIÓN: control independiente de la distancia del label X al eje */
+  const CP_X_LABEL_OFFSET = Number(getComputedStyle(document.documentElement).getPropertyValue('--cpXLabelOffset')) || 38;
 
   const NAME_TO_ISO3 = {
     "Alemania":"DEU","Australia":"AUS","Austria":"AUT","Bélgica":"BEL","Canadá":"CAN","Chile":"CHL","Colombia":"COL",
@@ -1072,17 +1090,19 @@
     const pxW = svg.clientWidth || 900;
     const pxH = svg.clientHeight || 560;
 
-    const xTicks = thinTicksForWidth(xTicksAll, pxW * 0.78, 46 * UI_SCALE);
-    const yTicks = thinTicksForWidth(yTicksAll, pxH * 0.65, 34 * UI_SCALE);
+    /* MODIFICACIÓN: el thinning considera también el escalado de fuente de la gráfica */
+    const xTicks = thinTicksForWidth(xTicksAll, pxW * 0.78, 46 * UI_SCALE * CP_FONT_SCALE);
+    const yTicks = thinTicksForWidth(yTicksAll, pxH * 0.65, 34 * UI_SCALE * CP_FONT_SCALE);
 
     const xMin=0, yMin=0;
 
     const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
     const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
 
-    const fTick  = 12 * UI_SCALE;
-    const fAxis  = 14 * UI_SCALE;
-    const fPoint = 14 * UI_SCALE;
+    /* MODIFICACIÓN: fuentes de la gráfica C–P controladas por --cpFontScale */
+    const fTick  = 12 * UI_SCALE * CP_FONT_SCALE;
+    const fAxis  = 14 * UI_SCALE * CP_FONT_SCALE;
+    const fPoint = 14 * UI_SCALE * CP_FONT_SCALE;
 
     yTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
@@ -1128,10 +1148,10 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    /* MODIFICACIÓN: etiqueta X más cerca del eje X */
+    /* MODIFICACIÓN: etiqueta X controlada por --cpXLabelOffset */
     const xLabelY = Math.min(
       H - Math.round(16 * UI_SCALE),
-      (pad.t + innerH + Math.round(38 * UI_SCALE))
+      (pad.t + innerH + Math.round(CP_X_LABEL_OFFSET * UI_SCALE))
     );
     const xl = svgEl('text',{
       x: pad.l + innerW/2, y: xLabelY,
