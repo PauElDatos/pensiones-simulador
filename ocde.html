@@ -255,6 +255,7 @@
       height:100%;
       min-height:0;
       padding:12px;
+      align-items:stretch;
     }
     @media (max-width: 1300px){
       .viz{ grid-template-columns: minmax(0, 1fr) 300px; }
@@ -268,7 +269,6 @@
       flex-direction:column;
       gap:10px;
       min-height:0;
-      height:100%;
     }
 
     .chart-legend{
@@ -285,14 +285,12 @@
     .swatch.retired{ background:var(--retired); }
     .swatch.primary{ background:var(--primary); }
 
-    /* MODIFICACIÓN CLAVE (sin deformar nada dentro):
-       - antes: height:auto => podía “pasarse” del alto disponible y el panel lo recortaba
-       - ahora: height:100% => el SVG usa el alto real del hueco disponible y NO se corta */
     .bigsvg{
       width:100%;
       height:100%;
       flex:1 1 auto;
       min-height:260px;
+      height:auto;
       border-radius:12px;
       border:1px solid rgba(255,255,255,.05);
       background:rgba(0,0,0,.08);
@@ -312,6 +310,11 @@
       display:flex;
       flex-direction:column;
       gap:10px;
+
+      /* MODIFICACIÓN (para que no se “corte” el final del BLOQUE PAÍS): */
+      flex: 1 1 auto;
+      padding-bottom: 18px;
+      -webkit-overflow-scrolling: touch;
     }
 
     .pyrwrap{
@@ -354,6 +357,7 @@
       line-height:1.35;
     }
 
+    /* Bloques con título “dentro”, estilo similar a Pirámide */
     .blkwrap{
       border:1px solid rgba(255,255,255,.08);
       border-radius:12px;
@@ -377,7 +381,7 @@
       text-transform:uppercase;
       color:var(--primary);
       font-size: calc(12px * var(--uiScale));
-      white-space:normal;
+      white-space:normal;              /* clave: no recortar */
       line-height:1.15;
       overflow-wrap:anywhere;
     }
@@ -447,6 +451,7 @@
 <body>
 <header>
   <div class="h-title">
+    <!-- MODIFICACIÓN: mantener solo “Sostenibilidad — países OCDE” -->
     <h1>Sostenibilidad — países OCDE</h1>
   </div>
   <div class="h-meta">
@@ -512,8 +517,9 @@
           <div class="legend-item mono" id="kReadout">k: —</div>
         </div>
 
-        <!-- VUELVE al enfoque “correcto”: no deformar el contenido interno -->
         <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
+
+        <!-- MODIFICACIÓN: se elimina el texto de interpretación bajo la gráfica -->
       </div>
 
       <!-- EXPLANATION -->
@@ -927,6 +933,7 @@
 
     const totalPop = vals.reduce((a,b)=>a+b,0);
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
+
     els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F`;
   }
 
@@ -1017,7 +1024,6 @@
     return ticks;
   }
 
-  /* Evita que se amontonen las etiquetas en móvil */
   function thinTicksForWidth(ticks, innerPx, minPxPerLabel){
     if (!Array.isArray(ticks) || ticks.length <= 2) return ticks;
     const maxLabels = Math.max(2, Math.floor(innerPx / minPxPerLabel) + 1);
@@ -1032,7 +1038,6 @@
     clearSvg(svg);
 
     const W = 1000, H = 700;
-
     const pad = {
       l: Math.round(90 * UI_SCALE),
       r: Math.round(30 * UI_SCALE),
@@ -1064,7 +1069,6 @@
     const yStep = yStepFromYMax(yMax);
     const yTicksAll = buildTicks(yMax, yStep);
 
-    /* Thin ticks según ancho/alto real (en px) del SVG en pantalla */
     const pxW = svg.clientWidth || 900;
     const pxH = svg.clientHeight || 560;
 
@@ -1124,9 +1128,13 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
+    /* MODIFICACIÓN: etiqueta X más cerca del eje X */
+    const xLabelY = Math.min(
+      H - Math.round(16 * UI_SCALE),
+      (pad.t + innerH + Math.round(38 * UI_SCALE))
+    );
     const xl = svgEl('text',{
-      x: pad.l + innerW/2,
-      y: H - Math.round(20 * UI_SCALE),
+      x: pad.l + innerW/2, y: xLabelY,
       fill: COLORS.text,
       "font-size": String(fAxis),
       "font-family":"Arial, sans-serif",
@@ -1135,8 +1143,11 @@
     xl.textContent = "Cotizantes (millones)";
     svg.appendChild(xl);
 
-    /* Acerca el texto “Pensionistas” al eje Y (evita que quede “lejísimos” en móvil) */
-    const yLabelX = Math.max(18, pad.l - Math.round(48 * UI_SCALE));
+    /* MODIFICACIÓN: etiqueta Y más cerca del eje Y */
+    const yLabelX = Math.max(
+      Math.round(18 * UI_SCALE),
+      (pad.l - Math.round(34 * UI_SCALE))
+    );
     const yLabelY = pad.t + innerH/2;
     const yl = svgEl('text',{
       x: yLabelX, y: yLabelY,
@@ -1187,13 +1198,11 @@
       "stroke-dasharray":"6 6"
     }));
 
-    /* Círculo vuelve a ser círculo (no ovalado) porque NO deformamos el SVG */
     svg.appendChild(svgEl('circle',{
       cx: xToPx(C), cy: yToPx(P), r: 7.5,
       fill: COLORS.retired, "fill-opacity":"0.95"
     }));
 
-    /* Etiqueta país: si está cerca del borde derecho, la colocamos a la izquierda para que no se corte */
     const pxX = xToPx(C);
     const nearRight = (pxX > (pad.l + innerW - 140));
     const labelX = nearRight ? (pxX - 10) : (pxX + 10);
@@ -1346,10 +1355,7 @@
       renderCountrySelect();
       if (defaultCountry && els.countrySelect) els.countrySelect.value = defaultCountry;
 
-      /* render tras layout */
       requestAnimationFrame(() => renderCPChart());
-
-      /* al redimensionar: recalculamos thinning de ticks y reposición de etiquetas */
       window.addEventListener("resize", debounce(renderCPChart, 120), { passive: true });
     }catch(err){
       els.loadText.textContent = "Error cargando datasets";

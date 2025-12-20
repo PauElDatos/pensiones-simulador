@@ -1,4 +1,3 @@
-```html
 <!doctype html>
 <html lang="es">
 <head>
@@ -7,6 +6,9 @@
   <title>Pensiones — Simulador</title>
   <style>
     :root{
+      /* MACRO: escala global de tipografías (1 = original) */
+      --fontScale: 1;
+
       --bg:#252525;
       --primary:#FEF702;
       --text:#B0B0B0;
@@ -15,7 +17,7 @@
       --workers:#36C3FF;     /* cotizantes */
       --retired:#FF6A00;     /* jubilados */
       --minors:#7f7f7f;      /* <18 */
-      --noncot:#1f6d86;      /* edad laboral no cotizante */
+      --noncot:#1f6d86;      /* desempleados */
 
       --panel:#2b2b2b;
       --stroke:#3a3a3a;
@@ -25,6 +27,11 @@
 
       --radius:14px;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+
+    /* Mejora móvil: sube escala de fuentes sin tocar jerarquías */
+    @media (max-width: 640px){
+      :root{ --fontScale: 1.18; }
     }
 
     *{box-sizing:border-box}
@@ -42,13 +49,11 @@
       margin:0;
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size:22px;
+      font-size: calc(22px * var(--fontScale));
       letter-spacing:.3px;
     }
-    /* CAMBIO: quitamos el texto explicativo del header */
-    .h-title p{ display:none; }
-
-    .h-meta{ font-size:12px; opacity:.85; text-align:right; }
+    .h-title p{ margin:6px 0 0 0; font-size: calc(13px * var(--fontScale)); opacity:.9; max-width:110ch; }
+    .h-meta{ font-size: calc(12px * var(--fontScale)); opacity:.85; text-align:right; }
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       padding:8px 10px;
@@ -99,11 +104,11 @@
     .ttl{
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size:13px;
+      font-size: calc(13px * var(--fontScale));
       letter-spacing:.35px;
       text-transform:uppercase;
     }
-    .sub{ font-size:12px; opacity:.85; text-align:right; max-width:62ch; }
+    .sub{ font-size: calc(12px * var(--fontScale)); opacity:.85; text-align:right; max-width:62ch; }
 
     /* LEFT */
     .chart-area{
@@ -139,12 +144,12 @@
     .chart-card .ch .cttl{
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size:12px;
+      font-size: calc(12px * var(--fontScale));
       letter-spacing:.35px;
       text-transform:uppercase;
     }
     .chart-card .ch .csub{
-      font-size:12px;
+      font-size: calc(12px * var(--fontScale));
       opacity:.85;
       text-align:right;
       font-variant-numeric: tabular-nums;
@@ -164,9 +169,6 @@
       border:1px solid rgba(255,255,255,.05);
       background:rgba(0,0,0,.08);
       display:block;
-      /* para el scrubbing con puntero */
-      touch-action: none;
-      user-select: none;
     }
 
     /* chart 1: slider + svg */
@@ -193,8 +195,14 @@
       accent-color: var(--primary);
     }
 
+    /* Móvil: el slider vertical del chart 1 se adapta a la altura de la gráfica */
+    @media (max-width: 640px){
+      .sim-wrap .vslider-shell{ height: 100%; }
+      .sim-wrap .vslider-shell input[type="range"]{ height: 100%; }
+    }
+
     .caption{
-      font-size:12px;
+      font-size: calc(12px * var(--fontScale));
       opacity:.82;
       line-height:1.35;
       border-top:1px solid rgba(255,255,255,.06);
@@ -224,7 +232,7 @@
 
     .ctl{ display:grid; gap:6px; }
     .ctl label{
-      font-size:13px;
+      font-size: calc(13px * var(--fontScale));
       opacity:.92;
       display:flex;
       align-items:center;
@@ -232,29 +240,50 @@
       gap:10px;
     }
     .val{ font-variant-numeric: tabular-nums; opacity:.95; }
-    input[type="range"]{ width:100%; accent-color: var(--primary); }
-    .divider{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
-    .note{ font-size:11px; opacity:.75; line-height:1.35; }
-    .mono{ font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1, "ss01" 1; }
 
-    /* controles del sistema */
-    .sys-controls{
-      display:grid;
-      gap:10px;
-      padding:10px;
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:12px;
-      background:rgba(0,0,0,.08);
+    /* Mantener “relleno” amarillo en sliders horizontales */
+    input[type="range"]{
+      width:100%;
+      accent-color: var(--primary);
+      background: rgba(255,255,255,.12);
+      border-radius:999px;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
     }
-    .sys-grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
+    input[type="range"]::-webkit-slider-runnable-track{
+      height: 4px;
+      background: transparent;
+      border-radius:999px;
     }
-    @media (max-width: 900px){
-      .sys-grid{ grid-template-columns:1fr; }
+    input[type="range"]::-webkit-slider-thumb{
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 1px solid rgba(0,0,0,.35);
+      margin-top: -5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.35);
     }
-    .ctl small{ opacity:.75; }
+    input[type="range"]::-moz-range-track{
+      height:4px;
+      background: transparent;
+      border-radius:999px;
+    }
+    input[type="range"]::-moz-range-thumb{
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 1px solid rgba(0,0,0,.35);
+      box-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+
+    .divider{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
+    .note{ font-size: calc(11px * var(--fontScale)); opacity:.75; line-height:1.35; }
+    .mono{ font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1, "ss01" 1; }
 
     /* resultado (chart 1) */
     .result-pill{
@@ -265,7 +294,7 @@
       border-radius:999px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.03);
-      font-size:12px;
+      font-size: calc(12px * var(--fontScale));
       opacity:.95;
     }
     .result-dot{
@@ -285,7 +314,7 @@
       border-radius:999px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.03);
-      font-size:12px;
+      font-size: calc(12px * var(--fontScale));
       opacity:.95;
       white-space:nowrap;
     }
@@ -326,12 +355,12 @@
       min-width:240px;
     }
     .cp-ratio-hero .label{
-      font-size:12px;
+      font-size: calc(12px * var(--fontScale));
       opacity:.85;
       margin-bottom:4px;
     }
     .cp-ratio-hero .big{
-      font-size:22px;
+      font-size: calc(22px * var(--fontScale));
       color:#fff;
       font-family:var(--fontTitle);
       letter-spacing:.3px;
@@ -340,10 +369,9 @@
     .cp-ratio-hero .right{
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:10px;
       flex-wrap:wrap;
       justify-content:flex-end;
-      max-width:420px;
     }
 
     .hero-icon{
@@ -366,7 +394,7 @@
       align-items:center;
       justify-content:center;
       color:#fff;
-      font-size:18px;
+      font-size: calc(18px * var(--fontScale));
       opacity:.9;
       border:1px solid rgba(255,255,255,.10);
       border-radius:10px;
@@ -382,38 +410,10 @@
       border:1px solid rgba(255,255,255,.06);
       border-radius:12px;
       background:rgba(0,0,0,.08);
-      font-size:12px;
+      font-size: calc(12px * var(--fontScale));
     }
     .cp-kv .k{ opacity:.85; }
     .cp-kv .v{ color:#fff; font-variant-numeric: tabular-nums; }
-
-    /* Leyenda gráfico Evolución en el tiempo */
-    .legend-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:14px;
-      align-items:center;
-      font-size:12px;
-      opacity:.9;
-      padding:0 2px;
-    }
-    .legend-item{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      white-space:nowrap;
-    }
-    .legend-swatch{
-      width:14px;
-      height:14px;
-      border-radius:4px;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.15);
-    }
-    .legend-line{
-      width:18px;
-      height:0;
-      border-top:3px solid #fff;
-    }
   </style>
 </head>
 
@@ -421,11 +421,7 @@
 <header>
   <div class="h-title">
     <h1>Simulador</h1>
-    <p>
-      (1) Evolución temporal con pirámide sintética: menores (&lt;18), edad laboral (18–64) y jubilados (65+).
-      El slider vertical controla la participación (qué parte de 18–64 intenta cotizar) y el paro reduce cotizantes efectivos.
-      (2) C–P y equilibrio: línea P=k·C (k=τ/ρ) y punto moviéndose con la animación y la pirámide.
-    </p>
+    <p></p>
   </div>
   <div class="h-meta">
     <div class="pill"><span class="dot"></span><span><a class="back" href="index.html">Volver</a></span></div>
@@ -445,7 +441,7 @@
       <div class="charts-row">
 
         <!-- Chart 1 -->
-        <div class="chart-card" aria-label="Evolución temporal">
+        <div class="chart-card" aria-label="Evolución temporal (cotizantes vs jubilados)">
           <div class="ch">
             <div class="cttl">Evolución en el tiempo</div>
             <div class="csub mono" id="tReadout">t: 0</div>
@@ -457,30 +453,6 @@
                 <input id="participationSlider" type="range" min="30" max="98" step="1" value="78" />
               </div>
               <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
-            </div>
-
-            <!-- CAMBIO: leyenda restaurada -->
-            <div class="legend-row" aria-label="Leyenda del gráfico">
-              <div class="legend-item">
-                <span class="legend-swatch" style="background:var(--minors)"></span>
-                <span>Menores (&lt;18)</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-swatch" style="background:var(--workers)"></span>
-                <span>Cotizantes efectivos</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-swatch" style="background:var(--noncot)"></span>
-                <span>Edad laboral no cotizante</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-swatch" style="background:var(--retired)"></span>
-                <span>Jubilados (65+)</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-line"></span>
-                <span>Población total</span>
-              </div>
             </div>
 
             <div class="sys-controls" aria-label="Parámetros del sistema">
@@ -507,7 +479,7 @@
                     <span class="val mono" id="uVal">10%</span>
                   </label>
                   <input id="uSlider" type="range" min="0" max="35" step="1" value="10" />
-                  <!-- CAMBIO: quitamos el texto "Reduce cotizantes..." -->
+                  <small></small>
                 </div>
 
                 <div class="ctl">
@@ -533,8 +505,6 @@
                   </label>
                   <input id="yearsSlider" type="range" min="20" max="140" step="5" value="80" />
                 </div>
-
-                <!-- CAMBIO: quitamos el control de velocidad (siempre 1.0) -->
               </div>
 
               <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
@@ -558,7 +528,8 @@
             </div>
 
             <div class="caption">
-              Puedes arrastrar la línea vertical amarilla (o hacer click sobre la gráfica) para inspeccionar valores cuando la simulación está en pausa.
+              Áreas apiladas: menores (&lt;18, gris), cotizantes efectivos (azul), <span class="mono">Desempleados</span> (azul oscuro) y jubilados (naranja).
+              El slider vertical controla participación y el paro (u) resta cotizantes dentro de 18–64.
             </div>
           </div>
         </div>
@@ -596,7 +567,7 @@
                 </div>
 
                 <div class="right" aria-label="Trabajadores que sostienen a 1 jubilado" id="heroWorkersIcons">
-                  <!-- JS: iconos estables (no cambian con los años; solo aparecen/desaparecen) -->
+                  <!-- JS -->
                 </div>
               </div>
 
@@ -606,6 +577,9 @@
 
                 <div class="k">Pensionistas (P)</div>
                 <div class="v mono" id="PVal">—</div>
+
+                <div class="k">Paro (u)</div>
+                <div class="v mono" id="uVal2">—</div>
 
                 <div class="k">Ratio P/C</div>
                 <div class="v mono" id="PCRatio">—</div>
@@ -661,7 +635,6 @@
         <input id="sigmaSlider" type="range" min="6" max="40" step="1" value="18" />
       </div>
 
-      <!-- Dos densidades -->
       <div class="ctl">
         <label>
           <span>Densidad jóvenes (parte inferior)</span>
@@ -690,6 +663,7 @@
 
       <div class="note">
         La pirámide define shares iniciales: menores (&lt;18), edad laboral (18–64) y jubilados (65+).
+        Con densidad jóvenes y densidad mayores controlas de forma independiente la “forma” del bulto inferior y superior.
       </div>
     </div>
   </section>
@@ -708,6 +682,8 @@
     minors: CSS('--minors'),
     noncot: CSS('--noncot')
   };
+
+  const FONT_SCALE = parseFloat(CSS('--fontScale')) || 1;
 
   // Jubilado fijo (icono)
   const ICONS = {
@@ -751,11 +727,8 @@
     tau: 0.29,
     u: 0.10,        // paro (fracción)
     popGrowth: 0.003,
-    agingPP: 0.002, // fracción anual (0.002 = +0.2pp)
+    agingPP: 0.002, // fracción anual
     years: 80,
-
-    // velocidad fija (x1.0)
-    speed: 1.00,
 
     // slider vertical: participación 18–64 que intenta cotizar
     participation: 0.78,
@@ -764,6 +737,9 @@
     t: 0,
     playing: false,
     lastTs: 0,
+
+    // iconos “fijos” (no cambian con los años, solo aparecen/desaparecen)
+    workerIconSeq: [],
   };
 
   const els = {
@@ -820,6 +796,7 @@
     heroWorkersIcons: document.getElementById('heroWorkersIcons'),
     CVal: document.getElementById('CVal'),
     PVal: document.getElementById('PVal'),
+    uVal2: document.getElementById('uVal2'),
     PCRatio: document.getElementById('PCRatio'),
     CPRatio2: document.getElementById('CPRatio2'),
     tauVal2: document.getElementById('tauVal2'),
@@ -839,27 +816,33 @@
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const toM = (x) => x / 1_000_000;
+  const fs = (px) => (px * FONT_SCALE).toFixed(2);
 
   function kEquilibrium(){
     const rho = Math.max(1e-6, state.rho);
     return state.tau / rho;
   }
 
-  // ======================
-  // Iconos trabajadores (ESTABLES)
-  // - Se eligen una vez al inicio (aleatorio)
-  // - No cambian con los años; solo cambia cuántos se muestran
-  // ======================
-  const WORKER_SEQUENCE_CAP = 40;        // reserva de iconos
-  const WORKER_SHOW_CAP = 18;            // límite visual en UI
-  const workerIconSequence = (() => {
-    const seq = [];
-    for (let i=0;i<WORKER_SEQUENCE_CAP;i++){
-      const j = Math.floor(Math.random() * WORKER_POOL.length);
-      seq.push(WORKER_POOL[j]);
-    }
-    return seq;
-  })();
+  function randWorkerIcon(){
+    if (!WORKER_POOL.length) return null;
+    const i = Math.floor(Math.random() * WORKER_POOL.length);
+    return WORKER_POOL[i];
+  }
+
+  // Slider “relleno” amarillo (horizontal)
+  function paintRange(input){
+    if (!input) return;
+    // no tocar sliders verticales
+    const isVertical = input.id === 'participationSlider' || input.id === 'peakSlider';
+    if (isVertical) return;
+
+    const min = Number(input.min || 0);
+    const max = Number(input.max || 100);
+    const val = Number(input.value || 0);
+    const pct = ((val - min) / Math.max(1e-9, (max - min))) * 100;
+
+    input.style.background = `linear-gradient(to right, ${CSS('--primary')} 0%, ${CSS('--primary')} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
+  }
 
   // ======================
   // Pirámide sintética -> shares por edad
@@ -870,7 +853,6 @@
   }
 
   function densityPower(d){
-    // density [0.35..1.25] -> p ~ [0.65..2.20]
     return 0.65 + (d - 0.35) * (2.20 - 0.65) / (1.25 - 0.35);
   }
 
@@ -894,7 +876,6 @@
         v += 0.10 * Math.exp(-t / Math.max(1.5, sigmaModel*1.2));
       }
 
-      // densidad distinta para jóvenes vs mayores
       const p = (i <= peak) ? pYoung : pOld;
       v = Math.pow(Math.max(0, v), p);
 
@@ -911,15 +892,12 @@
   function sharesFromPyramid(){
     const shares = buildSyntheticTotalShares();
 
-    // <18: bins 0-4,5-9,10-14 completos + 3/5 del 15-19
     const minors =
       (shares[0]||0) + (shares[1]||0) + (shares[2]||0) + 0.60*(shares[3]||0);
 
-    // 18-64: 2/5 del 15-19 + 20-24..60-64
     let work = 0.40*(shares[3]||0);
     for (let i=4;i<=12;i++) work += (shares[i]||0);
 
-    // 65+: 65-69..100+
     let retired = 0;
     for (let i=13;i<shares.length;i++) retired += (shares[i]||0);
 
@@ -965,7 +943,6 @@
       total = total * (1 + state.popGrowth);
 
       const dR = state.agingPP;
-
       let takeFromWork = Math.min(sWork, dR);
       sWork -= takeFromWork;
       let rem = dR - takeFromWork;
@@ -985,73 +962,16 @@
   }
 
   // ======================
-  // Scrubbing: mover t con el ratón sobre el SVG cuando está en pausa
-  // ======================
-  const timeChartGeom = {
-    pad: {l: 90, r: 30, t: 24, b: 88},
-    innerW: 1000 - 90 - 30,
-    innerH: 700 - 24 - 88
-  };
-  let scrubbing = false;
-
-  function clientToSvgX(svg, clientX){
-    const rect = svg.getBoundingClientRect();
-    const xNorm = (clientX - rect.left) / rect.width;          // 0..1
-    const xSvg = xNorm * 1000;                                  // viewBox width
-    return xSvg;
-  }
-
-  function svgXToT(xSvg){
-    const T = state.years;
-    const {pad, innerW} = timeChartGeom;
-    const t = ((xSvg - pad.l) / innerW) * T;
-    return clamp(Math.round(t), 0, T);
-  }
-
-  function setTFromPointer(clientX){
-    const xSvg = clientToSvgX(els.timeSvg, clientX);
-    const tNew = svgXToT(xSvg);
-    state.t = tNew;
-    renderTimeChart();
-  }
-
-  function enableScrubHandlers(){
-    const svg = els.timeSvg;
-
-    svg.addEventListener('pointerdown', (e) => {
-      if (state.playing) return;
-      scrubbing = true;
-      svg.setPointerCapture(e.pointerId);
-      setTFromPointer(e.clientX);
-    });
-
-    svg.addEventListener('pointermove', (e) => {
-      if (!scrubbing) return;
-      if (state.playing) return;
-      setTFromPointer(e.clientX);
-    });
-
-    svg.addEventListener('pointerup', (e) => {
-      if (!scrubbing) return;
-      scrubbing = false;
-      try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
-    });
-
-    svg.addEventListener('pointercancel', () => { scrubbing = false; });
-    svg.addEventListener('mouseleave', () => { scrubbing = false; });
-  }
-
-  // ======================
-  // Render Chart 1
+  // Chart 1
   // ======================
   function renderTimeChart(){
     const svg = els.timeSvg;
     clearSvg(svg);
 
     const W = 1000, H = 700;
-    const pad = timeChartGeom.pad;
-    const innerW = timeChartGeom.innerW;
-    const innerH = timeChartGeom.innerH;
+    const pad = {l: 90, r: 30, t: 24, b: 88};
+    const innerW = W - pad.l - pad.r;
+    const innerH = H - pad.t - pad.b;
 
     const data = buildSeries();
     const T = state.years;
@@ -1062,7 +982,6 @@
     const xToPx = (x) => pad.l + (x / T) * innerW;
     const yToPx = (yM) => pad.t + innerH - (yM / yNice) * innerH;
 
-    // grid Y
     const yTicks = 6;
     for (let i=0;i<=yTicks;i++){
       const yv = (yNice * i / yTicks);
@@ -1073,14 +992,13 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 10, y: yToPx(yv) + 4,
-        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
+        fill: COLORS.text, "font-size": fs(12), "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
       t.textContent = String(Math.round(yv));
       svg.appendChild(t);
     }
 
-    // grid X
     const xTicks = 5;
     for (let i=0;i<=xTicks;i++){
       const xv = Math.round(T * i / xTicks);
@@ -1090,14 +1008,13 @@
       }));
       const t = svgEl('text',{
         x: xToPx(xv), y: pad.t + innerH + 26,
-        fill: COLORS.text, "font-size":"12", "font-family":"Arial, sans-serif",
+        fill: COLORS.text, "font-size": fs(12), "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
       t.textContent = String(xv);
       svg.appendChild(t);
     }
 
-    // ejes
     svg.appendChild(svgEl('line',{
       x1: pad.l, y1: pad.t+innerH, x2: pad.l+innerW, y2: pad.t+innerH,
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
@@ -1107,21 +1024,19 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    // labels
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: H - 24,
-      fill: COLORS.text, "font-size":"14", "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fs(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
     svg.appendChild(svgEl('text',{
       x: 20, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size":"14", "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fs(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 20 ${pad.t + innerH/2})`
     })).textContent = "Personas (millones)";
 
-    // stacks
     const minorsTop = [];
     const cotTop = [];
     const noncotTop = [];
@@ -1175,7 +1090,6 @@
       stroke: "none"
     }));
 
-    // total line
     svg.appendChild(svgEl('path', {
       d: "M " + totalTop.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L "),
       fill: "none",
@@ -1184,7 +1098,6 @@
       "stroke-opacity":"0.95"
     }));
 
-    // marcador temporal (línea amarilla discontinua)
     const tNow = Math.round(state.t);
     const cur = data[Math.min(data.length-1, tNow)];
     const xNow = xToPx(cur.t);
@@ -1202,7 +1115,6 @@
       fill: COLORS.primary, "fill-opacity":"0.95"
     }));
 
-    // HUD
     els.tReadout.textContent = `t: ${cur.t}`;
     els.simMeta.textContent = `Año: ${cur.t} | Población: ${toM(cur.total).toFixed(1)} M`;
 
@@ -1282,7 +1194,6 @@
     const xToPx = (x) => pad.l + (x / xMax) * innerW;
     const yToPx = (y) => pad.t + innerH - (y / yMax) * innerH;
 
-    // grid Y
     yTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
         x1: pad.l, y1: yToPx(v), x2: pad.l+innerW, y2: yToPx(v),
@@ -1291,7 +1202,7 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 10, y: yToPx(v) + 4,
-        fill: COLORS.text, "font-size":"12",
+        fill: COLORS.text, "font-size": fs(12),
         "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
@@ -1299,7 +1210,6 @@
       svg.appendChild(t);
     });
 
-    // grid X
     xTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
         x1: xToPx(v), y1: pad.t, x2: xToPx(v), y2: pad.t+innerH,
@@ -1307,7 +1217,7 @@
       }));
       const t = svgEl('text',{
         x: xToPx(v), y: pad.t + innerH + 26,
-        fill: COLORS.text, "font-size":"12",
+        fill: COLORS.text, "font-size": fs(12),
         "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
@@ -1315,7 +1225,6 @@
       svg.appendChild(t);
     });
 
-    // ejes
     svg.appendChild(svgEl('line',{
       x1: pad.l, y1: pad.t+innerH, x2: pad.l+innerW, y2: pad.t+innerH,
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
@@ -1325,23 +1234,21 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    // labels
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: H - 20,
-      fill: COLORS.text, "font-size":"14",
+      fill: COLORS.text, "font-size": fs(14),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
     svg.appendChild(svgEl('text',{
       x: 20, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size":"14",
+      fill: COLORS.text, "font-size": fs(14),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 20 ${pad.t + innerH/2})`
     })).textContent = "Pensionistas (millones)";
 
-    // línea equilibrio
     if (isFinite(k) && k > 0){
       const xAtTop = yMax / k;
       let xEnd, yEnd;
@@ -1355,7 +1262,7 @@
       }));
     }
 
-    // CAMBIO: guías discontinuas azules (repuestas)
+    // guías discontinuas azules
     svg.appendChild(svgEl('line',{
       x1: xToPx(0), y1: yToPx(P),
       x2: xToPx(C), y2: yToPx(P),
@@ -1369,7 +1276,6 @@
       "stroke-dasharray":"6 6"
     }));
 
-    // punto
     const sustainable = (cur.retired <= k * cur.cot + 1e-9);
 
     svg.appendChild(svgEl('circle',{
@@ -1383,23 +1289,23 @@
     }));
     svg.appendChild(svgEl('text',{
       x: xToPx(C) + 10, y: yToPx(P) - 10,
-      fill: COLORS.retired, "font-size":"14",
+      fill: COLORS.retired, "font-size": fs(14),
       "font-family":"Arial, sans-serif", "opacity":"0.95"
     })).textContent = `t=${cur.t}`;
 
-    // HUD header
     els.cpReadoutSim.textContent = `C: ${C.toFixed(2)} M | P: ${P.toFixed(2)} M`;
     els.kReadoutSim.textContent = `k: ${k.toFixed(2)}`;
     els.cpStatusDot.classList.toggle("bad", !sustainable);
     els.cpStatusText.textContent = sustainable ? "SOSTENIBLE" : "NO SOSTENIBLE";
 
-    // Métricas
     const PC = (C > 0) ? (P / C) : NaN;
     const CP = (P > 0) ? (C / P) : NaN;
     const PStar = k * C;
 
     els.CVal.textContent = `${C.toFixed(2)} M`;
     els.PVal.textContent = `${P.toFixed(2)} M`;
+    els.uVal2.textContent = `${Math.round(state.u * 100)}%`;
+
     els.PCRatio.textContent = isFinite(PC) ? PC.toFixed(2) : "—";
     els.CPRatio2.textContent = isFinite(CP) ? CP.toFixed(2) : "—";
 
@@ -1409,19 +1315,34 @@
     els.PStar2.textContent = `${PStar.toFixed(2)} M`;
 
     els.heroCP.textContent = isFinite(CP) ? CP.toFixed(2) : "—";
-    renderWorkersIconsStable(isFinite(CP) ? CP : NaN);
+    renderWorkersIcons(isFinite(CP) ? CP : NaN);
   }
 
-  function renderWorkersIconsStable(cp){
+  function ensureWorkerSeq(cap){
+    const target = Math.max(0, cap|0);
+    while (state.workerIconSeq.length < target){
+      const src = randWorkerIcon();
+      if (!src) break;
+      state.workerIconSeq.push(src);
+    }
+  }
+
+  function renderWorkersIcons(cp){
     els.heroWorkersIcons.innerHTML = "";
-    if (!isFinite(cp) || cp <= 0) return;
+
+    if (!isFinite(cp) || cp <= 0){
+      return;
+    }
 
     const N = Math.max(0, Math.round(cp));
-    const show = Math.min(N, WORKER_SHOW_CAP);
+    const CAP = 18;
+    const show = Math.min(N, CAP);
 
-    // CAMBIO: usamos la secuencia pre-elegida (estable)
+    ensureWorkerSeq(CAP);
+
     for (let i=0;i<show;i++){
-      const src = workerIconSequence[i % workerIconSequence.length];
+      const src = state.workerIconSeq[i] || randWorkerIcon();
+      if (!src) break;
       const img = document.createElement('img');
       img.className = "worker-icon";
       img.src = src;
@@ -1430,7 +1351,7 @@
       els.heroWorkersIcons.appendChild(img);
     }
 
-    if (N > WORKER_SHOW_CAP){
+    if (N > CAP){
       const plus = document.createElement('div');
       plus.className = "plus";
       plus.textContent = "+";
@@ -1469,7 +1390,6 @@
 
     const {m,f} = buildSyntheticSharesMF();
 
-    // grid
     const gridLines = 6;
     for (let k=0;k<=gridLines;k++){
       const x = pad.l + (innerW * k/gridLines);
@@ -1486,7 +1406,7 @@
     svg.appendChild(svgEl('text',{
       x: pad.l, y: 30,
       fill: COLORS.primary,
-      "font-size":"15",
+      "font-size": fs(15),
       "font-family":"Futura, Trebuchet MS, Arial, sans-serif",
       "letter-spacing":"0.35",
       "opacity":"0.95"
@@ -1495,7 +1415,7 @@
     svg.appendChild(svgEl('text',{
       x: cx - 10, y: 50,
       fill: COLORS.workers,
-      "font-size":"13",
+      "font-size": fs(13),
       "font-family":"Arial, sans-serif",
       "text-anchor":"end",
       "opacity":"0.92"
@@ -1504,7 +1424,7 @@
     svg.appendChild(svgEl('text',{
       x: cx + 10, y: 50,
       fill: COLORS.retired,
-      "font-size":"13",
+      "font-size": fs(13),
       "font-family":"Arial, sans-serif",
       "text-anchor":"start",
       "opacity":"0.92"
@@ -1537,7 +1457,7 @@
       const t = svgEl('text',{
         x: 12, y: y + h*0.72,
         fill: COLORS.text,
-        "font-size":"12",
+        "font-size": fs(12),
         "font-family":"Arial, sans-serif",
         "opacity":"0.90"
       });
@@ -1559,8 +1479,7 @@
     const dt = Math.min(0.05, (ts - state.lastTs) / 1000);
     state.lastTs = ts;
 
-    // velocidad fija x1.0 (state.speed = 1.0)
-    state.t = state.t + dt * 12 * state.speed;
+    state.t = state.t + dt * 12 * 1.0; // velocidad fija 1.0
     if (state.t > state.years) state.t = state.years;
 
     renderTimeChart();
@@ -1578,7 +1497,6 @@
   // Sync UI
   // ======================
   function syncUI(){
-    // pirámide
     els.popSlider.value = state.popTotalM;
     els.popVal.textContent = state.popTotalM.toFixed(1);
     els.peakSlider.value = state.peakIdx;
@@ -1590,7 +1508,6 @@
     els.densityOldSlider.value = state.densityOld;
     els.densityOldVal.textContent = state.densityOld.toFixed(2);
 
-    // sistema
     els.participationSlider.value = Math.round(state.participation * 100);
 
     els.rhoSlider.value = state.rho;
@@ -1607,12 +1524,17 @@
     els.popGrowthVal.textContent = (state.popGrowth*100).toFixed(2) + "%";
     els.agingVal.textContent = (state.agingPP*100).toFixed(2) + " pp";
     els.yearsVal.textContent = String(state.years);
+
+    // pintar “relleno” amarillo en sliders horizontales
+    [
+      els.rhoSlider, els.tauSlider, els.uSlider, els.popGrowthSlider, els.agingSlider, els.yearsSlider,
+      els.sigmaSlider, els.densityYoungSlider, els.densityOldSlider, els.popSlider
+    ].forEach(paintRange);
   }
 
   // ======================
   // Handlers
   // ======================
-  // pirámide
   els.peakSlider.addEventListener('input', (e) => {
     state.peakIdx = Number(e.target.value);
     renderPyramid();
@@ -1622,6 +1544,7 @@
   els.sigmaSlider.addEventListener('input', (e) => {
     state.sigma = Number(e.target.value);
     els.sigmaVal.textContent = String(state.sigma);
+    paintRange(els.sigmaSlider);
     renderPyramid();
     renderTimeChart();
   });
@@ -1629,6 +1552,7 @@
   els.densityYoungSlider.addEventListener('input', (e) => {
     state.densityYoung = Number(e.target.value);
     els.densityYoungVal.textContent = state.densityYoung.toFixed(2);
+    paintRange(els.densityYoungSlider);
     renderPyramid();
     renderTimeChart();
   });
@@ -1636,6 +1560,7 @@
   els.densityOldSlider.addEventListener('input', (e) => {
     state.densityOld = Number(e.target.value);
     els.densityOldVal.textContent = state.densityOld.toFixed(2);
+    paintRange(els.densityOldSlider);
     renderPyramid();
     renderTimeChart();
   });
@@ -1644,33 +1569,35 @@
     state.popTotalM = Number(e.target.value);
     els.popVal.textContent = state.popTotalM.toFixed(1);
     els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
+    paintRange(els.popSlider);
     renderPyramid();
     renderTimeChart();
   });
 
-  // participación
   els.participationSlider.addEventListener('input', (e) => {
     state.participation = Number(e.target.value) / 100.0;
     renderTimeChart();
   });
 
-  // sistema
   els.rhoSlider.addEventListener('input', (e) => {
     state.rho = Number(e.target.value);
     els.rhoVal.textContent = state.rho.toFixed(2);
+    paintRange(els.rhoSlider);
     renderTimeChart();
   });
 
   els.tauSlider.addEventListener('input', (e) => {
     state.tau = Number(e.target.value);
     els.tauVal.textContent = state.tau.toFixed(2);
+    paintRange(els.tauSlider);
     renderTimeChart();
   });
 
   els.uSlider.addEventListener('input', (e) => {
-    const v = Number(e.target.value); // %
+    const v = Number(e.target.value);
     state.u = v / 100.0;
     els.uVal.textContent = v + "%";
+    paintRange(els.uSlider);
     renderTimeChart();
   });
 
@@ -1678,6 +1605,7 @@
     const vPct = Number(e.target.value);
     state.popGrowth = vPct / 100.0;
     els.popGrowthVal.textContent = vPct.toFixed(2) + "%";
+    paintRange(els.popGrowthSlider);
     renderTimeChart();
   });
 
@@ -1685,6 +1613,7 @@
     const v = Number(e.target.value);
     state.agingPP = v / 100.0;
     els.agingVal.textContent = v.toFixed(2) + " pp";
+    paintRange(els.agingSlider);
     renderTimeChart();
   });
 
@@ -1692,6 +1621,7 @@
     state.years = Number(e.target.value);
     els.yearsVal.textContent = String(state.years);
     state.t = clamp(state.t, 0, state.years);
+    paintRange(els.yearsSlider);
     renderTimeChart();
   });
 
@@ -1706,14 +1636,15 @@
   // ======================
   // init
   // ======================
+  // Secuencia fija inicial (aleatoria) de avatares para “trabajadores”
+  ensureWorkerSeq(18);
+
   syncUI();
   renderPyramid();
   renderTimeChart();
-  enableScrubHandlers();
   requestAnimationFrame(rafLoop);
 })();
 </script>
 
 </body>
 </html>
-```
