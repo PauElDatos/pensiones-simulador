@@ -10,17 +10,16 @@
       --fontScale: 1.35;
 
       /*
-        (NUEVO) Distancia (misma para X e Y) entre los ejes y sus textos descriptivos
+        Distancia (misma para X e Y) entre los ejes y sus textos descriptivos
         en las gráficas "Evolución en el tiempo" y "C–P y equilibrio".
-        Nota: distancia real en px respecto al eje (pad.l para Y y pad.t+innerH para X).
       */
-      --axisLabelGap: 50px;
+      --axisLabelGap: 60px;
 
       /*
-        (NUEVO) SOLO cuando el layout apila (móvil/una columna), escala de fuente
+        SOLO cuando el layout apila (móvil/una columna), escala de fuente
         para los textos descriptivos de ejes (NO ticks) en "Evolución en el tiempo" y "C–P y equilibrio".
       */
-      --axisLabelFontScale: 1.5;
+      --axisLabelFontScale: 1.4;
 
       --bg:#252525;
       --primary:#FEF702;
@@ -46,8 +45,6 @@
     @media (max-width: 640px){
       :root{
         --fontScale: 1.18;
-
-        /* Ajusta a tu gusto: afecta a la distancia de labels descriptivos respecto a sus ejes */
         --axisLabelGap: 70px;
       }
     }
@@ -92,15 +89,10 @@
     }
     a.back:hover{ border-bottom-color: rgba(254,247,2,.35); color:#fff; }
 
+    /* (CAMBIO) Ya no hay panel derecho separado: un solo panel "Simulación" */
     main{
       min-height: calc(100vh - 70px);
-      display:grid;
-      grid-template-columns: 1fr 480px;
-      gap:12px;
       padding:12px 12px 18px 12px;
-    }
-    @media (max-width: 1250px){
-      main{ grid-template-columns:1fr; }
     }
 
     .panel{
@@ -136,19 +128,29 @@
       gap:10px;
       height:100%;
     }
+
+    /* (CAMBIO) 3 columnas: Evolución | C-P | Pirámide */
     .charts-row{
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 480px;
       gap:12px;
       align-items:start;
     }
+
+    /* Si no cabe, baja la pirámide debajo (pero sigue dentro de "Simulación") */
+    @media (max-width: 1500px){
+      .charts-row{ grid-template-columns: 1fr 1fr; }
+      .pyr-in-sim{ grid-column: 1 / -1; }
+    }
+
     @media (max-width: 900px){
       :root{
-        /* SOLO en esta disposición (bloques apilados): escala del texto descriptivo de ejes */
         --axisLabelFontScale: 1.15;
       }
       .charts-row{ grid-template-columns:1fr; }
+      .pyr-in-sim{ grid-column:auto; }
     }
+
     .chart-card{
       border:1px solid rgba(255,255,255,.06);
       border-radius:12px;
@@ -231,8 +233,7 @@
       padding-top:8px;
     }
 
-    /* RIGHT */
-    .right-body{ padding:12px; display:flex; flex-direction:column; gap:12px; }
+    /* Pirámide dentro de Simulación */
     .pyr-frame{
       display:grid;
       grid-template-columns: 64px 1fr;
@@ -249,7 +250,7 @@
       display:block;
     }
 
-    /* (CAMBIO) Slider vertical de PIRÁMIDE adaptado a la altura real de la gráfica */
+    /* Slider vertical de PIRÁMIDE adaptado a la altura real de la gráfica */
     .pyr-frame .vslider-shell{ height: 100%; }
     .pyr-frame .vslider-shell input[type="range"]{ height: 100%; }
 
@@ -264,14 +265,14 @@
     }
     .val{ font-variant-numeric: tabular-nums; opacity:.95; }
 
-    /* (NUEVO) Espaciado de parámetros bajo "Evolución en el tiempo" como en "Pirámide" */
+    /* Espaciado de parámetros bajo "Evolución en el tiempo" */
     .sys-controls{
       display:grid;
-      gap:12px; /* separación entre bloques (grid, resultado/botones, etc.) */
+      gap:12px;
     }
     .sys-grid{
       display:grid;
-      gap:12px; /* separación entre cada parámetro (ctl) */
+      gap:12px;
     }
 
     /* Mantener “relleno” amarillo en sliders horizontales */
@@ -463,7 +464,7 @@
 
 <main>
 
-  <!-- LEFT -->
+  <!-- SIMULACIÓN (incluye ahora la PIRÁMIDE a la derecha de C–P) -->
   <section class="panel" aria-label="Gráficas del simulador">
     <div class="ph">
       <div class="ttl">Simulación</div>
@@ -571,9 +572,10 @@
         <div class="chart-card" aria-label="Gráfica C vs P (equilibrio)">
           <div class="ch">
             <div class="cttl">C–P y equilibrio</div>
+
+            <!-- (CAMBIO) Reordenado: primero k + estado, debajo C: | P: -->
             <div class="csub mono">
-              <div id="cpReadoutSim">C: — | P: —</div>
-              <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:6px;">
+              <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
                 <span class="mini-pill" title="Pendiente de la línea de equilibrio">
                   <span class="dot" style="width:8px;height:8px;box-shadow:0 0 0 3px rgba(254,247,2,.10)"></span>
                   <span class="mono" id="kReadoutSim">k: —</span>
@@ -583,6 +585,7 @@
                   <span class="mono" id="cpStatusText">—</span>
                 </span>
               </div>
+              <div id="cpReadoutSim" style="margin-top:6px;">C: — | P: —</div>
             </div>
           </div>
 
@@ -640,63 +643,63 @@
           </div>
         </div>
 
-      </div>
-    </div>
-  </section>
+        <!-- (CAMBIO) Pirámide movida dentro de "Simulación" (a la derecha de C–P) -->
+        <div class="chart-card pyr-in-sim" aria-label="Pirámide poblacional y controles">
+          <div class="ch">
+            <div class="cttl">Pirámide</div>
+            <div class="csub mono" id="pyrMeta">Población total: 47.0 M</div>
+          </div>
 
-  <!-- RIGHT -->
-  <section class="panel" aria-label="Pirámide poblacional y controles">
-    <div class="ph">
-      <div class="ttl">Pirámide</div>
-      <div class="sub mono" id="pyrMeta">Población total: 47.0 M</div>
-    </div>
+          <div class="cb">
+            <div class="pyr-frame">
+              <div class="vslider-shell" title="Pico (quinquenio)">
+                <input id="peakSlider" type="range" min="0" max="20" step="1" value="9" />
+              </div>
 
-    <div class="right-body">
-      <div class="pyr-frame">
-        <div class="vslider-shell" title="Pico (quinquenio)">
-          <input id="peakSlider" type="range" min="0" max="20" step="1" value="9" />
+              <svg id="pyrSvg" class="pyr-svg" viewBox="0 0 520 650" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide por quinquenios"></svg>
+            </div>
+
+            <div class="ctl">
+              <label>
+                <span>Dispersión del perfil etario (σ)</span>
+                <span class="val mono" id="sigmaVal">18</span>
+              </label>
+              <input id="sigmaSlider" type="range" min="6" max="40" step="1" value="18" />
+            </div>
+
+            <div class="ctl">
+              <label>
+                <span>Densidad jóvenes (parte inferior)</span>
+                <span class="val mono" id="densityYoungVal">0.75</span>
+              </label>
+              <input id="densityYoungSlider" type="range" min="0.35" max="1.25" step="0.01" value="0.75" />
+            </div>
+
+            <div class="ctl">
+              <label>
+                <span>Densidad mayores (parte superior)</span>
+                <span class="val mono" id="densityOldVal">0.75</span>
+              </label>
+              <input id="densityOldSlider" type="range" min="0.35" max="1.25" step="0.01" value="0.75" />
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="ctl">
+              <label>
+                <span>Total población (millones)</span>
+                <span class="val mono" id="popVal">47.0</span>
+              </label>
+              <input id="popSlider" type="range" min="5" max="350" step="0.5" value="47" />
+            </div>
+
+            <div class="note">
+              La pirámide define shares iniciales: menores (&lt;18), edad laboral (18–64) y jubilados (65+).
+              Con densidad jóvenes y densidad mayores controlas de forma independiente la “forma” del bulto inferior y superior.
+            </div>
+          </div>
         </div>
 
-        <svg id="pyrSvg" class="pyr-svg" viewBox="0 0 520 650" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide por quinquenios"></svg>
-      </div>
-
-      <div class="ctl">
-        <label>
-          <span>Dispersión del perfil etario (σ)</span>
-          <span class="val mono" id="sigmaVal">18</span>
-        </label>
-        <input id="sigmaSlider" type="range" min="6" max="40" step="1" value="18" />
-      </div>
-
-      <div class="ctl">
-        <label>
-          <span>Densidad jóvenes (parte inferior)</span>
-          <span class="val mono" id="densityYoungVal">0.75</span>
-        </label>
-        <input id="densityYoungSlider" type="range" min="0.35" max="1.25" step="0.01" value="0.75" />
-      </div>
-
-      <div class="ctl">
-        <label>
-          <span>Densidad mayores (parte superior)</span>
-          <span class="val mono" id="densityOldVal">0.75</span>
-        </label>
-        <input id="densityOldSlider" type="range" min="0.35" max="1.25" step="0.01" value="0.75" />
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="ctl">
-        <label>
-          <span>Total población (millones)</span>
-          <span class="val mono" id="popVal">47.0</span>
-        </label>
-        <input id="popSlider" type="range" min="5" max="350" step="0.5" value="47" />
-      </div>
-
-      <div class="note">
-        La pirámide define shares iniciales: menores (&lt;18), edad laboral (18–64) y jubilados (65+).
-        Con densidad jóvenes y densidad mayores controlas de forma independiente la “forma” del bulto inferior y superior.
       </div>
     </div>
   </section>
@@ -716,16 +719,16 @@
     noncot: CSS('--noncot')
   };
 
-  // (CAMBIO) Escala dinámica (responde a @media). Evita “capturar” un valor fijo.
+  // Escala dinámica (responde a @media)
   const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
 
-  // (NUEVO) Gap unificado (mismo para X e Y) entre eje y texto descriptivo (solo Time + C–P)
+  // Gap unificado (mismo para X e Y) entre eje y texto descriptivo (solo Time + C–P)
   const getAxisLabelGap = () => {
     const v = parseFloat(CSS('--axisLabelGap'));
     return isFinite(v) ? v : 60;
   };
 
-  // (NUEVO) Escala SOLO para textos descriptivos de ejes (solo en layout apilado; ver @media 900px)
+  // Escala SOLO para textos descriptivos de ejes (solo en layout apilado; ver @media 900px)
   const getAxisLabelFontScale = () => {
     const v = parseFloat(CSS('--axisLabelFontScale'));
     return isFinite(v) ? v : 1;
@@ -784,7 +787,7 @@
     playing: false,
     lastTs: 0,
 
-    // iconos “fijos” (no cambian con los años, solo aparecen/desaparecen)
+    // iconos “fijos”
     workerIconSeq: [],
   };
 
@@ -863,13 +866,9 @@
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const toM = (x) => x / 1_000_000;
 
-  // Escala general (UI / textos generales)
+  // Escala general
   const fs = (px) => (px * getFontScale()).toFixed(2);
-
-  // (CAMBIO) Ticks (SVG) con escala global, sin variables específicas por gráfica
   const fsTick = (px) => (px * getFontScale()).toFixed(2);
-
-  // (NUEVO) SOLO textos descriptivos de ejes (Time + C–P): escala adicional en layout apilado
   const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale()).toFixed(2);
 
   function kEquilibrium(){
@@ -1078,7 +1077,7 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    // (CAMBIO) Etiqueta descriptiva del eje X con gap unificado
+    // Etiqueta descriptiva eje X
     const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
@@ -1086,7 +1085,7 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    // (CAMBIO) Etiqueta descriptiva del eje Y con el mismo gap (unificado)
+    // Etiqueta descriptiva eje Y
     const yLabelX = Math.max(10, pad.l - getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
@@ -1292,7 +1291,7 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    // (CAMBIO) Etiqueta descriptiva del eje X con gap unificado
+    // Etiqueta descriptiva eje X
     const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
@@ -1301,7 +1300,7 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
-    // (CAMBIO) Etiqueta descriptiva del eje Y con el mismo gap (unificado)
+    // Etiqueta descriptiva eje Y
     const yLabelX = Math.max(10, pad.l - getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
@@ -1465,9 +1464,6 @@
       stroke: COLORS.text, "stroke-width":1.2, "stroke-opacity":"0.65"
     }));
 
-    // (CAMBIO) Eliminado el texto: "Distribución por edad (quinquenios)"
-
-    // (NUEVO) Estos textos se tratan como “descriptivos” dentro del eje/encuadre de la pirámide
     svg.appendChild(svgEl('text',{
       x: cx - 10, y: 50,
       fill: COLORS.workers,
@@ -1510,7 +1506,6 @@
         fill: COLORS.retired, "fill-opacity":"0.80"
       }));
 
-      // Labels de edades (no son los textos descriptivos de ejes Time/C–P)
       const t = svgEl('text',{
         x: 12, y: y + h*0.72,
         fill: COLORS.text,
@@ -1536,7 +1531,7 @@
     const dt = Math.min(0.05, (ts - state.lastTs) / 1000);
     state.lastTs = ts;
 
-    state.t = state.t + dt * 12 * 1.0; // velocidad fija 1.0
+    state.t = state.t + dt * 12 * 1.0;
     if (state.t > state.years) state.t = state.years;
 
     renderTimeChart();
@@ -1582,7 +1577,6 @@
     els.agingVal.textContent = (state.agingPP*100).toFixed(2) + " pp";
     els.yearsVal.textContent = String(state.years);
 
-    // pintar “relleno” amarillo en sliders horizontales
     [
       els.rhoSlider, els.tauSlider, els.uSlider, els.popGrowthSlider, els.agingSlider, els.yearsSlider,
       els.sigmaSlider, els.densityYoungSlider, els.densityOldSlider, els.popSlider
@@ -1693,7 +1687,6 @@
   // ======================
   // init
   // ======================
-  // Secuencia fija inicial (aleatoria) de avatares para “trabajadores”
   ensureWorkerSeq(18);
 
   syncUI();
