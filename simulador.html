@@ -574,8 +574,7 @@
             </div>
 
             <div class="caption">
-              Áreas apiladas: menores (&lt;18, gris), cotizantes efectivos (azul), <span class="mono">Desempleados</span> (azul oscuro) y jubilados (naranja).
-              El slider vertical controla participación y el paro (u) resta cotizantes dentro de 18–64.
+              <span class="mono">ρ</span> (productividad): output relativo por trabajador. <span class="mono">τ</span> (cotización): fracción del output por trabajador destinada a financiar pensiones; junto con <span class="mono">ρ</span> determina <span class="mono">k=τ/ρ</span>.
             </div>
           </div>
         </div>
@@ -893,12 +892,19 @@
     const rect = svg.getBoundingClientRect();
     let h = rect.height;
 
-    // Si el navegador devuelve height "raro" (0/NaN), lo derivamos por viewBox y width
-    if (!isFinite(h) || h <= 1){
-      const w = rect.width || svg.clientWidth || 0;
-      const vb = svg.viewBox && svg.viewBox.baseVal;
-      if (w > 0 && vb && vb.width > 0 && vb.height > 0){
-        h = w * (vb.height / vb.width);
+    const w = rect.width || svg.clientWidth || 0;
+    const vb = svg.viewBox && svg.viewBox.baseVal;
+
+    if (w > 0 && vb && vb.width > 0 && vb.height > 0){
+      const expected = w * (vb.height / vb.width);
+
+      if (!isFinite(h) || h <= 1){
+        h = expected;
+      } else if (expected > 1){
+        const ratio = h / expected;
+        if (ratio < 0.85 || ratio > 1.15){
+          h = expected;
+        }
       }
     }
 
@@ -915,8 +921,14 @@
   function syncSidebarToSvg({ shell, input, svg }){
     if (!shell || !input || !svg) return;
 
-    const targetH = getRenderedSvgHeight(svg);
+    let targetH = getRenderedSvgHeight(svg);
     if (targetH <= 1) return; // se reintentará vía syncAllSidebarsStable()
+
+    const wrap = svg && svg.parentElement;
+    if (wrap){
+      const wh = wrap.getBoundingClientRect().height;
+      if (isFinite(wh) && wh > targetH) targetH = wh;
+    }
 
     // Asegura que el contenedor coincide con la altura render real de la gráfica
     shell.style.height = `${targetH}px`;
@@ -1082,6 +1094,49 @@
     return series;
   }
 
+  function renderTimeLegend(svg, x, y){
+    const items = [
+      { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
+      { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
+      { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
+      { label: "Jubilados (65+)", fill: COLORS.retired, op: "0.50" }
+    ];
+
+    const g = svgEl('g', { "opacity":"0.95" });
+    const box = 14;
+    const row = 20;
+
+    for (let i=0;i<items.length;i++){
+      const it = items[i];
+      const yy = y + i*row;
+
+      g.appendChild(svgEl('rect', {
+        x: x, y: yy - (box - 2),
+        width: box, height: box,
+        fill: it.fill,
+        "fill-opacity": it.op,
+        stroke: COLORS.text,
+        "stroke-width":"1",
+        "stroke-opacity":"0.20",
+        rx:"3", ry:"3"
+      }));
+
+      const t = svgEl('text', {
+        x: x + box + 8,
+        y: yy + 2,
+        fill: COLORS.text,
+        "font-size": fsTick(12),
+        "font-family":"Arial, sans-serif",
+        "text-anchor":"start",
+        "opacity":"0.92"
+      });
+      t.textContent = it.label;
+      g.appendChild(t);
+    }
+
+    svg.appendChild(g);
+  }
+
   // ======================
   // Chart 1
   // ======================
@@ -1187,7 +1242,11 @@
 
     svg.appendChild(svgEl('path', { d: polyPath(minorsTop, basePts), fill: COLORS.minors, "fill-opacity":"0.35", stroke:"none" }));
     svg.appendChild(svgEl('path', { d: polyPath(cotTop, minorsTop),   fill: COLORS.workers,"fill-opacity":"0.50", stroke:"none" }));
-    svg.appendChild(svgEl('path', { d: polyPath(noncotTop, cotTop),   fill: COLORS.noncot, "fill-opacity":"0.55", stroke:"none" }));
+
+    const noncotFill = (state.u <= 1e-9) ? COLORS.workers : COLORS.noncot;
+    const noncotOpacity = (state.u <= 1e-9) ? "0.50" : "0.55";
+    svg.appendChild(svgEl('path', { d: polyPath(noncotTop, cotTop),   fill: noncotFill, "fill-opacity": noncotOpacity, stroke:"none" }));
+
     svg.appendChild(svgEl('path', { d: polyPath(totalTop, noncotTop), fill: COLORS.retired,"fill-opacity":"0.50", stroke:"none" }));
 
     svg.appendChild(svgEl('path', {
@@ -1197,6 +1256,8 @@
       "stroke-width":"3",
       "stroke-opacity":"0.95"
     }));
+
+    renderTimeLegend(svg, pad.l + 14, pad.t + 26);
 
     const tNow = Math.round(state.t);
     const cur = data[Math.min(data.length-1, tNow)];
