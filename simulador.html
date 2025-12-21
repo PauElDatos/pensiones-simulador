@@ -211,12 +211,12 @@
       display:block;
     }
 
-    /* ========= CAMBIO IMPORTANTE (1): STRETCH ========= */
+    /* ========= CAMBIO: quitar barra izquierda (ahora 1 columna) ========= */
     .sim-wrap{
       display:grid;
-      grid-template-columns: 54px 1fr;
+      grid-template-columns: 1fr;
       gap:10px;
-      align-items:stretch; /* antes: start */
+      align-items:stretch;
     }
 
     .vslider-shell{
@@ -260,7 +260,7 @@
       display:grid;
       grid-template-columns: 64px 1fr;
       gap:10px;
-      align-items:stretch; /* antes: start */
+      align-items:stretch;
     }
     .pyr-svg{
       width:100%;
@@ -499,9 +499,6 @@
 
           <div class="cb">
             <div class="sim-wrap">
-              <div class="vslider-shell" id="participationShell" title="Participación: % de población 18–64 que intenta cotizar">
-                <input id="participationSlider" type="range" min="30" max="98" step="1" value="78" />
-              </div>
               <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
             </div>
 
@@ -779,7 +776,7 @@
     agingPP: 0.002,
     years: 80,
 
-    participation: 0.78,
+    participation: 1.00,
 
     t: 0,
     playing: false,
@@ -978,8 +975,8 @@
 
     ro.observe(els.timeSvg);
     ro.observe(els.pyrSvg);
-    ro.observe(els.participationShell);
-    ro.observe(els.peakShell);
+    if (els.participationShell) ro.observe(els.participationShell);
+    if (els.peakShell) ro.observe(els.peakShell);
   }
 
   // ======================
@@ -1114,7 +1111,8 @@
 
     const box = 14;
     const gap = 10;
-    const after = 20;
+    const after = 34;
+
     let x = 0;
 
     items.forEach((it) => {
@@ -1793,7 +1791,7 @@
     els.densityOldSlider.value = state.densityOld;
     els.densityOldVal.textContent = state.densityOld.toFixed(2);
 
-    els.participationSlider.value = Math.round(state.participation * 100);
+    if (els.participationSlider) els.participationSlider.value = Math.round(state.participation * 100);
 
     els.rhoSlider.value = state.rho;
     els.tauSlider.value = state.tau;
@@ -1862,11 +1860,13 @@
     renderTimeChart();
   });
 
-  els.participationSlider.addEventListener('input', (e) => {
-    state.participation = Number(e.target.value) / 100.0;
-    paintRange(els.participationSlider);
-    renderTimeChart();
-  });
+  if (els.participationSlider){
+    els.participationSlider.addEventListener('input', (e) => {
+      state.participation = Number(e.target.value) / 100.0;
+      paintRange(els.participationSlider);
+      renderTimeChart();
+    });
+  }
 
   els.rhoSlider.addEventListener('input', (e) => {
     state.rho = Number(e.target.value);
