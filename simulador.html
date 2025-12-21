@@ -230,6 +230,7 @@
       overflow:hidden;
       height:100%;
       align-self:stretch;
+      position:relative;
     }
 
     .vslider-shell input[type="range"]{
@@ -237,7 +238,10 @@
       appearance: none;
       width: 260px; /* JS lo recalcula a la altura real */
       height: 4px;
-      transform: rotate(-90deg);
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-50%,-50%) rotate(-90deg);
       transform-origin: center;
       cursor: pointer;
       display:block;
@@ -574,7 +578,7 @@
             </div>
 
             <div class="caption">
-              <span class="mono">ρ</span> (productividad): output relativo por trabajador. <span class="mono">τ</span> (cotización): fracción del output por trabajador destinada a financiar pensiones; junto con <span class="mono">ρ</span> determina <span class="mono">k=τ/ρ</span>.
+              <span class="mono">ρ</span> es un parámetro “resumen” de productividad agregada: captura el nivel de tecnología, la eficiencia organizativa y, en general, cuánta producción (base imponible) genera cada trabajador en promedio. Un <span class="mono">ρ</span> más alto significa que, con el mismo número de cotizantes, la economía genera más valor y el sistema puede sostener más pensiones sin aumentar tipos; un <span class="mono">ρ</span> más bajo implica el caso contrario (misma población activa, menor capacidad de financiación real). Por su parte, <span class="mono">τ</span> representa la intensidad contributiva: el porcentaje del output/labor income que se deriva al sistema (vía cotizaciones/tributación afectada). Subir <span class="mono">τ</span> aumenta ingresos por cotizante, pero también refleja una mayor carga sobre salarios y empresas; bajar <span class="mono">τ</span> alivia la cuña fiscal pero exige, para el mismo nivel de pensiones, más cotizantes o más productividad. Juntas, ambas variables determinan la pendiente de equilibrio <span class="mono">k=τ/ρ</span>, es decir, la “regla” que relaciona cuántos pensionistas pueden financiarse de manera sostenible para un nivel dado de cotizantes.
             </div>
           </div>
         </div>
@@ -782,6 +786,9 @@
     lastTs: 0,
 
     workerIconSeq: [],
+
+    timeLayout: null,
+    draggingTime: false,
   };
 
   const els = {
@@ -930,10 +937,8 @@
       if (isFinite(wh) && wh > targetH) targetH = wh;
     }
 
-    // Asegura que el contenedor coincide con la altura render real de la gráfica
     shell.style.height = `${targetH}px`;
 
-    // Longitud útil del slider = altura del contenedor - padding - bordes
     const shellRect = shell.getBoundingClientRect();
     const cs = getComputedStyle(shell);
 
@@ -1061,14 +1066,17 @@
       const workingAge = total * sWork;
       const retired = total * sRet;
 
-      const cot = workingAge * clamp(state.participation,0,1) * (1 - clamp(state.u,0,1));
-      const noncot = Math.max(0, workingAge - cot);
+      const labour = workingAge * clamp(state.participation,0,1);
+      const unemployed = labour * clamp(state.u,0,1);
+      const cotEff = labour - unemployed;
+      const inactive = Math.max(0, workingAge - labour);
 
       series.push({
         t, total,
         minors,
-        cot,
-        noncot,
+        cot: cotEff,
+        inactive,
+        noncot: unemployed,
         retired,
         sMin, sWork, sRet
       });
@@ -1094,7 +1102,7 @@
     return series;
   }
 
-  function renderTimeLegend(svg, x, y){
+  function renderTimeLegendHorizontal(svg, y){
     const items = [
       { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
       { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
@@ -1103,15 +1111,15 @@
     ];
 
     const g = svgEl('g', { "opacity":"0.95" });
+
     const box = 14;
-    const row = 20;
+    const gap = 10;
+    const after = 20;
+    let x = 0;
 
-    for (let i=0;i<items.length;i++){
-      const it = items[i];
-      const yy = y + i*row;
-
+    items.forEach((it) => {
       g.appendChild(svgEl('rect', {
-        x: x, y: yy - (box - 2),
+        x: x, y: y - (box - 2),
         width: box, height: box,
         fill: it.fill,
         "fill-opacity": it.op,
@@ -1122,8 +1130,8 @@
       }));
 
       const t = svgEl('text', {
-        x: x + box + 8,
-        y: yy + 2,
+        x: x + box + gap,
+        y: y + 2,
         fill: COLORS.text,
         "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
@@ -1132,9 +1140,57 @@
       });
       t.textContent = it.label;
       g.appendChild(t);
-    }
+
+      x = x + box + gap + (it.label.length * 7.2) + after;
+    });
 
     svg.appendChild(g);
+
+    try{
+      const bb = g.getBBox();
+      const tx = (1000 - bb.width) / 2 - bb.x;
+      g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
+    } catch(e){}
+  }
+
+  function viewXFromClientX(svg, clientX){
+    const rect = svg.getBoundingClientRect();
+    if (!rect || rect.width <= 0) return 0;
+    return ((clientX - rect.left) / rect.width) * 1000;
+  }
+
+  function setTimeFromClientX(clientX){
+    const L = state.timeLayout;
+    if (!L) return;
+
+    const x = viewXFromClientX(els.timeSvg, clientX);
+    const t = ((x - L.pad.l) / L.innerW) * L.T;
+    const tt = clamp(Math.round(t), 0, state.years);
+    state.t = tt;
+    renderTimeChart();
+  }
+
+  function setupTimeScrub(){
+    els.timeSvg.style.cursor = "ew-resize";
+    els.timeSvg.style.touchAction = "none";
+
+    els.timeSvg.addEventListener("pointerdown", (e) => {
+      state.playing = false;
+      state.draggingTime = true;
+      try{ els.timeSvg.setPointerCapture(e.pointerId); }catch(err){}
+      setTimeFromClientX(e.clientX);
+    });
+
+    els.timeSvg.addEventListener("pointermove", (e) => {
+      if (!state.draggingTime) return;
+      setTimeFromClientX(e.clientX);
+    });
+
+    const end = () => { state.draggingTime = false; };
+
+    els.timeSvg.addEventListener("pointerup", end);
+    els.timeSvg.addEventListener("pointercancel", end);
+    els.timeSvg.addEventListener("pointerleave", end);
   }
 
   // ======================
@@ -1145,12 +1201,14 @@
     clearSvg(svg);
 
     const W = 1000, H = 700;
-    const pad = {l: 90, r: 30, t: 24, b: 88};
+    const pad = {l: 90, r: 30, t: 24, b: 140};
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
     const data = buildSeries();
     const T = state.years;
+
+    state.timeLayout = { W, H, pad, innerW, innerH, T };
 
     const yMax = Math.max(...data.map(d => d.total)) / 1_000_000;
     const yNice = Math.ceil(yMax/5)*5 || 5;
@@ -1200,12 +1258,15 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getAxisLabelGap());
+    const xAxisLabelY = Math.min(H - 44, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
       fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
+
+    const legendY = Math.min(H - 16, xAxisLabelY + 30);
+    renderTimeLegendHorizontal(svg, legendY);
 
     const yLabelX = Math.max(10, pad.l - getAxisLabelGap());
     svg.appendChild(svgEl('text',{
@@ -1224,7 +1285,7 @@
     data.forEach(d => {
       const x = xToPx(d.t);
       const mM = toM(d.minors);
-      const cM = toM(d.cot);
+      const cM = toM(d.cot + (d.inactive || 0));
       const nM = toM(d.noncot);
       const rM = toM(d.retired);
 
@@ -1243,9 +1304,9 @@
     svg.appendChild(svgEl('path', { d: polyPath(minorsTop, basePts), fill: COLORS.minors, "fill-opacity":"0.35", stroke:"none" }));
     svg.appendChild(svgEl('path', { d: polyPath(cotTop, minorsTop),   fill: COLORS.workers,"fill-opacity":"0.50", stroke:"none" }));
 
-    const noncotFill = (state.u <= 1e-9) ? COLORS.workers : COLORS.noncot;
-    const noncotOpacity = (state.u <= 1e-9) ? "0.50" : "0.55";
-    svg.appendChild(svgEl('path', { d: polyPath(noncotTop, cotTop),   fill: noncotFill, "fill-opacity": noncotOpacity, stroke:"none" }));
+    if (state.u > 1e-9){
+      svg.appendChild(svgEl('path', { d: polyPath(noncotTop, cotTop), fill: COLORS.noncot, "fill-opacity":"0.55", stroke:"none" }));
+    }
 
     svg.appendChild(svgEl('path', { d: polyPath(totalTop, noncotTop), fill: COLORS.retired,"fill-opacity":"0.50", stroke:"none" }));
 
@@ -1257,9 +1318,7 @@
       "stroke-opacity":"0.95"
     }));
 
-    renderTimeLegend(svg, pad.l + 14, pad.t + 26);
-
-    const tNow = Math.round(state.t);
+    const tNow = clamp(Math.round(state.t), 0, state.years);
     const cur = data[Math.min(data.length-1, tNow)];
     const xNow = xToPx(cur.t);
 
@@ -1282,7 +1341,6 @@
     updateSystemPill(cur);
     renderCPChartSim(cur, data);
 
-    // importante: stable (varios frames)
     syncAllSidebarsStable();
   }
 
@@ -1689,7 +1747,6 @@
 
     els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
 
-    // importante: stable (varios frames)
     syncAllSidebarsStable();
   }
 
@@ -1881,6 +1938,7 @@
   renderTimeChart();
 
   setupSidebarObservers();
+  setupTimeScrub();
 
   window.addEventListener('load', () => {
     syncAllSidebarsStable();
