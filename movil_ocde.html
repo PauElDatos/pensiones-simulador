@@ -2,18 +2,17 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pensiones — Sostenibilidad OCDE</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Pensiones — Sostenibilidad OCDE (Móvil)</title>
 
   <style>
     :root{
-      --uiScale: 1.35;
+      /* Ajuste general para móvil: bajar escala para evitar solapes */
+      --uiScale: 1.05;
 
-      /* MODIFICACIÓN: distancia (offset) COMÚN de los labels descriptivos de ejes (X e Y) respecto a sus ejes */
-      --cpAxisLabelOffset: 40;
-
-      /* MODIFICACIÓN: SOLO EN MÓVIL (layout apilado), escala de fuente de los labels descriptivos de ejes */
-      --cpAxisLabelFontScaleMobile: 1.5;
+      /* Labels de ejes (mantener compactos en móvil) */
+      --cpAxisLabelOffset: 34;
+      --cpAxisLabelFontScaleMobile: 1.10;
 
       --bg:#252525;
       --primary:#FEF702;
@@ -40,30 +39,34 @@
       color:var(--text);
       font-family:var(--fontText);
       font-size: calc(14px * var(--uiScale));
+      overflow-x:hidden; /* clave para evitar desbordes horizontales */
+      -webkit-text-size-adjust: 100%;
     }
 
     header{
-      padding:18px 18px 8px 18px;
+      padding:14px 14px 10px 14px;
       display:flex;
-      align-items:flex-end;
+      flex-wrap:wrap;
+      align-items:flex-start;
       justify-content:space-between;
-      gap:12px;
+      gap:10px;
     }
-    .h-title{ line-height:1.05; }
+    .h-title{ line-height:1.05; flex:1 1 auto; min-width: 220px; }
     .h-title h1{
       margin:0;
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size: calc(22px * var(--uiScale));
+      font-size: calc(18px * var(--uiScale));
       letter-spacing:.3px;
+      overflow-wrap:anywhere;
     }
-    .h-title p{ margin:6px 0 0 0; font-size: calc(13px * var(--uiScale)); opacity:.9; }
+    .h-title p{ margin:6px 0 0 0; font-size: calc(12px * var(--uiScale)); opacity:.9; }
 
     .h-meta{
       font-size: calc(12px * var(--uiScale));
-      opacity:.85;
+      opacity:.9;
       text-align:right;
-      max-width:62ch;
+      flex:0 0 auto;
     }
     .pill{
       display:inline-flex; align-items:center; gap:8px;
@@ -71,6 +74,7 @@
       border:1px solid var(--stroke);
       border-radius:999px;
       background:rgba(255,255,255,.03);
+      white-space:nowrap;
     }
     .dot{
       width:8px; height:8px; border-radius:50%;
@@ -86,19 +90,12 @@
     a.back:hover{ border-bottom-color: rgba(254,247,2,.35); color:#fff; }
 
     main{
-      height: calc(100vh - 70px);
-      display:grid;
-      grid-template-columns: 320px 1fr;
-      gap:12px;
-      padding:12px 12px 18px 12px;
-      min-height:0;
-    }
-    @media (max-width: 1100px){
-      main{
-        grid-template-columns:1fr;
-        height:auto;
-        min-height: calc(100vh - 70px);
-      }
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:10px 10px 16px 10px;
+      min-height: calc(100svh - 64px);
+      height:auto;
     }
 
     .panel{
@@ -107,60 +104,64 @@
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
-      min-height:0;
+      max-width:100%;
     }
+
     .ph{
-      padding:12px 12px 10px 12px;
+      padding:10px 10px 8px 10px;
       border-bottom:1px solid var(--stroke);
       background:rgba(255,255,255,.02);
       display:flex;
-      align-items:center;
+      flex-wrap:wrap;
+      align-items:flex-start;
       justify-content:space-between;
-      gap:10px;
+      gap:8px;
       min-height:44px;
     }
     .ttl{
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size: calc(13px * var(--uiScale));
+      font-size: calc(12px * var(--uiScale));
       letter-spacing:.35px;
       text-transform:uppercase;
-      white-space:nowrap;
-      flex:0 0 auto;
+      white-space:normal;     /* móvil: permitir salto */
+      line-height:1.15;
+      flex:1 1 auto;
+      min-width: 180px;
+      overflow-wrap:anywhere;
     }
     .sub{
       font-size: calc(12px * var(--uiScale));
       opacity:.85;
-      text-align:right;
-      max-width:56ch;
-      white-space:nowrap;
-      flex:0 0 auto;
+      text-align:left;        /* móvil: mejor lectura */
+      max-width:100%;
+      white-space:normal;     /* móvil: permitir salto */
+      line-height:1.25;
+      flex:1 1 100%;
     }
 
     .ph-actions{
-      flex:1 1 auto;
+      flex:1 1 100%;
       display:flex;
-      justify-content:center;
+      flex-direction:column;  /* móvil: botones apilados */
+      justify-content:stretch;
       gap:8px;
       min-width:0;
-      overflow:hidden;
+      overflow:visible;
     }
     .ph-btn{
       appearance:none;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(0,0,0,.14);
       color:var(--text);
-      border-radius:999px;
-      padding:7px 10px;
+      border-radius:12px;      /* en móvil mejor que píldora estrecha */
+      padding:11px 12px;
       font-size: calc(12px * var(--uiScale));
-      line-height:1;
+      line-height:1.15;
       cursor:pointer;
-      white-space:nowrap;
-      flex:1 1 0;
-      min-width:0;
-      max-width:220px;
-      text-overflow:ellipsis;
-      overflow:hidden;
+      white-space:normal;      /* permitir salto en texto */
+      text-align:left;
+      width:100%;
     }
     .ph-btn:hover{
       border-color: rgba(254,247,2,.25);
@@ -172,270 +173,14 @@
       background:rgba(254,247,2,.08);
       color:#fff;
     }
-    @media (max-width: 900px){
-      .ph{ flex-wrap:wrap; }
-      .ph-actions{ width:100%; order:3; justify-content:stretch; }
-      .sub{ width:100%; order:2; text-align:left; }
-    }
 
-    .countries{ display:flex; flex-direction:column; height:100%; min-height:0; }
+    .countries{ display:flex; flex-direction:column; }
     .countries .body{
-      padding:10px 10px 12px 10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      overflow:auto;
-      min-height:0;
-      flex:1 1 auto;
-    }
-    .country-grid{ display:grid; grid-template-columns:1fr; gap:8px; }
-    .country-btn{
-      width:100%;
-      text-align:left;
-      padding:10px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.02);
-      color:var(--text);
-      cursor:pointer;
-      font-size: calc(13px * var(--uiScale));
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-    }
-    .country-btn:hover{
-      border-color: rgba(254,247,2,.25);
-      background:rgba(255,255,255,.03);
-    }
-    .country-btn[aria-selected="true"]{
-      border-color: rgba(254,247,2,.35);
-      background:rgba(254,247,2,.08);
-    }
-    .tag{
-      font-size: calc(11px * var(--uiScale));
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.09);
-      opacity:.9;
-      white-space:nowrap;
-    }
-    .note{
-      font-size: calc(11px * var(--uiScale));
-      opacity:.75;
-      line-height:1.35;
-    }
-
-    /* Selector móvil */
-    .country-select-wrap{ display:none; }
-    .country-select{
-      width:100%;
-      appearance:none;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.14);
-      color:var(--text);
-      border-radius:12px;
-      padding:10px 12px;
-      font-size: calc(13px * var(--uiScale));
-      outline:none;
-    }
-    .country-select:focus{
-      border-color: rgba(254,247,2,.35);
-      box-shadow: 0 0 0 3px rgba(254,247,2,.10);
-    }
-    .select-hint{
-      font-size: calc(11px * var(--uiScale));
-      opacity:.75;
-      line-height:1.35;
-    }
-    @media (max-width: 1100px){
-      .country-list-wrap{ display:none; }
-      .country-select-wrap{ display:flex; flex-direction:column; gap:10px; }
-      .countries .body{ overflow:visible; }
-    }
-
-    .viz{
-      display:grid;
-      grid-template-columns: minmax(0, 1fr) 330px;
-      gap:12px;
-      height:100%;
-      min-height:0;
-      padding:12px;
-      align-items:stretch;
-    }
-    @media (max-width: 1300px){
-      .viz{ grid-template-columns: minmax(0, 1fr) 300px; }
-    }
-    @media (max-width: 1100px){
-      .viz{ grid-template-columns: 1fr; }
-    }
-
-    .chart-area{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      min-height:0;
-    }
-
-    .chart-legend{
-      display:flex; flex-wrap:wrap; gap:10px;
-      align-items:center; justify-content:space-between;
-      font-size: calc(12px * var(--uiScale));
-      opacity:.92;
-      flex:0 0 auto;
-    }
-    .legend-left{ display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
-    .legend-item{ display:flex; align-items:center; gap:8px; }
-    .swatch{ width:10px; height:10px; border-radius:2px; background:var(--primary); }
-    .swatch.workers{ background:var(--workers); }
-    .swatch.retired{ background:var(--retired); }
-    .swatch.primary{ background:var(--primary); }
-
-    .bigsvg{
-      width:100%;
-      height:100%;
-      flex:1 1 auto;
-      min-height:260px;
-      height:auto;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.05);
-      background:rgba(0,0,0,.08);
-      display:block;
-    }
-
-    .explain{
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-      gap:10px;
-    }
-    .explain .body{
-      padding:12px;
-      overflow:auto;
-      min-height:0;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-
-      /* MODIFICACIÓN (para que no se “corte” el final del BLOQUE PAÍS): */
-      flex: 1 1 auto;
-      padding-bottom: 56px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .pyrwrap{
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:12px;
-      background:rgba(255,255,255,.02);
       padding:10px;
       display:flex;
       flex-direction:column;
-      gap:8px;
-    }
-    .pyrtitle{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
       gap:10px;
-      font-size: calc(12px * var(--uiScale));
-      opacity:.92;
-    }
-    .pyrtitle .l{
-      font-family:var(--fontTitle);
-      letter-spacing:.35px;
-      text-transform:uppercase;
-      color:var(--primary);
-      font-size: calc(12px * var(--uiScale));
-    }
-    .pyrsvg{
-      width:100%;
-      height:auto;
-      aspect-ratio: 520 / 520;
-      min-height:320px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.06);
-      background:rgba(0,0,0,.08);
-      display:block;
-    }
-    .pyrnote{
-      font-size: calc(11px * var(--uiScale));
-      opacity:.72;
-      line-height:1.35;
-    }
-
-    /* Bloques con título “dentro”, estilo similar a Pirámide */
-    .blkwrap{
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:12px;
-      background:rgba(255,255,255,.02);
-      padding:10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .blktitle{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:10px;
-      font-size: calc(12px * var(--uiScale));
-      opacity:.92;
-    }
-    .blktitle .l{
-      font-family:var(--fontTitle);
-      letter-spacing:.35px;
-      text-transform:uppercase;
-      color:var(--primary);
-      font-size: calc(12px * var(--uiScale));
-      white-space:normal;              /* clave: no recortar */
-      line-height:1.15;
-      overflow-wrap:anywhere;
-    }
-
-    .kv{
-      display:grid;
-      grid-template-columns: 1fr auto;
-      gap:8px 10px;
-      align-items:baseline;
-      padding:10px 10px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:12px;
-      background:rgba(255,255,255,.02);
-    }
-    .k{ font-size: calc(12px * var(--uiScale)); opacity:.9; }
-    .v{ font-size: calc(12px * var(--uiScale)); color:#fff; font-variant-numeric: tabular-nums; }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.14);
-      font-size: calc(12px * var(--uiScale));
-      line-height:1.25;
-    }
-    .badge .dot2{
-      width:10px; height:10px; border-radius:999px;
-      background:var(--primary);
-      box-shadow:0 0 0 3px rgba(254,247,2,.12);
-      flex:0 0 auto;
-    }
-    .badge.warn .dot2{ background:var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.14); }
-    .badge.ok .dot2{ background:var(--workers); box-shadow:0 0 0 3px rgba(54,195,255,.14); }
-
-    /* MODIFICACIÓN: fondo amarillo para los mensajes “Por debajo/Por encima…” (badge bajo la pirámide) */
-    #resultBadge{
-      background: var(--primary);
-      color: #111;
-    }
-
-    .hr{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
-
-    .mono{
-      font-variant-numeric: tabular-nums;
-      font-feature-settings: "tnum" 1, "ss01" 1;
+      overflow:visible; /* móvil: evitar scroll interno */
     }
 
     .loader{
@@ -448,6 +193,7 @@
       background:rgba(0,0,0,.14);
       font-size: calc(12px * var(--uiScale));
       opacity:.9;
+      width:100%;
     }
     .spinner{
       width:14px; height:14px;
@@ -457,21 +203,231 @@
       animation: spin 0.9s linear infinite;
     }
     @keyframes spin{ to{ transform:rotate(360deg);} }
+
+    /* En móvil: solo selector (no lista larga) */
+    .country-select-wrap{ display:flex; flex-direction:column; gap:10px; }
+    .country-list-wrap{ display:none; }
+
+    .country-select{
+      width:100%;
+      appearance:none;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+      color:var(--text);
+      border-radius:12px;
+      padding:12px 12px;
+      font-size: calc(13px * var(--uiScale));
+      outline:none;
+    }
+    .country-select:focus{
+      border-color: rgba(254,247,2,.35);
+      box-shadow: 0 0 0 3px rgba(254,247,2,.10);
+    }
+    .select-hint{
+      font-size: calc(11px * var(--uiScale));
+      opacity:.75;
+      line-height:1.35;
+    }
+
+    .viz{
+      display:grid;
+      grid-template-columns: 1fr; /* móvil: 1 columna */
+      gap:10px;
+      padding:10px;
+      align-items:stretch;
+    }
+
+    .chart-area{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:0;
+      max-width:100%;
+    }
+
+    .chart-legend{
+      display:flex;
+      flex-direction:column;   /* móvil: apilar leyenda */
+      gap:8px;
+      align-items:flex-start;
+      justify-content:flex-start;
+      font-size: calc(12px * var(--uiScale));
+      opacity:.92;
+    }
+    .legend-left{ display:flex; flex-direction:column; gap:8px; }
+    .legend-item{ display:flex; align-items:center; gap:8px; }
+    .swatch{ width:10px; height:10px; border-radius:2px; background:var(--primary); }
+    .swatch.workers{ background:var(--workers); }
+    .swatch.retired{ background:var(--retired); }
+    .swatch.primary{ background:var(--primary); }
+
+    .bigsvg{
+      width:100%;
+      max-width:100%;
+      height:auto;
+      min-height:260px;
+      aspect-ratio: 1000 / 700; /* clave para que reserve espacio */
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.05);
+      background:rgba(0,0,0,.08);
+      display:block;
+    }
+
+    .explain{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-width:100%;
+    }
+    .explain .body{
+      padding:10px;
+      overflow:visible; /* móvil: evitar scroll interno */
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .pyrwrap{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      background:rgba(255,255,255,.02);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-width:100%;
+    }
+    .pyrtitle{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:8px;
+      font-size: calc(12px * var(--uiScale));
+      opacity:.92;
+    }
+    .pyrtitle .l{
+      font-family:var(--fontTitle);
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      color:var(--primary);
+      font-size: calc(12px * var(--uiScale));
+    }
+    .pyrsvg{
+      width:100%;
+      max-width:100%;
+      height:auto;
+      min-height:240px;              /* bajar para móvil */
+      aspect-ratio: 520 / 520;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(0,0,0,.08);
+      display:block;
+    }
+    .pyrnote{
+      font-size: calc(11px * var(--uiScale));
+      opacity:.72;
+      line-height:1.35;
+    }
+
+    .blkwrap{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      background:rgba(255,255,255,.02);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .blktitle{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:8px;
+      font-size: calc(12px * var(--uiScale));
+      opacity:.92;
+    }
+    .blktitle .l{
+      font-family:var(--fontTitle);
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      color:var(--primary);
+      font-size: calc(12px * var(--uiScale));
+      white-space:normal;
+      line-height:1.15;
+      overflow-wrap:anywhere;
+    }
+
+    /* Clave móvil: no forzar 2 columnas; apilar para evitar superposición */
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr;  /* antes: 1fr auto */
+      gap:6px;
+      align-items:start;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      background:rgba(255,255,255,.02);
+    }
+    .k{ font-size: calc(12px * var(--uiScale)); opacity:.9; }
+    .v{
+      font-size: calc(12px * var(--uiScale));
+      color:#fff;
+      font-variant-numeric: tabular-nums;
+      margin: -2px 0 6px 0;
+    }
+
+    .badge{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+      font-size: calc(12px * var(--uiScale));
+      line-height:1.25;
+      flex-wrap:wrap; /* por si el texto es largo */
+    }
+    .badge .dot2{
+      width:10px; height:10px; border-radius:999px;
+      background:var(--primary);
+      box-shadow:0 0 0 3px rgba(254,247,2,.12);
+      flex:0 0 auto;
+      margin-top:2px;
+    }
+    .badge.warn .dot2{ background:var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.14); }
+    .badge.ok .dot2{ background:var(--workers); box-shadow:0 0 0 3px rgba(54,195,255,.14); }
+
+    /* Fondo amarillo para el badge de resultado */
+    #resultBadge{
+      background: var(--primary);
+      color: #111;
+    }
+
+    .hr{ height:1px; background:rgba(255,255,255,.06); margin:2px 0; }
+
+    .mono{
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1, "ss01" 1;
+    }
   </style>
 </head>
 
 <body>
+
+<!-- Redirect: si se abre en escritorio, vuelve a ocde.html -->
 <script>
   (function(){
     try{
-      if (window.innerWidth <= 900) window.location.replace("movil_ocde.html");
+      if (window.innerWidth > 900) window.location.replace("ocde.html");
     }catch(e){}
   })();
 </script>
 
 <header>
   <div class="h-title">
-    <!-- MODIFICACIÓN: mantener solo “Sostenibilidad — países OCDE” -->
     <h1>Sostenibilidad — países OCDE</h1>
   </div>
   <div class="h-meta">
@@ -481,7 +437,7 @@
 
 <main>
 
-  <!-- LEFT -->
+  <!-- TOP: Selector país -->
   <section class="panel countries" aria-label="Países OCDE">
     <div class="ph">
       <div class="ttl">Países OCDE</div>
@@ -498,6 +454,7 @@
         <div class="select-hint" id="leftNoteMobile">Estado: esperando datos.</div>
       </div>
 
+      <!-- Se mantiene el contenedor de lista por compatibilidad, pero oculto en móvil -->
       <div class="country-list-wrap" id="countryListWrap">
         <div class="country-grid" id="countryList"></div>
         <div class="note" id="leftNote">Estado: esperando datos.</div>
@@ -505,7 +462,7 @@
     </div>
   </section>
 
-  <!-- RIGHT -->
+  <!-- Visualización -->
   <section class="panel" aria-label="Visualización y explicación">
     <div class="ph">
       <div class="ttl">Gráfica C–P</div>
@@ -538,8 +495,6 @@
         </div>
 
         <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
-
-        <!-- MODIFICACIÓN: se elimina el texto de interpretación bajo la gráfica -->
       </div>
 
       <!-- EXPLANATION -->
@@ -631,10 +586,7 @@
 
   const UI_SCALE = Number(getComputedStyle(document.documentElement).getPropertyValue('--uiScale')) || 1;
 
-  /* MODIFICACIÓN: offset COMÚN para labels descriptivos (X e Y) respecto a sus ejes */
   const CP_AXIS_LABEL_OFFSET = Number(getComputedStyle(document.documentElement).getPropertyValue('--cpAxisLabelOffset')) || 50;
-
-  /* MODIFICACIÓN: SOLO EN MÓVIL (layout apilado), escala de fuente para los labels descriptivos de ejes */
   const CP_AXIS_LABEL_FONT_SCALE_MOBILE = Number(getComputedStyle(document.documentElement).getPropertyValue('--cpAxisLabelFontScaleMobile')) || 1;
 
   const NAME_TO_ISO3 = {
@@ -782,6 +734,7 @@
   }
 
   function renderCountryList(){
+    if (!els.countryList) return;
     els.countryList.innerHTML = "";
     state.oecdNames.forEach(name => {
       const btn = document.createElement('button');
@@ -960,7 +913,8 @@
     const totalPop = vals.reduce((a,b)=>a+b,0);
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
 
-    els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F`;
+    /* Fix: cerrar correctamente el texto (en tu pega venía truncado) */
+    els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F).`;
   }
 
   function setExplainPanel(metrics){
@@ -1073,7 +1027,7 @@
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
-    /* MODIFICACIÓN: detectar layout apilado (móvil) para escalar SOLO los labels descriptivos de ejes */
+    /* aquí siempre móvil; pero mantenemos la detección */
     const isMobileStacked = window.matchMedia && window.matchMedia("(max-width: 1100px)").matches;
     const axisLabelScale = isMobileStacked ? CP_AXIS_LABEL_FONT_SCALE_MOBILE : 1;
 
@@ -1102,7 +1056,6 @@
     const pxW = svg.clientWidth || 900;
     const pxH = svg.clientHeight || 560;
 
-    /* MODIFICACIÓN: thinning sin escala extra */
     const xTicks = thinTicksForWidth(xTicksAll, pxW * 0.78, 46 * UI_SCALE);
     const yTicks = thinTicksForWidth(yTicksAll, pxH * 0.65, 34 * UI_SCALE);
 
@@ -1111,12 +1064,9 @@
     const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
     const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
 
-    /* MODIFICACIÓN: tamaños base (sin cpFontScale) */
     const fTick  = 12 * UI_SCALE;
     const fAxis  = 14 * UI_SCALE;
     const fPoint = 14 * UI_SCALE;
-
-    /* MODIFICACIÓN: fuente SOLO para labels descriptivos de ejes (móvil) */
     const fAxisLabel = fAxis * axisLabelScale;
 
     yTicks.forEach(v => {
@@ -1163,7 +1113,6 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    /* MODIFICACIÓN: offset COMÚN para los labels descriptivos de X e Y */
     const axisOffsetPx = CP_AXIS_LABEL_OFFSET * UI_SCALE;
 
     const xLabelY = Math.min(
@@ -1379,7 +1328,7 @@
 
       const leftMsg =
         `Datos pensiones: ${state.oecdNames.length} países. Pirámides: ${state.popByIso3.size} códigos (año ${state.popPreferredYear || "—"}).`;
-      els.leftNote.textContent = leftMsg;
+      if (els.leftNote) els.leftNote.textContent = leftMsg;
       if (els.leftNoteMobile) els.leftNoteMobile.textContent = leftMsg;
 
       const defaultCountry = state.countriesByName.has("España") ? "España" : (state.oecdNames[0] || null);
@@ -1398,7 +1347,7 @@
 
       const msg =
         `No se pudo cargar "${DATA_URL}" o "${POP_CSV_URL}". Revisa que ambos existan en tu repo y se sirvan en GitHub Pages.`;
-      els.leftNote.textContent = msg;
+      if (els.leftNote) els.leftNote.textContent = msg;
       if (els.leftNoteMobile) els.leftNoteMobile.textContent = msg;
 
       els.selectedCountryMeta.textContent = "Error";
