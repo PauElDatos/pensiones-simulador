@@ -11,7 +11,7 @@
       --axisLabelGap: 70px;
       --axisLabelFontScale: 1.15;
 
-      --chartTextBoost: 1.15;         /* NUEVO: boost SOLO para textos de SVG */
+      --chartTextBoost: 2.0;         /* NUEVO: boost SOLO para textos de SVG */
 
       --bg:#252525;
       --primary:#FEF702;
@@ -1165,70 +1165,90 @@
   }
 
   /* MÓVIL: leyenda abreviada y en 2 filas si viewport estrecho */
-  function renderTimeLegendHorizontal(svg, y){
+    function renderTimeLegendHorizontal(svg, y){
     const isNarrow = window.matchMedia && window.matchMedia("(max-width: 520px)").matches;
 
     const items = isNarrow ? [
-      { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
-      { label: "Trab.",     fill: COLORS.workers, op: "0.50" },
-      { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
-      { label: "Jubilados", fill: COLORS.retired, op: "0.50" }
+        { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
+        { label: "Trab.",     fill: COLORS.workers, op: "0.50" },
+        { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
+        { label: "Jubilados", fill: COLORS.retired, op: "0.50" }
     ] : [
-      { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
-      { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
-      { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
-      { label: "Jubilados (65+)", fill: COLORS.retired, op: "0.50" }
+        { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
+        { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
+        { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
+        { label: "Jubilados (65+)", fill: COLORS.retired, op: "0.50" }
     ];
 
-    const box = 14;
-    const gap = 10;
+    // Ajuste: que el símbolo/espaciado también crezca con el boost
+    const boost = getChartTextBoost();
+    const box = Math.round(14 * boost);
+    const gap = Math.round(10 * boost);
 
     const makeRow = (rowItems, yRow) => {
-      const g = svgEl('g', { "opacity":"0.95" });
-      let x = 0;
-      rowItems.forEach((it) => {
+        const g = svgEl('g', { "opacity":"0.95" });
+        let x = 0;
+
+        rowItems.forEach((it) => {
+        // cajita de color
         g.appendChild(svgEl('rect', {
-          x: x, y: yRow - (box - 2),
-          width: box, height: box,
-          fill: it.fill,
-          "fill-opacity": it.op,
-          stroke: COLORS.text,
-          "stroke-width":"1",
-          "stroke-opacity":"0.20",
-          rx:"3", ry:"3"
+            x: x, y: yRow - (box - 2),
+            width: box, height: box,
+            fill: it.fill,
+            "fill-opacity": it.op,
+            stroke: COLORS.text,
+            "stroke-width":"1",
+            "stroke-opacity":"0.20",
+            rx:"3", ry:"3"
         }));
 
+        // texto
         const t = svgEl('text', {
-          x: x + box + gap,
-          y: yRow + 2,
-          fill: COLORS.text,
-          "font-size": fsTick(12),
-          "font-family":"Arial, sans-serif",
-          "text-anchor":"start",
-          "opacity":"0.92"
+            x: x + box + gap,
+            y: yRow + 2,
+            fill: COLORS.text,
+            // Subo un poco la base: antes 12. Con --chartTextBoost esto escala más.
+            "font-size": fsTick(13),
+            "font-family":"Arial, sans-serif",
+            "text-anchor":"start",
+            "opacity":"0.92"
         });
         t.textContent = it.label;
         g.appendChild(t);
 
-        /* estimación simple de avance */
-        x = x + box + gap + (it.label.length * 7.0) + 22;
-      });
+        // Medición real del ancho del texto para evitar solapes
+        let textW = 0;
+        try{
+            if (typeof t.getComputedTextLength === "function"){
+            textW = t.getComputedTextLength();
+            } else {
+            textW = it.label.length * 7.5 * boost;
+            }
+        }catch(e){
+            textW = it.label.length * 7.5 * boost;
+        }
 
-      svg.appendChild(g);
-      try{
+        // avance en X (margen final también proporcional)
+        x = x + box + gap + textW + Math.round(22 * boost);
+        });
+
+        svg.appendChild(g);
+
+        // centrado de la fila
+        try{
         const bb = g.getBBox();
         const tx = (1000 - bb.width) / 2 - bb.x;
         g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
-      }catch(e){}
+        }catch(e){}
     };
 
     if (isNarrow){
-      makeRow(items.slice(0,2), y);
-      makeRow(items.slice(2,4), y + 22);
+        makeRow(items.slice(0,2), y);
+        makeRow(items.slice(2,4), y + Math.round(22 * boost));
     } else {
-      makeRow(items, y);
+        makeRow(items, y);
     }
-  }
+    }
 
   function viewXFromClientX(svg, clientX){
     const rect = svg.getBoundingClientRect();
