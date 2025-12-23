@@ -11,6 +11,8 @@
       --axisLabelGap: 70px;
       --axisLabelFontScale: 1.15;
 
+      --chartTextBoost: 1.15;         /* NUEVO: boost SOLO para textos de SVG */
+
       --bg:#252525;
       --primary:#FEF702;
       --text:#B0B0B0;
@@ -231,6 +233,31 @@
       line-height:1.35;
       border-top:1px solid rgba(255,255,255,.06);
       padding-top:8px;
+    }
+
+    /* NUEVO: desplegable de explicación */
+    .cap-details{
+      border-top:1px solid rgba(255,255,255,.06);
+      padding-top:8px;
+    }
+    .cap-summary{
+      font-size: calc(12px * var(--fontScale));
+      opacity:.82;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      list-style:none;
+      outline:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cap-summary::-webkit-details-marker{ display:none; }
+    .cap-summary::after{ content:"▾"; opacity:.85; }
+    .cap-details[open] .cap-summary::after{ content:"▴"; }
+    .cap-details .caption{
+      border-top:0;
+      padding-top:6px;
     }
 
     /* ========= Pirámide ========= */
@@ -612,9 +639,13 @@
               </div>
             </div>
 
-            <div class="caption">
-              <span class="mono">ρ</span> es un parámetro “resumen” de productividad agregada: captura el nivel de tecnología, la eficiencia organizativa y, en general, cuánta producción (base imponible) genera cada trabajador en promedio. Un <span class="mono">ρ</span> más alto significa que, con el mismo número de cotizantes, la economía genera más valor y el sistema puede sostener más pensiones sin aumentar tipos; un <span class="mono">ρ</span> más bajo implica el caso contrario (misma población activa, menor capacidad de financiación real). Por su parte, <span class="mono">τ</span> representa la intensidad contributiva: el porcentaje del output/labor income que se deriva al sistema (vía cotizaciones/tributación afectada). Subir <span class="mono">τ</span> aumenta ingresos por cotizante, pero también refleja una mayor carga sobre salarios y empresas; bajar <span class="mono">τ</span> alivia la cuña fiscal pero exige, para el mismo nivel de pensiones, más cotizantes o más productividad. Juntas, ambas variables determinan la pendiente de equilibrio <span class="mono">k=τ/ρ</span>, es decir, la “regla” que relaciona cuántos pensionistas pueden financiarse de manera sostenible para un nivel dado de cotizantes.
-            </div>
+            <!-- CAMBIO: desplegable -->
+            <details class="cap-details">
+              <summary class="cap-summary">Ver explicación (ρ, τ y k)</summary>
+              <div class="caption">
+                <span class="mono">ρ</span> es un parámetro “resumen” de productividad agregada: captura el nivel de tecnología, la eficiencia organizativa y, en general, cuánta producción (base imponible) genera cada trabajador en promedio. Un <span class="mono">ρ</span> más alto significa que, con el mismo número de cotizantes, la economía genera más valor y el sistema puede sostener más pensiones sin aumentar tipos; un <span class="mono">ρ</span> más bajo implica el caso contrario (misma población activa, menor capacidad de financiación real). Por su parte, <span class="mono">τ</span> representa la intensidad contributiva: el porcentaje del output/labor income que se deriva al sistema (vía cotizaciones/tributación afectada). Subir <span class="mono">τ</span> aumenta ingresos por cotizante, pero también refleja una mayor carga sobre salarios y empresas; bajar <span class="mono">τ</span> alivia la cuña fiscal pero exige, para el mismo nivel de pensiones, más cotizantes o más productividad. Juntas, ambas variables determinan la pendiente de equilibrio <span class="mono">k=τ/ρ</span>, es decir, la “regla” que relaciona cuántos pensionistas pueden financiarse de manera sostenible para un nivel dado de cotizantes.
+              </div>
+            </details>
           </div>
         </div>
 
@@ -780,6 +811,11 @@
     return isFinite(v) ? v : 1;
   };
 
+  const getChartTextBoost = () => {
+    const v = parseFloat(CSS('--chartTextBoost'));
+    return isFinite(v) ? v : 1;
+  };
+
   const WORKER_POOL = [
     "figuras/noun-avatar-5116460.svg",
     "figuras/noun-avatar-5116462.svg",
@@ -901,9 +937,9 @@
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const toM = (x) => x / 1_000_000;
 
-  const fs = (px) => (px * getFontScale()).toFixed(2);
-  const fsTick = (px) => (px * getFontScale()).toFixed(2);
-  const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale()).toFixed(2);
+  const fs = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
+  const fsTick = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
+  const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale() * getChartTextBoost()).toFixed(2);
 
   function kEquilibrium(){
     const rho = Math.max(1e-6, state.rho);
@@ -1587,9 +1623,12 @@
 
   function renderWorkersIcons(cp){
     els.heroWorkersIcons.innerHTML = "";
-    if (!isFinite(cp) || cp <= 0) return;
+    if (!isFinite(cp)) return;
 
-    const N = Math.max(0, Math.round(cp));
+    let N = Math.round(cp);
+    if (cp < 1.99) N = Math.max(1, N);
+    N = Math.max(1, N);
+
     const CAP = 30;
     const show = Math.min(N, CAP);
     const hasPlus = N > CAP;
