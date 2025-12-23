@@ -7,9 +7,9 @@
 
   <style>
     :root{
-      --fontScale: 1.35;
-      --axisLabelGap: 60px;
-      --axisLabelFontScale: 1.4;
+      --fontScale: 1.25;              /* móvil: un poco más contenido */
+      --axisLabelGap: 70px;
+      --axisLabelFontScale: 1.15;
 
       --bg:#252525;
       --primary:#FEF702;
@@ -29,13 +29,14 @@
       --radius:14px;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
 
-      --workersRowLeftGap: 18px;
+      --workersRowLeftGap: 0px;       /* móvil: sin margen extra */
     }
 
-    @media (max-width: 640px){
+    @media (max-width: 420px){
       :root{
-        --fontScale: 1.18;
-        --axisLabelGap: 70px;
+        --fontScale: 1.10;
+        --axisLabelGap: 78px;
+        --axisLabelFontScale: 1.08;
       }
     }
 
@@ -43,11 +44,12 @@
     body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--fontText); }
 
     header{
-      padding:18px 18px 8px 18px;
+      padding:14px 12px 6px 12px;
       display:flex;
       align-items:flex-end;
       justify-content:space-between;
       gap:12px;
+      flex-wrap:wrap;                 /* móvil: permite salto */
     }
     .h-title{ line-height:1.05; }
     .h-title h1{
@@ -57,8 +59,13 @@
       font-size: calc(22px * var(--fontScale));
       letter-spacing:.3px;
     }
-    .h-title p{ margin:6px 0 0 0; font-size: calc(13px * var(--fontScale)); opacity:.9; max-width:110ch; }
-    .h-meta{ font-size: calc(12px * var(--fontScale)); opacity:.85; text-align:right; }
+    .h-title p{ margin:6px 0 0 0; font-size: calc(13px * var(--fontScale)); opacity:.9; max-width:unset; }
+    .h-meta{
+      font-size: calc(12px * var(--fontScale));
+      opacity:.85;
+      text-align:left;               /* móvil: mejor lectura */
+      width:100%;
+    }
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       padding:8px 10px;
@@ -81,7 +88,7 @@
 
     main{
       min-height: calc(100vh - 70px);
-      padding:12px 12px 18px 12px;
+      padding:10px 10px 16px 10px;   /* móvil */
     }
 
     .panel{
@@ -96,9 +103,10 @@
       border-bottom:1px solid var(--stroke);
       background:rgba(255,255,255,.02);
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:10px;
+      flex-wrap:wrap;                /* móvil: evita solape */
     }
     .ttl{
       font-family:var(--fontTitle);
@@ -106,8 +114,15 @@
       font-size: calc(13px * var(--fontScale));
       letter-spacing:.35px;
       text-transform:uppercase;
+      white-space:nowrap;
     }
-    .sub{ font-size: calc(12px * var(--fontScale)); opacity:.85; text-align:right; max-width:62ch; }
+    .sub{
+      font-size: calc(12px * var(--fontScale));
+      opacity:.85;
+      text-align:left;
+      max-width:unset;
+      width:100%;
+    }
 
     .chart-area{
       padding:12px;
@@ -119,20 +134,9 @@
 
     .charts-row{
       display:grid;
-      grid-template-columns: 1fr 1fr 480px;
+      grid-template-columns: 1fr;    /* móvil: todo apilado */
       gap:12px;
       align-items:start;
-    }
-
-    @media (max-width: 1500px){
-      .charts-row{ grid-template-columns: 1fr 1fr; }
-      .pyr-in-sim{ grid-column: 1 / -1; }
-    }
-
-    @media (max-width: 900px){
-      :root{ --axisLabelFontScale: 1.15; }
-      .charts-row{ grid-template-columns:1fr; }
-      .pyr-in-sim{ grid-column:auto; }
     }
 
     .chart-card{
@@ -146,9 +150,10 @@
       padding:10px 10px 8px 10px;
       border-bottom:1px solid rgba(255,255,255,.06);
       display:flex;
-      align-items:flex-end;
+      align-items:flex-start;
       justify-content:space-between;
       gap:10px;
+      flex-wrap:wrap;                /* móvil */
     }
 
     .chart-card .ch .cttl{
@@ -157,41 +162,42 @@
       font-size: calc(12px * var(--fontScale));
       letter-spacing:.35px;
       text-transform:uppercase;
+      white-space:nowrap;
     }
     .chart-card .ch .csub{
       font-size: calc(12px * var(--fontScale));
       opacity:.85;
-      text-align:right;
+      text-align:left;
       font-variant-numeric: tabular-nums;
       line-height:1.2;
+      width:100%;
     }
 
     .chart-card .ch.cp-head{
       display:block;
-      align-items:unset;
-      justify-content:unset;
     }
     .cp-head-row{
       display:grid;
-      grid-template-columns: auto 1fr auto;
-      align-items:center;
-      gap:12px;
+      grid-template-columns: 1fr;     /* móvil: una columna */
+      align-items:start;
+      gap:8px;
     }
     .cp-mid{
       display:flex;
       align-items:center;
-      justify-content:center;
+      justify-content:flex-start;
       gap:8px;
-      flex-wrap:nowrap;
+      flex-wrap:wrap;                /* móvil: permite salto */
       min-width:0;
     }
     .cp-right{
-      text-align:right;
+      text-align:left;
       white-space:nowrap;
       opacity:.85;
       font-variant-numeric: tabular-nums;
       line-height:1.2;
       font-size: calc(12px * var(--fontScale));
+      width:100%;
     }
 
     .chart-card .cb{
@@ -211,12 +217,41 @@
       display:block;
     }
 
-    /* ========= CAMBIO: quitar barra izquierda (ahora 1 columna) ========= */
+    /* ========= 1 columna ========= */
     .sim-wrap{
       display:grid;
       grid-template-columns: 1fr;
       gap:10px;
       align-items:stretch;
+    }
+
+    .caption{
+      font-size: calc(12px * var(--fontScale));
+      opacity:.82;
+      line-height:1.35;
+      border-top:1px solid rgba(255,255,255,.06);
+      padding-top:8px;
+    }
+
+    /* ========= Pirámide ========= */
+    .pyr-frame{
+      display:grid;
+      grid-template-columns: 56px 1fr; /* móvil: barra más estrecha */
+      gap:10px;
+      align-items:stretch;
+    }
+    @media (max-width: 420px){
+      .pyr-frame{ grid-template-columns: 48px 1fr; }
+    }
+
+    .pyr-svg{
+      width:100%;
+      height:auto;
+      aspect-ratio: 520 / 650;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.05);
+      background:rgba(0,0,0,.08);
+      display:block;
     }
 
     .vslider-shell{
@@ -232,11 +267,14 @@
       align-self:stretch;
       position:relative;
     }
+    @media (max-width: 420px){
+      .vslider-shell{ padding:8px 4px; border-radius:12px; }
+    }
 
     .vslider-shell input[type="range"]{
       -webkit-appearance: none;
       appearance: none;
-      width: 260px; /* JS lo recalcula a la altura real */
+      width: 240px; /* JS lo recalcula */
       height: 4px;
       position:absolute;
       left:50%;
@@ -247,37 +285,12 @@
       display:block;
     }
 
-    .caption{
-      font-size: calc(12px * var(--fontScale));
-      opacity:.82;
-      line-height:1.35;
-      border-top:1px solid rgba(255,255,255,.06);
-      padding-top:8px;
-    }
-
-    /* ========= CAMBIO IMPORTANTE (2): STRETCH ========= */
-    .pyr-frame{
-      display:grid;
-      grid-template-columns: 64px 1fr;
-      gap:10px;
-      align-items:stretch;
-    }
-    .pyr-svg{
-      width:100%;
-      height:auto;
-      aspect-ratio: 520 / 650;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.05);
-      background:rgba(0,0,0,.08);
-      display:block;
-    }
-
     .ctl{ display:grid; gap:6px; }
     .ctl label{
       font-size: calc(13px * var(--fontScale));
       opacity:.92;
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:10px;
     }
@@ -339,6 +352,8 @@
       background:rgba(255,255,255,.03);
       font-size: calc(12px * var(--fontScale));
       opacity:.95;
+      width:100%;                    /* móvil */
+      justify-content:flex-start;
     }
     .result-dot{
       width:9px; height:9px; border-radius:50%;
@@ -347,6 +362,34 @@
     }
     .result-dot.bad{ background: var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.12); }
     .result-dot.ok{ background: var(--workers); box-shadow:0 0 0 3px rgba(54,195,255,.12); }
+
+    /* Botones: wrap real */
+    .sim-footer-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .sim-btn-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      width:100%;
+    }
+    .sim-btn{
+      cursor:pointer;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:8px 10px;
+      flex:1 1 120px;
+      min-width:120px;
+    }
+    @media (max-width: 420px){
+      .sim-btn{ flex:1 1 100%; min-width:0; }
+    }
 
     .mini-pill{
       display:inline-flex;
@@ -381,20 +424,21 @@
 
     .cp-ratio-hero{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
-      gap:14px;
+      gap:12px;
       padding:10px;
       border:1px solid rgba(255,255,255,.06);
       border-radius:12px;
       background:rgba(0,0,0,.08);
+      flex-wrap:wrap;
     }
     .cp-ratio-hero .left{
       display:flex;
       align-items:center;
-      gap:12px;
-      min-width:240px;
-      flex:0 0 auto;
+      gap:10px;
+      min-width:0;
+      flex:1 1 200px;
     }
     .cp-ratio-hero .label{
       font-size: calc(12px * var(--fontScale));
@@ -402,7 +446,7 @@
       margin-bottom:4px;
     }
     .cp-ratio-hero .big{
-      font-size: calc(22px * var(--fontScale));
+      font-size: calc(20px * var(--fontScale));
       color:#fff;
       font-family:var(--fontTitle);
       letter-spacing:.3px;
@@ -410,20 +454,20 @@
     }
 
     .cp-ratio-hero .right{
-      flex:1 1 auto;
+      flex:1 1 220px;
       min-width:0;
       display:flex;
       align-items:center;
-      justify-content:flex-end;
-      flex-wrap:nowrap;
-      gap:8px;
+      justify-content:flex-start;     /* móvil */
+      flex-wrap:wrap;                /* móvil */
+      gap:6px;
       margin-left: var(--workersRowLeftGap);
       overflow:hidden;
     }
 
     .hero-icon{
-      width:48px;
-      height:48px;
+      width:40px;
+      height:40px;
       display:block;
       filter: invert(1) brightness(2) saturate(0);
       opacity:.98;
@@ -431,8 +475,8 @@
     }
 
     .worker-icon{
-      width:30px;
-      height:30px;
+      width:24px;
+      height:24px;
       display:block;
       filter: invert(1) brightness(2) saturate(0);
       opacity:.92;
@@ -440,12 +484,12 @@
     }
 
     .plus{
-      width:30px; height:30px;
+      width:24px; height:24px;
       display:flex;
       align-items:center;
       justify-content:center;
       color:#fff;
-      font-size: calc(18px * var(--fontScale));
+      font-size: calc(16px * var(--fontScale));
       opacity:.9;
       border:1px solid rgba(255,255,255,.10);
       border-radius:10px;
@@ -470,18 +514,6 @@
 </head>
 
 <body>
-<script>
-(function(){
-  try{
-    if (window.matchMedia && window.matchMedia("(max-width: 900px)").matches) {
-      if (!location.pathname.endsWith("movil_simulador.html")) {
-        window.location.replace("movil_simulador.html");
-      }
-    }
-  }catch(e){}
-})();
-</script>
-
 <header>
   <div class="h-title">
     <h1>Simulador</h1>
@@ -566,22 +598,16 @@
                 </div>
               </div>
 
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+              <div class="sim-footer-row">
                 <div class="result-pill" id="resultPill">
                   <span class="result-dot" id="resultDot"></span>
                   <span id="resultText">—</span>
                 </div>
 
-                <div style="display:flex; gap:8px;">
-                  <button id="playBtn" type="button" style="cursor:pointer; border-radius:12px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03); color:var(--text); padding:8px 10px;">
-                    Reproducir
-                  </button>
-                  <button id="pauseBtn" type="button" style="cursor:pointer; border-radius:12px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03); color:var(--text); padding:8px 10px;">
-                    Pausar
-                  </button>
-                  <button id="resetBtn" type="button" style="cursor:pointer; border-radius:12px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03); color:var(--text); padding:8px 10px;">
-                    Reset
-                  </button>
+                <div class="sim-btn-row">
+                  <button id="playBtn" type="button" class="sim-btn">Reproducir</button>
+                  <button id="pauseBtn" type="button" class="sim-btn">Pausar</button>
+                  <button id="resetBtn" type="button" class="sim-btn">Reset</button>
                 </div>
               </div>
             </div>
@@ -901,7 +927,6 @@
     input.style.background = `linear-gradient(to right, ${CSS('--primary')} 0%, ${CSS('--primary')} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
   }
 
-  /* ========= CAMBIO CLAVE: altura real del SVG (robusta) ========= */
   function getRenderedSvgHeight(svg){
     if (!svg) return 0;
 
@@ -924,7 +949,6 @@
       }
     }
 
-    // Último fallback: computed style
     if (!isFinite(h) || h <= 1){
       const cs = getComputedStyle(svg);
       const cssH = parseFloat(cs.height);
@@ -938,7 +962,7 @@
     if (!shell || !input || !svg) return;
 
     let targetH = getRenderedSvgHeight(svg);
-    if (targetH <= 1) return; // se reintentará vía syncAllSidebarsStable()
+    if (targetH <= 1) return;
 
     const wrap = svg && svg.parentElement;
     if (wrap){
@@ -966,7 +990,6 @@
     syncSidebarToSvg({ shell: els.peakShell, input: els.peakSlider, svg: els.pyrSvg });
   }
 
-  /* ========= CAMBIO CLAVE: reintento en varios frames (layout estable) ========= */
   function syncAllSidebarsStable(){
     let n = 0;
     const step = () => {
@@ -991,9 +1014,6 @@
     if (els.peakShell) ro.observe(els.peakShell);
   }
 
-  // ======================
-  // Pirámide sintética -> shares por edad
-  // ======================
   function gaussian(x, mu, sigma){
     const z = (x - mu) / Math.max(1e-6, sigma);
     return Math.exp(-0.5 * z * z);
@@ -1053,9 +1073,6 @@
     return { sMin: minors/s, sWork: work/s, sRet: retired/s };
   }
 
-  // ======================
-  // Serie temporal
-  // ======================
   function buildSeries(){
     const T = state.years;
     const series = [];
@@ -1111,56 +1128,70 @@
     return series;
   }
 
+  /* MÓVIL: leyenda abreviada y en 2 filas si viewport estrecho */
   function renderTimeLegendHorizontal(svg, y){
-    const items = [
+    const isNarrow = window.matchMedia && window.matchMedia("(max-width: 520px)").matches;
+
+    const items = isNarrow ? [
+      { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
+      { label: "Trab.",     fill: COLORS.workers, op: "0.50" },
+      { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
+      { label: "Jubilados", fill: COLORS.retired, op: "0.50" }
+    ] : [
       { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
       { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
       { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
       { label: "Jubilados (65+)", fill: COLORS.retired, op: "0.50" }
     ];
 
-    const g = svgEl('g', { "opacity":"0.95" });
-
     const box = 14;
     const gap = 10;
-    const after = 34;
 
-    let x = 0;
+    const makeRow = (rowItems, yRow) => {
+      const g = svgEl('g', { "opacity":"0.95" });
+      let x = 0;
+      rowItems.forEach((it) => {
+        g.appendChild(svgEl('rect', {
+          x: x, y: yRow - (box - 2),
+          width: box, height: box,
+          fill: it.fill,
+          "fill-opacity": it.op,
+          stroke: COLORS.text,
+          "stroke-width":"1",
+          "stroke-opacity":"0.20",
+          rx:"3", ry:"3"
+        }));
 
-    items.forEach((it) => {
-      g.appendChild(svgEl('rect', {
-        x: x, y: y - (box - 2),
-        width: box, height: box,
-        fill: it.fill,
-        "fill-opacity": it.op,
-        stroke: COLORS.text,
-        "stroke-width":"1",
-        "stroke-opacity":"0.20",
-        rx:"3", ry:"3"
-      }));
+        const t = svgEl('text', {
+          x: x + box + gap,
+          y: yRow + 2,
+          fill: COLORS.text,
+          "font-size": fsTick(12),
+          "font-family":"Arial, sans-serif",
+          "text-anchor":"start",
+          "opacity":"0.92"
+        });
+        t.textContent = it.label;
+        g.appendChild(t);
 
-      const t = svgEl('text', {
-        x: x + box + gap,
-        y: y + 2,
-        fill: COLORS.text,
-        "font-size": fsTick(12),
-        "font-family":"Arial, sans-serif",
-        "text-anchor":"start",
-        "opacity":"0.92"
+        /* estimación simple de avance */
+        x = x + box + gap + (it.label.length * 7.0) + 22;
       });
-      t.textContent = it.label;
-      g.appendChild(t);
 
-      x = x + box + gap + (it.label.length * 7.2) + after;
-    });
+      svg.appendChild(g);
+      try{
+        const bb = g.getBBox();
+        const tx = (1000 - bb.width) / 2 - bb.x;
+        g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
+      }catch(e){}
+    };
 
-    svg.appendChild(g);
-
-    try{
-      const bb = g.getBBox();
-      const tx = (1000 - bb.width) / 2 - bb.x;
-      g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
-    } catch(e){}
+    if (isNarrow){
+      makeRow(items.slice(0,2), y);
+      makeRow(items.slice(2,4), y + 22);
+    } else {
+      makeRow(items, y);
+    }
   }
 
   function viewXFromClientX(svg, clientX){
@@ -1203,15 +1234,12 @@
     els.timeSvg.addEventListener("pointerleave", end);
   }
 
-  // ======================
-  // Chart 1
-  // ======================
   function renderTimeChart(){
     const svg = els.timeSvg;
     clearSvg(svg);
 
     const W = 1000, H = 700;
-    const pad = {l: 90, r: 30, t: 24, b: 140};
+    const pad = {l: 90, r: 30, t: 24, b: 160}; /* móvil: más espacio para leyenda */
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -1268,14 +1296,14 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = Math.min(H - 44, pad.t + innerH + getAxisLabelGap());
+    const xAxisLabelY = Math.min(H - 64, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
       fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    const legendY = Math.min(H - 16, xAxisLabelY + 30);
+    const legendY = Math.min(H - 18, xAxisLabelY + 28);
     renderTimeLegendHorizontal(svg, legendY);
 
     const yLabelX = Math.max(10, pad.l - getAxisLabelGap());
@@ -1372,9 +1400,6 @@
     }
   }
 
-  // ======================
-  // Chart 2: C–P (sin cambios sustantivos)
-  // ======================
   function niceCeil(x, step){
     if (!isFinite(x) || x <= 0) return step;
     return Math.ceil(x / step) * step;
@@ -1573,9 +1598,9 @@
 
     const avail = els.heroWorkersIcons.getBoundingClientRect().width || 0;
 
-    const maxIcon = 30;
+    const maxIcon = 24;
     const minIcon = 14;
-    const baseGap = 8;
+    const baseGap = 6;
 
     let iconSize = maxIcon;
     let gap = baseGap;
@@ -1590,8 +1615,8 @@
       let s = tryCompute(baseGap);
       gap = baseGap;
 
-      if (s < 22){ s = tryCompute(6); gap = 6; }
-      if (s < 18){ s = tryCompute(4); gap = 4; }
+      if (s < 20){ s = tryCompute(4); gap = 4; }
+      if (s < 16){ s = tryCompute(3); gap = 3; }
 
       iconSize = clamp(s, minIcon, maxIcon);
 
@@ -1621,7 +1646,7 @@
       plus.textContent = "+";
       plus.style.width = `${iconSize}px`;
       plus.style.height = `${iconSize}px`;
-      plus.style.fontSize = `${Math.max(12, iconSize * 0.6)}px`;
+      plus.style.fontSize = `${Math.max(12, iconSize * 0.65)}px`;
       els.heroWorkersIcons.appendChild(plus);
     }
 
@@ -1651,16 +1676,13 @@
       plus.textContent = "+";
       plus.style.width = `${iconSize}px`;
       plus.style.height = `${iconSize}px`;
-      plus.style.fontSize = `${Math.max(12, iconSize * 0.6)}px`;
+      plus.style.fontSize = `${Math.max(12, iconSize * 0.65)}px`;
       els.heroWorkersIcons.appendChild(plus);
     }
 
     els.heroWorkersIcons.style.gap = `${gap}px`;
   }
 
-  // ======================
-  // Pirámide render
-  // ======================
   function buildSyntheticSharesMF(){
     const total = buildSyntheticTotalShares();
     const n = total.length;
@@ -1760,9 +1782,6 @@
     syncAllSidebarsStable();
   }
 
-  // ======================
-  // Animación
-  // ======================
   function tick(ts){
     if (!state.playing){
       state.lastTs = ts;
@@ -1785,9 +1804,6 @@
     requestAnimationFrame(rafLoop);
   }
 
-  // ======================
-  // Sync UI
-  // ======================
   function syncUI(){
     els.popSlider.value = state.popTotalM;
     els.popVal.textContent = state.popTotalM.toFixed(1);
@@ -1829,9 +1845,6 @@
     syncAllSidebarsStable();
   }
 
-  // ======================
-  // Handlers
-  // ======================
   els.peakSlider.addEventListener('input', (e) => {
     state.peakIdx = Number(e.target.value);
     paintRange(els.peakSlider);
@@ -1940,9 +1953,6 @@
     if (isFinite(cp)) renderWorkersIcons(cp);
   });
 
-  // ======================
-  // init
-  // ======================
   ensureWorkerSeq(30);
 
   syncUI();
