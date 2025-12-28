@@ -17,6 +17,7 @@
       --cpYAxisLabelGap: 20px;         /* distancia texto eje Y al eje Y (C–P Y EQUILIBRIO) */
 
       --timeLegendFontScale: 1.50;     /* tamaño del texto SOLO de la leyenda (EVOLUCIÓN EN EL TIEMPO) */
+      --timeLegendItemGap: 90px;      /* distancia horizontal entre elementos de la leyenda (EVOLUCIÓN EN EL TIEMPO) */
 
       --timeLegendToChartGap: 140px;   /* distancia vertical de la leyenda al eje X (la “gráfica”) */
 
@@ -50,9 +51,9 @@
         --axisLabelFontScale: 1.08;
 
         --timeXAxisLabelGap: 78px;
-        --timeYAxisLabelGap: 78px;
+        --timeYAxisLabelGap: 20px;
         --cpXAxisLabelGap: 78px;
-        --cpYAxisLabelGap: 78px;
+        --cpYAxisLabelGap: 20px;
 
         --timeLegendToChartGap: 106px; /* 78 + 28 (equivalente al comportamiento anterior) */
       }
@@ -238,14 +239,6 @@
     /* CAMBIO: “Evolución en el tiempo” más alta para dar espacio a leyenda */
     #timeSvg{
       aspect-ratio: 1000 / 900;
-      width:96%;
-      margin:0 auto;
-    }
-
-    /* CAMBIO: “C–P y equilibrio” un poco más pequeño y centrado */
-    #cpSvg{
-      width:96%;
-      margin:0 auto;
     }
 
     /* ========= 1 columna ========= */
@@ -890,6 +883,11 @@
     return isFinite(v) ? v : 1;
   };
 
+  const getTimeLegendItemGap = () => {
+    const v = parseFloat(CSS('--timeLegendItemGap'));
+    return isFinite(v) ? v : 22;
+  };
+
   /* distancia vertical desde el eje X (la “gráfica”) hasta la leyenda */
   const getTimeLegendToChartGap = () => {
     const v = parseFloat(CSS('--timeLegendToChartGap'));
@@ -1357,26 +1355,28 @@
   }
 
   /* ========= CAMBIO IMPORTANTE =========
-     - Chart más alto (H=900) para dar “caja” vertical real.
-     - Leyenda vertical y SIEMPRE por debajo del label del eje X.
+     - Asegura que NADA se solape: ticks → label X → leyenda (en vertical) y todo dentro del SVG.
+     - Ajusta padding dinámico con el tamaño real de texto (boost incluido).
   */
   function renderTimeChart(){
     const svg = els.timeSvg;
     clearSvg(svg);
 
     const W = 1000, H = 900;
-    const pad = {l: 90, r: 30, t: 24, b: 260};
-    const innerW = W - pad.l - pad.r;
-    const innerH = H - pad.t - pad.b;
-
-    const data = buildSeries();
-    const T = state.years;
-
-    state.timeLayout = { W, H, pad, innerW, innerH, T };
 
     const boost = getChartTextBoost();
     const xGap = getTimeXAxisLabelGap();
     const yGap = getTimeYAxisLabelGap();
+
+    const tickFontPx = 12 * getFontScale() * boost;
+    const axisLabelFontPx = 14 * getFontScale() * getAxisLabelFontScale() * boost;
+
+    const tickLabelOffset = Math.round((10 * boost) + tickFontPx);
+
+    const xAxisGapEff = Math.max(
+      xGap,
+      tickLabelOffset + tickFontPx + Math.round(10 * boost)
+    );
 
     const legendItems = getTimeLegendItems();
     const legendBox = Math.round(14 * boost);
@@ -1384,16 +1384,38 @@
     const legendLineH = Math.max(legendBox, legendFontPx) + Math.round(10 * boost);
     const legendTotalH = legendItems.length * legendLineH;
 
-    const axisY = pad.t + innerH;
+    const legendFromAxisMin = xAxisGapEff + axisLabelFontPx + Math.round(18 * boost);
+    const legendFromAxis = Math.max(getTimeLegendToChartGap(), legendFromAxisMin);
 
-    let xAxisLabelY = axisY + xGap;
+    const bottomNeed = Math.max(
+      tickLabelOffset + tickFontPx + Math.round(10 * boost),
+      xAxisGapEff + axisLabelFontPx + Math.round(10 * boost),
+      legendFromAxis + legendTotalH + Math.round(12 * boost)
+    ) + 18;
 
-    let legendY = axisY + getTimeLegendToChartGap();
-    const minLegendY = xAxisLabelY + Math.round(30 * boost);
-    legendY = Math.max(legendY, minLegendY);
-    legendY = Math.min(legendY, H - 18 - legendTotalH);
+    const estTickW = Math.max(44 * boost, tickFontPx * 2.4);
+    const leftNeed = 16 + estTickW + yGap + axisLabelFontPx;
 
-    xAxisLabelY = Math.min(xAxisLabelY, legendY - Math.round(22 * boost));
+    let pad = {
+      l: Math.max(90, leftNeed),
+      r: 34,
+      t: 24,
+      b: Math.max(140, bottomNeed)
+    };
+
+    const minInnerH = 280;
+    pad.b = Math.min(pad.b, Math.max(120, H - pad.t - minInnerH));
+
+    const minInnerW = 360;
+    pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
+
+    const innerW = W - pad.l - pad.r;
+    const innerH = H - pad.t - pad.b;
+
+    const data = buildSeries();
+    const T = state.years;
+
+    state.timeLayout = { W, H, pad, innerW, innerH, T };
 
     const yMax = Math.max(...data.map(d => d.total)) / 1_000_000;
     const yNice = Math.ceil(yMax/5)*5 || 5;
@@ -1426,7 +1448,7 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.30"
       }));
       const t = svgEl('text',{
-        x: xToPx(xv), y: pad.t + innerH + 26,
+        x: xToPx(xv), y: pad.t + innerH + tickLabelOffset,
         fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
@@ -1443,16 +1465,17 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
+    const xAxisLabelY = pad.t + innerH + xAxisGapEff;
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
       fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    /* CAMBIO: leyenda vertical, colocada por debajo del label X */
+    const legendY = pad.t + innerH + legendFromAxis;
     renderTimeLegendVertical(svg, legendY);
 
-    const yLabelX = Math.max(10, pad.l - yGap);
+    const yLabelX = Math.max(14, pad.l - yGap);
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
@@ -1574,12 +1597,44 @@
     clearSvg(svg);
 
     const W = 1000, H = 700;
-    const pad = {l: 90, r: 30, t: 26, b: 110};
-    const innerW = W - pad.l - pad.r;
-    const innerH = H - pad.t - pad.b;
 
+    const boost = getChartTextBoost();
     const xGap = getCPXAxisLabelGap();
     const yGap = getCPYAxisLabelGap();
+
+    const tickFontPx = 12 * getFontScale() * boost;
+    const axisLabelFontPx = 14 * getFontScale() * getAxisLabelFontScale() * boost;
+
+    const tickLabelOffset = Math.round((10 * boost) + tickFontPx);
+
+    const xAxisGapEff = Math.max(
+      xGap,
+      tickLabelOffset + tickFontPx + Math.round(10 * boost)
+    );
+
+    const bottomNeed = Math.max(
+      tickLabelOffset + tickFontPx + Math.round(10 * boost),
+      xAxisGapEff + axisLabelFontPx + Math.round(10 * boost)
+    ) + 18;
+
+    const estTickW = Math.max(44 * boost, tickFontPx * 2.4);
+    const leftNeed = 16 + estTickW + yGap + axisLabelFontPx;
+
+    let pad = {
+      l: Math.max(90, leftNeed),
+      r: 34,
+      t: 26,
+      b: Math.max(90, bottomNeed)
+    };
+
+    const minInnerH = 260;
+    pad.b = Math.min(pad.b, Math.max(70, H - pad.t - minInnerH));
+
+    const minInnerW = 360;
+    pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
+
+    const innerW = W - pad.l - pad.r;
+    const innerH = H - pad.t - pad.b;
 
     const C = toM(cur.cot);
     const P = toM(cur.retired);
@@ -1622,7 +1677,7 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.35"
       }));
       const t = svgEl('text',{
-        x: xToPx(v), y: pad.t + innerH + 26,
+        x: xToPx(v), y: pad.t + innerH + tickLabelOffset,
         fill: COLORS.text, "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
@@ -1640,7 +1695,7 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = Math.min(H - 16, pad.t + innerH + xGap);
+    const xAxisLabelY = pad.t + innerH + xAxisGapEff;
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
       fill: COLORS.text, "font-size": fsAxisLabel(14),
@@ -1648,7 +1703,7 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
-    const yLabelX = Math.max(10, pad.l - yGap);
+    const yLabelX = Math.max(14, pad.l - yGap);
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(14),
