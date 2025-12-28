@@ -3,22 +3,40 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pensiones — Parámetros (Evolución en el tiempo)</title>
+  <title>Pensiones — Evolución en el tiempo (Parámetros)</title>
 
   <style>
     :root{
       --bg:#252525;
       --primary:#FEF702;
       --text:#B0B0B0;
+      --grid:#4A4A4A;
+
+      --workers:#36C3FF;
+      --retired:#FF6A00;
+      --minors:#7f7f7f;
+      --noncot:#1f6d86;
+
       --stroke:#3a3a3a;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
       --radius:16px;
 
-      --workers:#36C3FF;
-      --retired:#FF6A00;
-
       --fontTitle: "Futura","Trebuchet MS",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       --fontText:  Arial,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+
+      /* Escalas del SVG */
+      --fontScale: 1.0;
+      --chartTextBoost: 2.0;
+
+      /* Gaps (controlan padding real) */
+      --timeXAxisLabelGap: 86px;
+      --timeYAxisLabelGap: 70px;
+      --timeLegendToChartGap: 130px;
+
+      --timeLegendFontScale: 1.35;
+      --timeLegendItemGap: 72px;
+
+      --timeChartWidth: 100%;
     }
 
     *{ box-sizing:border-box; }
@@ -44,7 +62,7 @@
       margin:6px 0 0 0;
       opacity:.9;
       font-size:13px;
-      max-width:92ch;
+      max-width:96ch;
       line-height:1.35;
     }
     .pill{
@@ -74,7 +92,7 @@
     main{ padding:10px 18px 22px 18px; }
 
     .panel{
-      max-width: 980px;
+      max-width: 1180px;
       margin: 0 auto;
       background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
       border:1px solid var(--stroke);
@@ -104,20 +122,20 @@
     .sub{
       font-size: 12px;
       opacity:.85;
-      line-height:1.3;
+      line-height:1.35;
       flex:1 1 auto;
-      min-width:260px;
+      min-width:280px;
     }
     .mono{ font-variant-numeric: tabular-nums; }
 
     .content{
       padding:14px 16px 16px 16px;
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.25fr 0.95fr;
       gap:14px;
       align-items:start;
     }
-    @media (max-width: 900px){
+    @media (max-width: 980px){
       .content{ grid-template-columns:1fr; }
     }
 
@@ -152,6 +170,17 @@
       line-height:1.2;
     }
     .card .cb{ padding:12px; display:grid; gap:12px; }
+
+    .bigsvg{
+      width:100%;
+      height:auto;
+      aspect-ratio: 1000 / 700;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.05);
+      background:rgba(0,0,0,.08);
+      display:block;
+    }
+    #timeSvg{ width: var(--timeChartWidth); margin: 0 auto; }
 
     .ctl{ display:grid; gap:6px; }
     .ctl label{
@@ -207,41 +236,25 @@
     .kv .k{ opacity:.85; }
     .kv .v{ color:#fff; font-variant-numeric: tabular-nums; }
 
-    .mini-row{
+    .result-pill{
       display:flex;
+      align-items:center;
       gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-start;
-      font-size:12px;
-      opacity:.92;
-    }
-    .mini-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:7px 10px;
-      border-radius:999px;
+      padding:10px 12px;
+      border-radius:12px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.03);
-      font-variant-numeric: tabular-nums;
-    }
-    .mini-dot{
-      width:9px; height:9px;
-      border-radius:50%;
-      background: var(--workers);
-      box-shadow:0 0 0 3px rgba(54,195,255,.12);
-    }
-    .mini-dot.ret{ background: var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.12); }
-    .mini-dot.ylw{ background: var(--primary); box-shadow:0 0 0 3px rgba(254,247,2,.12); }
-
-    .note{
       font-size:12px;
-      opacity:.78;
-      line-height:1.35;
-      padding-top:8px;
-      border-top:1px solid rgba(255,255,255,.06);
+      opacity:.95;
     }
+    .result-dot{
+      width:10px; height:10px; border-radius:50%;
+      background: var(--primary);
+      box-shadow:0 0 0 3px rgba(254,247,2,.12);
+      flex:0 0 auto;
+    }
+    .result-dot.ok{ background: var(--workers); box-shadow:0 0 0 3px rgba(54,195,255,.12); }
+    .result-dot.bad{ background: var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.12); }
 
     .btn-row{
       display:flex;
@@ -276,37 +289,13 @@
     }
     .btn.primary:hover{ background: rgba(254,247,2,1); }
 
-    details{
-      border-top:1px solid rgba(255,255,255,.06);
-      padding-top:10px;
-    }
-    summary{
-      cursor:pointer;
-      list-style:none;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-
-      padding:10px 12px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:12px;
-      background:rgba(0,0,0,.10);
+    .note{
       font-size:12px;
-      opacity:.92;
+      opacity:.78;
+      line-height:1.35;
+      border-top:1px solid rgba(255,255,255,.06);
+      padding-top:8px;
     }
-    summary::-webkit-details-marker{ display:none; }
-    summary::after{
-      content:"ABRIR ▾";
-      font-weight:700;
-      color:#fff;
-      padding:6px 10px;
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:999px;
-      background:rgba(255,255,255,.06);
-      line-height:1;
-    }
-    details[open] summary::after{ content:"CERRAR ▴"; }
   </style>
 </head>
 
@@ -315,8 +304,8 @@
   <div class="h-title">
     <h1>Evolución en el tiempo</h1>
     <p>
-      Ajusta los parámetros del sistema (productividad, tipo de cotización, paro y dinámica demográfica).
-      Se guardan automáticamente para el simulador.
+      Ajusta parámetros y observa la trayectoria agregada. La forma inicial se deriva de la pirámide del paso 1.
+      Los valores se guardan automáticamente para el simulador.
     </p>
   </div>
   <div class="pill">
@@ -326,30 +315,43 @@
 </header>
 
 <main>
-  <section class="panel" aria-label="Configuración evolución en el tiempo">
+  <section class="panel" aria-label="Configuración evolución en el tiempo (con gráfica)">
     <div class="ph">
-      <div class="ttl">Paso 2 — Parámetros</div>
+      <div class="ttl">Paso 2 — Tiempo</div>
       <div class="sub">
         <div class="mono" id="pyrSummary">Pirámide: —</div>
-        <div class="mini-row" style="margin-top:8px;">
-          <span class="mini-pill" title="Menores (<18)"><span class="mini-dot ylw"></span><span id="shareMin">—</span></span>
-          <span class="mini-pill" title="Edad laboral (18–64)"><span class="mini-dot"></span><span id="shareWork">—</span></span>
-          <span class="mini-pill" title="Mayores (65+)"><span class="mini-dot ret"></span><span id="shareRet">—</span></span>
-        </div>
+        <div class="mono" id="tReadout">t: —</div>
+        <div class="mono" id="simMeta">Año: — | Población: —</div>
       </div>
     </div>
 
     <div class="content">
-      <div class="card" aria-label="Parámetros económicos y fiscales">
+      <!-- Gráfica -->
+      <div class="card" aria-label="Gráfica evolución en el tiempo">
         <div class="ch">
-          <div class="cttl">Economía y cotización</div>
+          <div class="cttl">Gráfica</div>
+          <div class="csub mono" id="legendHint">Arrastra sobre la gráfica para cambiar t.</div>
+        </div>
+        <div class="cb">
+          <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Evolución en el tiempo"></svg>
+          <div class="result-pill" id="resultPill">
+            <span class="result-dot" id="resultDot"></span>
+            <span class="mono" id="resultText">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controles -->
+      <div class="card" aria-label="Parámetros">
+        <div class="ch">
+          <div class="cttl">Parámetros</div>
           <div class="csub mono" id="kLine">k = τ/ρ: —</div>
         </div>
 
         <div class="cb">
           <div class="ctl">
             <label>
-              <span>Productividad (ρ): output relativo por trabajador</span>
+              <span>Productividad (ρ)</span>
               <span class="val mono" id="rhoVal">0.80</span>
             </label>
             <input id="rhoSlider" type="range" min="0.40" max="1.40" step="0.01" value="0.80" />
@@ -371,29 +373,6 @@
             <input id="uSlider" type="range" min="0" max="35" step="1" value="10" />
           </div>
 
-          <div class="kv" aria-label="Resumen">
-            <div class="k">k = τ/ρ</div><div class="v mono" id="kVal">—</div>
-            <div class="k">u (fracción)</div><div class="v mono" id="uFrac">—</div>
-          </div>
-
-          <details>
-            <summary>Ver explicación (ρ, τ y k)</summary>
-            <div class="note" style="border-top:0; padding-top:10px;">
-              <span class="mono">ρ</span> sintetiza productividad agregada (tecnología, organización, output por trabajador).
-              <span class="mono">τ</span> es la intensidad contributiva (porcentaje del output/labor income dedicado al sistema).
-              La pendiente de equilibrio es <span class="mono">k = τ/ρ</span>, que determina cuántos pensionistas pueden financiarse por cotizante (a igualdad del resto).
-            </div>
-          </details>
-        </div>
-      </div>
-
-      <div class="card" aria-label="Parámetros demográficos y horizonte">
-        <div class="ch">
-          <div class="cttl">Demografía y horizonte</div>
-          <div class="csub mono" id="hLine">Años a simular: —</div>
-        </div>
-
-        <div class="cb">
           <div class="ctl">
             <label>
               <span>Crec. población anual</span>
@@ -418,9 +397,11 @@
             <input id="yearsSlider" type="range" min="20" max="140" step="5" value="80" />
           </div>
 
-          <div class="kv" aria-label="Unidades que se guardan">
-            <div class="k">popGrowth (fracción)</div><div class="v mono" id="popGrowthFrac">—</div>
-            <div class="k">agingPP (fracción)</div><div class="v mono" id="agingFrac">—</div>
+          <div class="kv" aria-label="Resumen guardado">
+            <div class="k">k = τ/ρ</div><div class="v mono" id="kVal">—</div>
+            <div class="k">u (fracción)</div><div class="v mono" id="uFrac">—</div>
+            <div class="k">popGrowth</div><div class="v mono" id="popGrowthFrac">—</div>
+            <div class="k">agingPP</div><div class="v mono" id="agingFrac">—</div>
             <div class="k">years</div><div class="v mono" id="yearsOut">—</div>
           </div>
 
@@ -434,11 +415,11 @@
           </div>
 
           <div class="note">
-            Al aceptar se abrirá <span class="mono">simulador.html</span>. El simulador debe leer estos valores desde
-            <span class="mono">localStorage["pensionSim_time_v1"]</span>.
+            Se guardan en <span class="mono">localStorage["pensionSim_time_v1"]</span> y se leerán en <span class="mono">simulador.html</span>.
           </div>
         </div>
       </div>
+
     </div>
   </section>
 </main>
@@ -446,31 +427,51 @@
 <script>
 (() => {
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-  const PRIMARY = CSS('--primary');
+
+  const COLORS = {
+    primary: CSS('--primary'),
+    text: CSS('--text'),
+    grid: CSS('--grid'),
+    workers: CSS('--workers'),
+    retired: CSS('--retired'),
+    minors: CSS('--minors'),
+    noncot: CSS('--noncot'),
+  };
 
   const PYR_KEY  = "pensionSim_pyramid_v1";
   const TIME_KEY = "pensionSim_time_v1";
 
-  // Defaults (coinciden con tu simulador)
-  const DEFAULTS = {
+  const DEFAULT_PYR = {
+    popTotalM: 47.0,
+    peakIdx: 9,
+    sigma: 18,
+    densityYoung: 0.75,
+    densityOld: 0.75
+  };
+
+  const DEFAULT_TIME = {
     rho: 0.80,
     tau: 0.29,
     u: 0.10,            // fracción
     popGrowth: 0.003,   // fracción
-    agingPP: 0.002,     // fracción (0.20 pp = 0.002)
+    agingPP: 0.002,     // fracción (0.20 pp)
     years: 80
   };
 
-  const state = { ...DEFAULTS };
+  const state = {
+    pyr: { ...DEFAULT_PYR },
+    time: { ...DEFAULT_TIME },
+    t: 0,
+    timeLayout: null,
+    draggingTime: false
+  };
 
   const els = {
-    // pyramid summary (opcional)
+    timeSvg: document.getElementById("timeSvg"),
     pyrSummary: document.getElementById("pyrSummary"),
-    shareMin: document.getElementById("shareMin"),
-    shareWork: document.getElementById("shareWork"),
-    shareRet: document.getElementById("shareRet"),
+    tReadout: document.getElementById("tReadout"),
+    simMeta: document.getElementById("simMeta"),
 
-    // sliders
     rhoSlider: document.getElementById("rhoSlider"),
     tauSlider: document.getElementById("tauSlider"),
     uSlider: document.getElementById("uSlider"),
@@ -478,7 +479,6 @@
     agingSlider: document.getElementById("agingSlider"),
     yearsSlider: document.getElementById("yearsSlider"),
 
-    // readouts
     rhoVal: document.getElementById("rhoVal"),
     tauVal: document.getElementById("tauVal"),
     uVal: document.getElementById("uVal"),
@@ -486,21 +486,58 @@
     agingVal: document.getElementById("agingVal"),
     yearsVal: document.getElementById("yearsVal"),
 
-    // computed
     kLine: document.getElementById("kLine"),
     kVal: document.getElementById("kVal"),
     uFrac: document.getElementById("uFrac"),
-    hLine: document.getElementById("hLine"),
     popGrowthFrac: document.getElementById("popGrowthFrac"),
     agingFrac: document.getElementById("agingFrac"),
     yearsOut: document.getElementById("yearsOut"),
 
-    // buttons
+    resultDot: document.getElementById("resultDot"),
+    resultText: document.getElementById("resultText"),
+
     resetBtn: document.getElementById("resetBtn"),
     nextBtn: document.getElementById("nextBtn"),
   };
 
   const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+  const toM = (x) => x / 1_000_000;
+
+  const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
+  const getChartTextBoost = () => parseFloat(CSS('--chartTextBoost')) || 1;
+
+  const getTimeXAxisLabelGap = () => {
+    const v = parseFloat(CSS('--timeXAxisLabelGap'));
+    return isFinite(v) ? v : 80;
+  };
+  const getTimeYAxisLabelGap = () => {
+    const v = parseFloat(CSS('--timeYAxisLabelGap'));
+    return isFinite(v) ? v : 70;
+  };
+  const getTimeLegendToChartGap = () => {
+    const v = parseFloat(CSS('--timeLegendToChartGap'));
+    return isFinite(v) ? v : 120;
+  };
+  const getTimeLegendFontScale = () => {
+    const v = parseFloat(CSS('--timeLegendFontScale'));
+    return isFinite(v) ? v : 1;
+  };
+  const getTimeLegendItemGap = () => {
+    const v = parseFloat(CSS('--timeLegendItemGap'));
+    return isFinite(v) ? v : 60;
+  };
+
+  const fs = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
+  const fsTick = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
+  const fsAxis = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
+  const fsLegend = (px) => (px * getFontScale() * getChartTextBoost() * getTimeLegendFontScale()).toFixed(2);
+
+  const svgEl = (name, attrs={}) => {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+  const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
 
   function paintRange(input){
     if (!input) return;
@@ -508,11 +545,450 @@
     const max = Number(input.max || 100);
     const val = Number(input.value || 0);
     const pct = ((val - min) / Math.max(1e-9, (max - min))) * 100;
-    input.style.background = `linear-gradient(to right, ${PRIMARY} 0%, ${PRIMARY} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
+    input.style.background =
+      `linear-gradient(to right, ${COLORS.primary} 0%, ${COLORS.primary} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
   }
 
   function kEquilibrium(){
-    return state.tau / Math.max(1e-9, state.rho);
+    return state.time.tau / Math.max(1e-9, state.time.rho);
+  }
+
+  function gaussian(x, mu, sigma){
+    const z = (x - mu) / Math.max(1e-6, sigma);
+    return Math.exp(-0.5 * z * z);
+  }
+
+  function densityPower(d){
+    return 0.65 + (d - 0.35) * (2.20 - 0.65) / (1.25 - 0.35);
+  }
+
+  function buildSyntheticTotalShares(){
+    const n = 21;
+    const peak = state.pyr.peakIdx;
+    const sigmaModel = state.pyr.sigma / 6.0;
+
+    const pYoung = densityPower(state.pyr.densityYoung);
+    const pOld   = densityPower(state.pyr.densityOld);
+
+    const total = new Array(n).fill(0);
+
+    for (let i=0;i<n;i++){
+      let v = gaussian(i, peak, sigmaModel);
+      v += 0.22 * gaussian(i, 2.0, sigmaModel * 1.6);
+
+      const tailStart = Math.max(0, peak + 4);
+      if (i >= tailStart){
+        const t = (i - tailStart);
+        v += 0.10 * Math.exp(-t / Math.max(1.5, sigmaModel*1.2));
+      }
+
+      const p = (i <= peak) ? pYoung : pOld;
+      v = Math.pow(Math.max(0, v), p);
+
+      total[i] = v;
+    }
+
+    let s = total.reduce((a,b)=>a+b,0);
+    if (s <= 0) s = 1;
+    for (let i=0;i<n;i++) total[i] /= s;
+
+    return total;
+  }
+
+  function sharesFromPyramid(){
+    const shares = buildSyntheticTotalShares();
+
+    const minors =
+      (shares[0]||0) + (shares[1]||0) + (shares[2]||0) + 0.60*(shares[3]||0);
+
+    let work = 0.40*(shares[3]||0);
+    for (let i=4;i<=12;i++) work += (shares[i]||0);
+
+    let retired = 0;
+    for (let i=13;i<shares.length;i++) retired += (shares[i]||0);
+
+    let s = minors + work + retired;
+    if (s <= 1e-9) s = 1;
+    return { sMin: minors/s, sWork: work/s, sRet: retired/s };
+  }
+
+  function buildSeries(){
+    const T = state.time.years;
+    const series = [];
+
+    let total = state.pyr.popTotalM * 1_000_000;
+
+    const base = sharesFromPyramid();
+    let sMin = clamp(base.sMin, 0.02, 0.70);
+    let sWork = clamp(base.sWork, 0.10, 0.80);
+    let sRet = clamp(base.sRet, 0.02, 0.60);
+
+    let n0 = sMin + sWork + sRet;
+    sMin /= n0; sWork /= n0; sRet /= n0;
+
+    const participation = 1.00;
+
+    for (let t=0; t<=T; t++){
+      const minors = total * sMin;
+      const workingAge = total * sWork;
+      const retired = total * sRet;
+
+      const labour = workingAge * clamp(participation,0,1);
+      const unemployed = labour * clamp(state.time.u,0,1);
+      const cotEff = labour - unemployed;
+      const inactive = Math.max(0, workingAge - labour);
+
+      series.push({
+        t, total,
+        minors,
+        cot: cotEff,
+        inactive,
+        noncot: unemployed,
+        retired,
+        sMin, sWork, sRet
+      });
+
+      total = total * (1 + state.time.popGrowth);
+
+      const dR = state.time.agingPP;
+      let takeFromWork = Math.min(sWork, dR);
+      sWork -= takeFromWork;
+      let rem = dR - takeFromWork;
+      if (rem > 0){
+        let takeFromMin = Math.min(sMin, rem);
+        sMin -= takeFromMin;
+        rem -= takeFromMin;
+      }
+      sRet = clamp(sRet + dR, 0.02, 0.85);
+
+      const n = sMin + sWork + sRet;
+      if (n > 1e-9){
+        sMin /= n; sWork /= n; sRet /= n;
+      }
+    }
+    return series;
+  }
+
+  function renderTimeLegendHorizontal(svg, y){
+    const isNarrow = window.matchMedia && window.matchMedia("(max-width: 520px)").matches;
+
+    const items = isNarrow ? [
+      { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
+      { label: "Trab.",     fill: COLORS.workers, op: "0.50" },
+      { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
+      { label: "Jubilados", fill: COLORS.retired, op: "0.50" }
+    ] : [
+      { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
+      { label: "Edad laboral", fill: COLORS.workers, op: "0.50" },
+      { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
+      { label: "Jubilados (65+)", fill: COLORS.retired, op: "0.50" }
+    ];
+
+    const boost = getChartTextBoost();
+    const box = Math.round(14 * boost);
+    const gap = Math.round(10 * boost);
+    const itemGap = Math.round(getTimeLegendItemGap() * boost);
+
+    const g = svgEl('g', { "opacity":"0.95" });
+    let x = 0;
+
+    items.forEach((it) => {
+      g.appendChild(svgEl('rect', {
+        x: x, y: y - (box - 2),
+        width: box, height: box,
+        fill: it.fill,
+        "fill-opacity": it.op,
+        stroke: COLORS.text,
+        "stroke-width":"1",
+        "stroke-opacity":"0.20",
+        rx:"3", ry:"3"
+      }));
+
+      const t = svgEl('text', {
+        x: x + box + gap,
+        y: y + 2,
+        fill: COLORS.text,
+        "font-size": fsLegend(13),
+        "font-family":"Arial, sans-serif",
+        "text-anchor":"start",
+        "opacity":"0.92"
+      });
+      t.textContent = it.label;
+      g.appendChild(t);
+
+      let textW = 0;
+      try{
+        textW = (typeof t.getComputedTextLength === "function")
+          ? t.getComputedTextLength()
+          : it.label.length * 7.5 * boost;
+      }catch(e){
+        textW = it.label.length * 7.5 * boost;
+      }
+
+      x = x + box + gap + textW + itemGap;
+    });
+
+    svg.appendChild(g);
+
+    try{
+      const bb = g.getBBox();
+      const tx = (1000 - bb.width) / 2 - bb.x;
+      g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
+    }catch(e){}
+  }
+
+  function updateSystemPill(cur){
+    const C = cur.cot;
+    const P = cur.retired;
+    const k = kEquilibrium();
+    const sustainable = (P <= k * C + 1e-9);
+
+    els.resultDot.classList.remove("ok","bad");
+    if (sustainable){
+      els.resultDot.classList.add("ok");
+      els.resultText.textContent = `Sostenible en t=${cur.t} (P ≤ k·C).`;
+    } else {
+      els.resultDot.classList.add("bad");
+      const Cneeded = (k>0) ? (P / k) : Infinity;
+      const missing = (Cneeded===Infinity) ? Infinity : Math.max(0, Cneeded - C);
+      els.resultText.textContent =
+        `No cierra en t=${cur.t}: faltan ${toM(missing).toFixed(2)} M cotizantes (a τ y ρ actuales).`;
+    }
+  }
+
+  function renderTimeChart(){
+    const svg = els.timeSvg;
+    clearSvg(svg);
+
+    const W = 1000, H = 700;
+
+    const boost = getChartTextBoost();
+    const xGap = getTimeXAxisLabelGap();
+    const yGap = getTimeYAxisLabelGap();
+    const legendGap = getTimeLegendToChartGap();
+
+    const tickLabelOffset = 26;
+    const tickH = 14 * boost;
+    const axisLabelH = 18 * boost;
+    const legendBox = Math.round(14 * boost);
+    const legendH = legendBox + 6;
+
+    const bottomNeed = Math.max(
+      tickLabelOffset + tickH,
+      xGap + axisLabelH,
+      legendGap + legendH
+    ) + 18;
+
+    const estTickW = 44 * boost;
+    const leftNeed = 16 + estTickW + yGap + axisLabelH;
+
+    let pad = {
+      l: Math.max(90, leftNeed),
+      r: 30,
+      t: 24,
+      b: Math.max(120, bottomNeed)
+    };
+
+    const minInnerH = 260;
+    pad.b = Math.min(pad.b, Math.max(90, H - pad.t - minInnerH));
+
+    const minInnerW = 360;
+    pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
+
+    const innerW = W - pad.l - pad.r;
+    const innerH = H - pad.t - pad.b;
+
+    const data = buildSeries();
+    const T = state.time.years;
+
+    state.timeLayout = { W, H, pad, innerW, innerH, T };
+
+    const yMax = Math.max(...data.map(d => d.total)) / 1_000_000;
+    const yNice = Math.ceil(yMax/5)*5 || 5;
+
+    const xToPx = (x) => pad.l + (x / T) * innerW;
+    const yToPx = (yM) => pad.t + innerH - (yM / yNice) * innerH;
+
+    const yTicks = 6;
+    for (let i=0;i<=yTicks;i++){
+      const yv = (yNice * i / yTicks);
+      svg.appendChild(svgEl('line',{
+        x1: pad.l, y1: yToPx(yv), x2: pad.l+innerW, y2: yToPx(yv),
+        stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.45",
+        "stroke-dasharray":"6 6"
+      }));
+      const t = svgEl('text',{
+        x: pad.l - 10, y: yToPx(yv) + 4,
+        fill: COLORS.text, "font-size": fsTick(12),
+        "font-family":"Arial, sans-serif",
+        "text-anchor":"end", "opacity":"0.90"
+      });
+      t.textContent = String(Math.round(yv));
+      svg.appendChild(t);
+    }
+
+    const xTicks = 5;
+    for (let i=0;i<=xTicks;i++){
+      const xv = Math.round(T * i / xTicks);
+      svg.appendChild(svgEl('line',{
+        x1: xToPx(xv), y1: pad.t, x2: xToPx(xv), y2: pad.t+innerH,
+        stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.30"
+      }));
+      const t = svgEl('text',{
+        x: xToPx(xv), y: pad.t + innerH + tickLabelOffset,
+        fill: COLORS.text, "font-size": fsTick(12),
+        "font-family":"Arial, sans-serif",
+        "text-anchor":"middle", "opacity":"0.90"
+      });
+      t.textContent = String(xv);
+      svg.appendChild(t);
+    }
+
+    svg.appendChild(svgEl('line',{
+      x1: pad.l, y1: pad.t+innerH, x2: pad.l+innerW, y2: pad.t+innerH,
+      stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
+    }));
+    svg.appendChild(svgEl('line',{
+      x1: pad.l, y1: pad.t, x2: pad.l, y2: pad.t+innerH,
+      stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
+    }));
+
+    const xAxisLabelY = pad.t + innerH + xGap;
+    svg.appendChild(svgEl('text',{
+      x: pad.l + innerW/2, y: xAxisLabelY,
+      fill: COLORS.text, "font-size": fsAxis(14),
+      "font-family":"Arial, sans-serif",
+      "text-anchor":"middle", "opacity":"0.95"
+    })).textContent = "Años / turnos";
+
+    const legendY = pad.t + innerH + legendGap;
+    renderTimeLegendHorizontal(svg, legendY);
+
+    const yLabelX = pad.l - yGap;
+    svg.appendChild(svgEl('text',{
+      x: yLabelX, y: pad.t + innerH/2,
+      fill: COLORS.text, "font-size": fsAxis(14),
+      "font-family":"Arial, sans-serif",
+      "text-anchor":"middle", "opacity":"0.95",
+      transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
+    })).textContent = "Personas (millones)";
+
+    const minorsTop = [];
+    const workTop = [];
+    const noncotTop = [];
+    const totalTop = [];
+    const basePts = [];
+
+    data.forEach(d => {
+      const x = xToPx(d.t);
+      const mM = toM(d.minors);
+      const wM = toM(d.cot + (d.inactive || 0));
+      const nM = toM(d.noncot);
+      const rM = toM(d.retired);
+
+      minorsTop.push([x, yToPx(mM)]);
+      workTop.push([x, yToPx(mM + wM)]);
+      noncotTop.push([x, yToPx(mM + wM + nM)]);
+      totalTop.push([x, yToPx(mM + wM + nM + rM)]);
+      basePts.push([x, yToPx(0)]);
+    });
+
+    function polyPath(topPts, bottomPts){
+      const pts = topPts.concat(bottomPts.slice().reverse());
+      return "M " + pts.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L ") + " Z";
+    }
+
+    svg.appendChild(svgEl('path', { d: polyPath(minorsTop, basePts), fill: COLORS.minors, "fill-opacity":"0.35", stroke:"none" }));
+    svg.appendChild(svgEl('path', { d: polyPath(workTop, minorsTop), fill: COLORS.workers, "fill-opacity":"0.50", stroke:"none" }));
+
+    if (state.time.u > 1e-9){
+      svg.appendChild(svgEl('path', { d: polyPath(noncotTop, workTop), fill: COLORS.noncot, "fill-opacity":"0.55", stroke:"none" }));
+    }
+    svg.appendChild(svgEl('path', { d: polyPath(totalTop, noncotTop), fill: COLORS.retired, "fill-opacity":"0.50", stroke:"none" }));
+
+    svg.appendChild(svgEl('path', {
+      d: "M " + totalTop.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L "),
+      fill: "none",
+      stroke: "#FFFFFF",
+      "stroke-width":"3",
+      "stroke-opacity":"0.95"
+    }));
+
+    const tNow = clamp(Math.round(state.t), 0, state.time.years);
+    const cur = data[Math.min(data.length-1, tNow)];
+    const xNow = xToPx(cur.t);
+
+    svg.appendChild(svgEl('line', {
+      x1: xNow, y1: pad.t, x2: xNow, y2: pad.t+innerH,
+      stroke: COLORS.primary,
+      "stroke-width":"2",
+      "stroke-opacity":"0.65",
+      "stroke-dasharray":"8 6"
+    }));
+    svg.appendChild(svgEl('circle', {
+      cx: xNow, cy: yToPx(toM(cur.total)), r: "5.5",
+      fill: COLORS.primary, "fill-opacity":"0.95"
+    }));
+
+    els.tReadout.textContent = `t: ${cur.t}`;
+    els.simMeta.textContent = `Año: ${cur.t} | Población: ${toM(cur.total).toFixed(1)} M`;
+
+    updateSystemPill(cur);
+  }
+
+  function viewXFromClientX(svg, clientX){
+    const rect = svg.getBoundingClientRect();
+    if (!rect || rect.width <= 0) return 0;
+    return ((clientX - rect.left) / rect.width) * 1000;
+  }
+
+  function setTimeFromClientX(clientX){
+    const L = state.timeLayout;
+    if (!L) return;
+
+    const x = viewXFromClientX(els.timeSvg, clientX);
+    const t = ((x - L.pad.l) / L.innerW) * L.T;
+    state.t = clamp(Math.round(t), 0, state.time.years);
+
+    renderTimeChart();
+    syncDerivedUI();
+  }
+
+  function setupTimeScrub(){
+    els.timeSvg.style.cursor = "ew-resize";
+    els.timeSvg.style.touchAction = "none";
+
+    els.timeSvg.addEventListener("pointerdown", (e) => {
+      state.draggingTime = true;
+      try{ els.timeSvg.setPointerCapture(e.pointerId); }catch(err){}
+      setTimeFromClientX(e.clientX);
+    });
+
+    els.timeSvg.addEventListener("pointermove", (e) => {
+      if (!state.draggingTime) return;
+      setTimeFromClientX(e.clientX);
+    });
+
+    const end = () => { state.draggingTime = false; };
+
+    els.timeSvg.addEventListener("pointerup", end);
+    els.timeSvg.addEventListener("pointercancel", end);
+    els.timeSvg.addEventListener("pointerleave", end);
+  }
+
+  function loadPyramid(){
+    try{
+      const raw = localStorage.getItem(PYR_KEY);
+      if (!raw) return;
+      const obj = JSON.parse(raw);
+      if (!obj || typeof obj !== "object") return;
+
+      if (isFinite(Number(obj.popTotalM))) state.pyr.popTotalM = Number(obj.popTotalM);
+      if (isFinite(Number(obj.peakIdx))) state.pyr.peakIdx = Number(obj.peakIdx);
+      if (isFinite(Number(obj.sigma))) state.pyr.sigma = Number(obj.sigma);
+      if (isFinite(Number(obj.densityYoung))) state.pyr.densityYoung = Number(obj.densityYoung);
+      if (isFinite(Number(obj.densityOld))) state.pyr.densityOld = Number(obj.densityOld);
+    }catch(e){}
   }
 
   function loadTime(){
@@ -522,125 +998,106 @@
       const obj = JSON.parse(raw);
       if (!obj || typeof obj !== "object") return;
 
-      if (isFinite(Number(obj.rho))) state.rho = Number(obj.rho);
-      if (isFinite(Number(obj.tau))) state.tau = Number(obj.tau);
-      if (isFinite(Number(obj.u))) state.u = clamp(Number(obj.u), 0, 1);
-      if (isFinite(Number(obj.popGrowth))) state.popGrowth = Number(obj.popGrowth);
-      if (isFinite(Number(obj.agingPP))) state.agingPP = Number(obj.agingPP);
-      if (isFinite(Number(obj.years))) state.years = clamp(Number(obj.years), 20, 140);
+      if (isFinite(Number(obj.rho))) state.time.rho = Number(obj.rho);
+      if (isFinite(Number(obj.tau))) state.time.tau = Number(obj.tau);
+      if (isFinite(Number(obj.u))) state.time.u = clamp(Number(obj.u), 0, 1);
+      if (isFinite(Number(obj.popGrowth))) state.time.popGrowth = Number(obj.popGrowth);
+      if (isFinite(Number(obj.agingPP))) state.time.agingPP = Number(obj.agingPP);
+      if (isFinite(Number(obj.years))) state.time.years = clamp(Number(obj.years), 20, 140);
     }catch(e){}
   }
 
   function saveTime(){
     const payload = {
-      rho: state.rho,
-      tau: state.tau,
-      u: state.u,
-      popGrowth: state.popGrowth,
-      agingPP: state.agingPP,
-      years: state.years
+      rho: state.time.rho,
+      tau: state.time.tau,
+      u: state.time.u,
+      popGrowth: state.time.popGrowth,
+      agingPP: state.time.agingPP,
+      years: state.time.years
     };
     try{ localStorage.setItem(TIME_KEY, JSON.stringify(payload)); }catch(e){}
   }
 
-  function loadPyramidSummary(){
-    try{
-      const raw = localStorage.getItem(PYR_KEY);
-      if (!raw){
-        els.pyrSummary.textContent = "Pirámide: (sin configuración guardada)";
-        els.shareMin.textContent = "Menores: —";
-        els.shareWork.textContent = "Laboral: —";
-        els.shareRet.textContent = "Mayores: —";
-        return;
-      }
-      const obj = JSON.parse(raw);
-
-      const pop = (obj && isFinite(Number(obj.popTotalM))) ? Number(obj.popTotalM) : null;
-      const peak = (obj && isFinite(Number(obj.peakIdx))) ? Number(obj.peakIdx) : null;
-      const sigma = (obj && isFinite(Number(obj.sigma))) ? Number(obj.sigma) : null;
-
-      els.pyrSummary.textContent =
-        `Pirámide: población ${pop !== null ? pop.toFixed(1) + " M" : "—"} | pico ${peak !== null ? peak : "—"} | σ ${sigma !== null ? sigma : "—"}`;
-
-      // Aquí no recalculamos shares (para no duplicar toda la lógica). Si quieres, lo integramos.
-      els.shareMin.textContent = "Menores: (ver paso 1)";
-      els.shareWork.textContent = "Laboral: (ver paso 1)";
-      els.shareRet.textContent = "Mayores: (ver paso 1)";
-    }catch(e){
-      els.pyrSummary.textContent = "Pirámide: —";
-    }
-  }
-
   function syncUI(){
-    els.rhoSlider.value = state.rho;
-    els.tauSlider.value = state.tau;
+    const t = state.time;
 
-    const uPct = Math.round(state.u * 100);
-    els.uSlider.value = uPct;
+    els.pyrSummary.textContent =
+      `Pirámide: población ${state.pyr.popTotalM.toFixed(1)} M | pico ${state.pyr.peakIdx} | σ ${state.pyr.sigma} | densY ${state.pyr.densityYoung.toFixed(2)} | densO ${state.pyr.densityOld.toFixed(2)}`;
 
-    const pgPct = state.popGrowth * 100;
-    els.popGrowthSlider.value = pgPct.toFixed(2);
+    els.rhoSlider.value = t.rho;
+    els.tauSlider.value = t.tau;
+    els.uSlider.value = Math.round(t.u * 100);
+    els.popGrowthSlider.value = (t.popGrowth * 100).toFixed(2);
+    els.agingSlider.value = (t.agingPP * 100).toFixed(2);
+    els.yearsSlider.value = t.years;
 
-    const agPP = state.agingPP * 100; // 0.002 -> 0.20
-    els.agingSlider.value = agPP.toFixed(2);
-
-    els.yearsSlider.value = state.years;
-
-    els.rhoVal.textContent = state.rho.toFixed(2);
-    els.tauVal.textContent = state.tau.toFixed(2);
-    els.uVal.textContent = `${uPct}%`;
-    els.popGrowthVal.textContent = `${pgPct.toFixed(2)}%`;
-    els.agingVal.textContent = `${agPP.toFixed(2)} pp`;
-    els.yearsVal.textContent = String(state.years);
-
-    const k = kEquilibrium();
-    els.kLine.textContent = `k = τ/ρ: ${k.toFixed(2)}`;
-    els.kVal.textContent = k.toFixed(3);
-
-    els.uFrac.textContent = state.u.toFixed(3);
-    els.hLine.textContent = `Años a simular: ${state.years}`;
-
-    els.popGrowthFrac.textContent = state.popGrowth.toFixed(4);
-    els.agingFrac.textContent = state.agingPP.toFixed(4);
-    els.yearsOut.textContent = String(state.years);
+    els.rhoVal.textContent = t.rho.toFixed(2);
+    els.tauVal.textContent = t.tau.toFixed(2);
+    els.uVal.textContent = `${Math.round(t.u*100)}%`;
+    els.popGrowthVal.textContent = `${(t.popGrowth*100).toFixed(2)}%`;
+    els.agingVal.textContent = `+${(t.agingPP*100).toFixed(2)} pp`;
+    els.yearsVal.textContent = String(t.years);
 
     [els.rhoSlider, els.tauSlider, els.uSlider, els.popGrowthSlider, els.agingSlider, els.yearsSlider].forEach(paintRange);
+
+    syncDerivedUI();
+  }
+
+  function syncDerivedUI(){
+    const t = state.time;
+    const k = kEquilibrium();
+
+    els.kLine.textContent = `k = τ/ρ: ${k.toFixed(2)}`;
+    els.kVal.textContent = k.toFixed(3);
+    els.uFrac.textContent = t.u.toFixed(3);
+    els.popGrowthFrac.textContent = t.popGrowth.toFixed(4);
+    els.agingFrac.textContent = t.agingPP.toFixed(4);
+    els.yearsOut.textContent = String(t.years);
+  }
+
+  function rerender(){
+    state.t = clamp(state.t, 0, state.time.years);
+    renderTimeChart();
   }
 
   // Events
   els.rhoSlider.addEventListener("input", (e) => {
-    state.rho = Number(e.target.value);
-    saveTime(); syncUI();
+    state.time.rho = Number(e.target.value);
+    saveTime(); syncUI(); rerender();
   });
 
   els.tauSlider.addEventListener("input", (e) => {
-    state.tau = Number(e.target.value);
-    saveTime(); syncUI();
+    state.time.tau = Number(e.target.value);
+    saveTime(); syncUI(); rerender();
   });
 
   els.uSlider.addEventListener("input", (e) => {
-    state.u = clamp(Number(e.target.value) / 100, 0, 1);
-    saveTime(); syncUI();
+    state.time.u = clamp(Number(e.target.value)/100, 0, 1);
+    saveTime(); syncUI(); rerender();
   });
 
   els.popGrowthSlider.addEventListener("input", (e) => {
-    state.popGrowth = Number(e.target.value) / 100;
-    saveTime(); syncUI();
+    state.time.popGrowth = Number(e.target.value)/100;
+    saveTime(); syncUI(); rerender();
   });
 
   els.agingSlider.addEventListener("input", (e) => {
-    state.agingPP = Number(e.target.value) / 100; // pp -> fracción
-    saveTime(); syncUI();
+    state.time.agingPP = Number(e.target.value)/100;
+    saveTime(); syncUI(); rerender();
   });
 
   els.yearsSlider.addEventListener("input", (e) => {
-    state.years = clamp(Number(e.target.value), 20, 140);
-    saveTime(); syncUI();
+    state.time.years = clamp(Number(e.target.value), 20, 140);
+    state.t = clamp(state.t, 0, state.time.years);
+    saveTime(); syncUI(); rerender();
   });
 
   els.resetBtn.addEventListener("click", () => {
-    Object.assign(state, DEFAULTS);
+    state.time = { ...DEFAULT_TIME };
     saveTime(); syncUI();
+    state.t = state.time.years;
+    rerender();
   });
 
   els.nextBtn.addEventListener("click", () => {
@@ -648,11 +1105,18 @@
     window.location.href = "simulador.html";
   });
 
+  window.addEventListener("resize", () => {
+    rerender();
+  });
+
   // Init
-  loadPyramidSummary();
+  loadPyramid();
   loadTime();
+  state.t = state.time.years;  // por defecto: marcar el final
   saveTime();
   syncUI();
+  rerender();
+  setupTimeScrub();
 })();
 </script>
 
