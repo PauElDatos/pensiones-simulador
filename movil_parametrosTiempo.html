@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pensiones — Parámetros (Tiempo, móvil)</title>
+
+  <style>
+    :root{
+      --bg:#252525;
+      --primary:#FEF702;
+      --text:#B0B0B0;
+      --stroke:#3a3a3a;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+      --radius:14px;
+
+      --workers:#36C3FF;
+      --retired:#FF6A00;
+
+      --fontTitle: "Futura","Trebuchet MS",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      --fontText:  Arial,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+
+      --fontScale: 1.15;
+    }
+
+    *{box-sizing:border-box}
+    body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--fontText); }
+
+    header{
+      padding:14px 12px 6px 12px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .h-title h1{
+      margin:0;
+      font-family:var(--fontTitle);
+      color:var(--primary);
+      font-size: calc(22px * var(--fontScale));
+      letter-spacing:.3px;
+      line-height:1.05;
+    }
+    .h-title p{
+      margin:6px 0 0 0;
+      font-size: calc(13px * var(--fontScale));
+      opacity:.9;
+      line-height:1.35;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border:1px solid var(--stroke);
+      border-radius:999px;
+      background:rgba(255,255,255,.03);
+      font-size: calc(12px * var(--fontScale));
+      opacity:.9;
+      width:100%;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:50%;
+      background:var(--primary);
+      box-shadow:0 0 0 3px rgba(254,247,2,.15);
+    }
+    a.back{
+      color:var(--text);
+      text-decoration:none;
+      border-bottom:1px solid rgba(255,255,255,.18);
+      padding-bottom:1px;
+    }
+
+    main{
+      min-height: calc(100vh - 70px);
+      padding:10px 10px 16px 10px;
+    }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .ph{
+      padding:12px 12px 10px 12px;
+      border-bottom:1px solid var(--stroke);
+      background:rgba(255,255,255,.02);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .ttl{
+      font-family:var(--fontTitle);
+      color:var(--primary);
+      font-size: calc(13px * var(--fontScale));
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+    .sub{
+      font-size: calc(12px * var(--fontScale));
+      opacity:.85;
+      width:100%;
+      line-height:1.25;
+      font-variant-numeric: tabular-nums;
+    }
+    .mono{ font-variant-numeric: tabular-nums; }
+
+    .area{
+      padding:12px;
+      display:grid;
+      gap:12px;
+    }
+
+    .card{
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:12px;
+      background:rgba(0,0,0,.08);
+      overflow:hidden;
+    }
+
+    .card .ch{
+      padding:10px 10px 8px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .cttl{
+      font-family:var(--fontTitle);
+      color:var(--primary);
+      font-size: calc(12px * var(--fontScale));
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+    .csub{
+      margin-top:6px;
+      font-size: calc(12px * var(--fontScale));
+      opacity:.85;
+      font-variant-numeric: tabular-nums;
+      line-height:1.2;
+    }
+    .cb{
+      padding:10px;
+      display:grid;
+      gap:10px;
+    }
+
+    .ctl{ display:grid; gap:6px; }
+    .ctl label{
+      font-size: calc(13px * var(--fontScale));
+      opacity:.92;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .val{ font-variant-numeric: tabular-nums; opacity:.95; }
+
+    input[type="range"]{
+      width:100%;
+      accent-color: var(--primary);
+      background: rgba(255,255,255,.12);
+      border-radius:999px;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb{
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 1px solid rgba(0,0,0,.35);
+      margin-top: -5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:8px 10px;
+      align-items:baseline;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:12px;
+      background:rgba(0,0,0,.08);
+      font-size: calc(12px * var(--fontScale));
+    }
+    .kv .k{ opacity:.85; }
+    .kv .v{ color:#fff; font-variant-numeric: tabular-nums; }
+
+    .btn-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      cursor:pointer;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:10px 12px;
+      flex:1 1 160px;
+      min-width:140px;
+      text-align:center;
+      font-size: calc(12px * var(--fontScale));
+    }
+    .btn.primary{
+      border-color: rgba(254,247,2,.35);
+      color:#111;
+      background: rgba(254,247,2,.92);
+    }
+
+    .note{
+      font-size: calc(11px * var(--fontScale));
+      opacity:.75;
+      line-height:1.35;
+      border-top:1px solid rgba(255,255,255,.06);
+      padding-top:8px;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="h-title">
+    <h1>Tiempo</h1>
+    <p>Ajusta parámetros. Se guardan automáticamente.</p>
+  </div>
+  <div class="pill"><span class="dot"></span><span><a class="back" href="movil_piramidePoblacional.html">Volver a pirámide</a></span></div>
+</header>
+
+<main>
+  <section class="panel" aria-label="Parámetros evolución en el tiempo (móvil)">
+    <div class="ph">
+      <div class="ttl">Paso 2 — Parámetros</div>
+      <div class="sub mono" id="kLine">k = τ/ρ: —</div>
+    </div>
+
+    <div class="area">
+      <div class="card">
+        <div class="ch">
+          <div class="cttl">Economía y cotización</div>
+          <div class="csub mono" id="pyrSummary">Pirámide: —</div>
+        </div>
+
+        <div class="cb">
+          <div class="ctl">
+            <label><span>Productividad (ρ)</span><span class="val mono" id="rhoVal">0.80</span></label>
+            <input id="rhoSlider" type="range" min="0.40" max="1.40" step="0.01" value="0.80" />
+          </div>
+
+          <div class="ctl">
+            <label><span>Tipo de cotización (τ)</span><span class="val mono" id="tauVal">0.29</span></label>
+            <input id="tauSlider" type="range" min="0.05" max="0.45" step="0.01" value="0.29" />
+          </div>
+
+          <div class="ctl">
+            <label><span>Paro (u)</span><span class="val mono" id="uVal">10%</span></label>
+            <input id="uSlider" type="range" min="0" max="35" step="1" value="10" />
+          </div>
+
+          <div class="kv">
+            <div class="k">k = τ/ρ</div><div class="v mono" id="kVal">—</div>
+            <div class="k">u (fracción)</div><div class="v mono" id="uFrac">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <div class="cttl">Demografía y horizonte</div>
+          <div class="csub mono" id="hLine">Años a simular: —</div>
+        </div>
+
+        <div class="cb">
+          <div class="ctl">
+            <label><span>Crec. población anual</span><span class="val mono" id="popGrowthVal">0.30%</span></label>
+            <input id="popGrowthSlider" type="range" min="-1.50" max="2.50" step="0.05" value="0.30" />
+          </div>
+
+          <div class="ctl">
+            <label><span>Envejecimiento anual (Δ 65+)</span><span class="val mono" id="agingVal">+0.20 pp</span></label>
+            <input id="agingSlider" type="range" min="-0.50" max="0.80" step="0.01" value="0.20" />
+          </div>
+
+          <div class="ctl">
+            <label><span>Años a simular</span><span class="val mono" id="yearsVal">80</span></label>
+            <input id="yearsSlider" type="range" min="20" max="140" step="5" value="80" />
+          </div>
+
+          <div class="kv">
+            <div class="k">popGrowth</div><div class="v mono" id="popGrowthFrac">—</div>
+            <div class="k">agingPP</div><div class="v mono" id="agingFrac">—</div>
+            <div class="k">years</div><div class="v mono" id="yearsOut">—</div>
+          </div>
+
+          <div class="btn-row">
+            <button id="resetBtn" class="btn" type="button">Restablecer</button>
+            <button id="nextBtn" class="btn primary" type="button">Aceptar</button>
+          </div>
+
+          <div class="note">
+            Al aceptar se abrirá <span class="mono">movil_simulador.html</span>.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const PRIMARY = CSS('--primary');
+
+  const PYR_KEY  = "pensionSim_pyramid_v1";
+  const TIME_KEY = "pensionSim_time_v1";
+
+  const DEFAULTS = {
+    rho: 0.80,
+    tau: 0.29,
+    u: 0.10,
+    popGrowth: 0.003,
+    agingPP: 0.002,
+    years: 80
+  };
+
+  const state = { ...DEFAULTS };
+
+  const els = {
+    pyrSummary: document.getElementById("pyrSummary"),
+
+    rhoSlider: document.getElementById("rhoSlider"),
+    tauSlider: document.getElementById("tauSlider"),
+    uSlider: document.getElementById("uSlider"),
+    popGrowthSlider: document.getElementById("popGrowthSlider"),
+    agingSlider: document.getElementById("agingSlider"),
+    yearsSlider: document.getElementById("yearsSlider"),
+
+    rhoVal: document.getElementById("rhoVal"),
+    tauVal: document.getElementById("tauVal"),
+    uVal: document.getElementById("uVal"),
+    popGrowthVal: document.getElementById("popGrowthVal"),
+    agingVal: document.getElementById("agingVal"),
+    yearsVal: document.getElementById("yearsVal"),
+
+    kLine: document.getElementById("kLine"),
+    kVal: document.getElementById("kVal"),
+    uFrac: document.getElementById("uFrac"),
+
+    hLine: document.getElementById("hLine"),
+    popGrowthFrac: document.getElementById("popGrowthFrac"),
+    agingFrac: document.getElementById("agingFrac"),
+    yearsOut: document.getElementById("yearsOut"),
+
+    resetBtn: document.getElementById("resetBtn"),
+    nextBtn: document.getElementById("nextBtn"),
+  };
+
+  const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+
+  function paintRange(input){
+    if (!input) return;
+    const min = Number(input.min || 0);
+    const max = Number(input.max || 100);
+    const val = Number(input.value || 0);
+    const pct = ((val - min) / Math.max(1e-9, (max - min))) * 100;
+    input.style.background = `linear-gradient(to right, ${PRIMARY} 0%, ${PRIMARY} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
+  }
+
+  function kEquilibrium(){
+    return state.tau / Math.max(1e-9, state.rho);
+  }
+
+  function loadTime(){
+    try{
+      const raw = localStorage.getItem(TIME_KEY);
+      if (!raw) return;
+      const obj = JSON.parse(raw);
+      if (!obj || typeof obj !== "object") return;
+
+      if (isFinite(Number(obj.rho))) state.rho = Number(obj.rho);
+      if (isFinite(Number(obj.tau))) state.tau = Number(obj.tau);
+      if (isFinite(Number(obj.u))) state.u = clamp(Number(obj.u), 0, 1);
+      if (isFinite(Number(obj.popGrowth))) state.popGrowth = Number(obj.popGrowth);
+      if (isFinite(Number(obj.agingPP))) state.agingPP = Number(obj.agingPP);
+      if (isFinite(Number(obj.years))) state.years = clamp(Number(obj.years), 20, 140);
+    }catch(e){}
+  }
+
+  function saveTime(){
+    const payload = {
+      rho: state.rho,
+      tau: state.tau,
+      u: state.u,
+      popGrowth: state.popGrowth,
+      agingPP: state.agingPP,
+      years: state.years
+    };
+    try{ localStorage.setItem(TIME_KEY, JSON.stringify(payload)); }catch(e){}
+  }
+
+  function loadPyramidSummary(){
+    try{
+      const raw = localStorage.getItem(PYR_KEY);
+      if (!raw){
+        els.pyrSummary.textContent = "Pirámide: (sin configuración guardada)";
+        return;
+      }
+      const obj = JSON.parse(raw);
+      const pop = (obj && isFinite(Number(obj.popTotalM))) ? Number(obj.popTotalM) : null;
+      const peak = (obj && isFinite(Number(obj.peakIdx))) ? Number(obj.peakIdx) : null;
+      const sigma = (obj && isFinite(Number(obj.sigma))) ? Number(obj.sigma) : null;
+
+      els.pyrSummary.textContent =
+        `Pirámide: ${pop !== null ? pop.toFixed(1) + " M" : "—"} | pico ${peak !== null ? peak : "—"} | σ ${sigma !== null ? sigma : "—"}`;
+    }catch(e){
+      els.pyrSummary.textContent = "Pirámide: —";
+    }
+  }
+
+  function syncUI(){
+    els.rhoSlider.value = state.rho;
+    els.tauSlider.value = state.tau;
+
+    const uPct = Math.round(state.u * 100);
+    els.uSlider.value = uPct;
+
+    const pgPct = state.popGrowth * 100;
+    els.popGrowthSlider.value = pgPct.toFixed(2);
+
+    const agPP = state.agingPP * 100;
+    els.agingSlider.value = agPP.toFixed(2);
+
+    els.yearsSlider.value = state.years;
+
+    els.rhoVal.textContent = state.rho.toFixed(2);
+    els.tauVal.textContent = state.tau.toFixed(2);
+    els.uVal.textContent = `${uPct}%`;
+    els.popGrowthVal.textContent = `${pgPct.toFixed(2)}%`;
+    els.agingVal.textContent = `${agPP.toFixed(2)} pp`;
+    els.yearsVal.textContent = String(state.years);
+
+    const k = kEquilibrium();
+    els.kLine.textContent = `k = τ/ρ: ${k.toFixed(2)}`;
+    els.kVal.textContent = k.toFixed(3);
+    els.uFrac.textContent = state.u.toFixed(3);
+
+    els.hLine.textContent = `Años a simular: ${state.years}`;
+    els.popGrowthFrac.textContent = state.popGrowth.toFixed(4);
+    els.agingFrac.textContent = state.agingPP.toFixed(4);
+    els.yearsOut.textContent = String(state.years);
+
+    [els.rhoSlider, els.tauSlider, els.uSlider, els.popGrowthSlider, els.agingSlider, els.yearsSlider].forEach(paintRange);
+  }
+
+  // Events
+  els.rhoSlider.addEventListener("input", (e) => { state.rho = Number(e.target.value); saveTime(); syncUI(); });
+  els.tauSlider.addEventListener("input", (e) => { state.tau = Number(e.target.value); saveTime(); syncUI(); });
+  els.uSlider.addEventListener("input", (e) => { state.u = clamp(Number(e.target.value)/100, 0, 1); saveTime(); syncUI(); });
+  els.popGrowthSlider.addEventListener("input", (e) => { state.popGrowth = Number(e.target.value)/100; saveTime(); syncUI(); });
+  els.agingSlider.addEventListener("input", (e) => { state.agingPP = Number(e.target.value)/100; saveTime(); syncUI(); });
+  els.yearsSlider.addEventListener("input", (e) => { state.years = clamp(Number(e.target.value), 20, 140); saveTime(); syncUI(); });
+
+  els.resetBtn.addEventListener("click", () => { Object.assign(state, DEFAULTS); saveTime(); syncUI(); });
+
+  els.nextBtn.addEventListener("click", () => {
+    saveTime();
+    window.location.href = "movil_simulador.html";
+  });
+
+  // Init
+  loadPyramidSummary();
+  loadTime();
+  saveTime();
+  syncUI();
+})();
+</script>
+
+</body>
+</html>
