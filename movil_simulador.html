@@ -1250,7 +1250,7 @@
 
     return isNarrow ? [
       { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
-      { label: "Trab.",     fill: COLORS.workers, op: "0.50" },
+      { label: "Trabajadores", fill: COLORS.workers, op: "0.50" },
       { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
       { label: "Jubilados", fill: COLORS.retired, op: "0.50" }
     ] : [
@@ -1409,6 +1409,14 @@
     const minInnerW = 360;
     pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
 
+    pad.r = Math.max(pad.r, pad.l);
+    if (W - pad.l - pad.r < minInnerW){
+      const over = minInnerW - (W - pad.l - pad.r);
+      const reduce = Math.ceil(over / 2);
+      pad.l = Math.max(90, pad.l - reduce);
+      pad.r = Math.max(30, pad.r - reduce);
+    }
+
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -1475,7 +1483,7 @@
     const legendY = pad.t + innerH + legendFromAxis;
     renderTimeLegendVertical(svg, legendY);
 
-    const yLabelX = Math.max(14, pad.l - yGap);
+    const yLabelX = Math.max(14, pad.l - (estTickW + yGap));
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
@@ -1633,6 +1641,14 @@
     const minInnerW = 360;
     pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
 
+    pad.r = Math.max(pad.r, pad.l);
+    if (W - pad.l - pad.r < minInnerW){
+      const over = minInnerW - (W - pad.l - pad.r);
+      const reduce = Math.ceil(over / 2);
+      pad.l = Math.max(90, pad.l - reduce);
+      pad.r = Math.max(30, pad.r - reduce);
+    }
+
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -1703,7 +1719,7 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
-    const yLabelX = Math.max(14, pad.l - yGap);
+    const yLabelX = Math.max(14, pad.l - (estTickW + yGap));
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(14),
