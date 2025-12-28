@@ -11,15 +11,20 @@
       --axisLabelGap: 70px;
       --axisLabelFontScale: 1.15;
 
-      --timeXAxisLabelGap: 100px;      /* NUEVO: distancia texto eje X al eje X (EVOLUCIÓN EN EL TIEMPO) */
-      --timeYAxisLabelGap: 20px;      /* NUEVO: distancia texto eje Y al eje Y (EVOLUCIÓN EN EL TIEMPO) */
-      --cpXAxisLabelGap: 100px;        /* NUEVO: distancia texto eje X al eje X (C–P Y EQUILIBRIO) */
-      --cpYAxisLabelGap: 20px;        /* NUEVO: distancia texto eje Y al eje Y (C–P Y EQUILIBRIO) */
+      --timeXAxisLabelGap: 100px;      /* distancia texto eje X al eje X (EVOLUCIÓN EN EL TIEMPO) */
+      --timeYAxisLabelGap: 20px;       /* distancia texto eje Y al eje Y (EVOLUCIÓN EN EL TIEMPO) */
+      --cpXAxisLabelGap: 100px;        /* distancia texto eje X al eje X (C–P Y EQUILIBRIO) */
+      --cpYAxisLabelGap: 20px;         /* distancia texto eje Y al eje Y (C–P Y EQUILIBRIO) */
 
-      --timeLegendFontScale: 1.50;    /* NUEVO: tamaño del texto SOLO de la leyenda (EVOLUCIÓN EN EL TIEMPO) */
-      --timeLegendItemGap: 100px;     /* NUEVO: distancia horizontal entre elementos de la leyenda (EVOLUCIÓN EN EL TIEMPO) */
+      --timeLegendFontScale: 1.50;     /* tamaño del texto SOLO de la leyenda (EVOLUCIÓN EN EL TIEMPO) */
+      --timeLegendItemGap: 90px;      /* distancia horizontal entre elementos de la leyenda (EVOLUCIÓN EN EL TIEMPO) */
 
-      --chartTextBoost: 2.0;         /* NUEVO: boost SOLO para textos de SVG */
+      --timeLegendToChartGap: 140px;   /* NUEVO: distancia vertical de la leyenda al eje X (la “gráfica”) */
+
+      --timeChartWidth: 94%;           /* NUEVO: hace el SVG de “Evolución en el tiempo” un poco más pequeño */
+      --cpChartWidth: 94%;             /* NUEVO: hace el SVG de “C–P y equilibrio” un poco más pequeño */
+
+      --chartTextBoost: 2.0;           /* boost SOLO para textos de SVG */
 
       --bg:#252525;
       --primary:#FEF702;
@@ -48,10 +53,15 @@
         --axisLabelGap: 78px;
         --axisLabelFontScale: 1.08;
 
-        --timeXAxisLabelGap: 78px;    /* NUEVO */
-        --timeYAxisLabelGap: 78px;    /* NUEVO */
-        --cpXAxisLabelGap: 78px;      /* NUEVO */
-        --cpYAxisLabelGap: 78px;      /* NUEVO */
+        --timeXAxisLabelGap: 78px;
+        --timeYAxisLabelGap: 78px;
+        --cpXAxisLabelGap: 78px;
+        --cpYAxisLabelGap: 78px;
+
+        --timeLegendToChartGap: 106px; /* 78 + 28 (equivalente al comportamiento anterior) */
+
+        --timeChartWidth: 100%;
+        --cpChartWidth: 100%;
       }
     }
 
@@ -230,6 +240,16 @@
       border:1px solid rgba(255,255,255,.05);
       background:rgba(0,0,0,.08);
       display:block;
+    }
+
+    /* NUEVO: reducir SOLO estos dos gráficos (no afecta Pirámide) */
+    #timeSvg{
+      width: var(--timeChartWidth);
+      margin: 0 auto;
+    }
+    #cpSvg{
+      width: var(--cpChartWidth);
+      margin: 0 auto;
     }
 
     /* ========= 1 columna ========= */
@@ -839,22 +859,22 @@
     return isFinite(v) ? v : 60;
   };
 
-  const getTimeXAxisLabelGap = () => {                 /* NUEVO */
+  const getTimeXAxisLabelGap = () => {
     const v = parseFloat(CSS('--timeXAxisLabelGap'));
     return isFinite(v) ? v : getAxisLabelGap();
   };
 
-  const getTimeYAxisLabelGap = () => {                 /* NUEVO */
+  const getTimeYAxisLabelGap = () => {
     const v = parseFloat(CSS('--timeYAxisLabelGap'));
     return isFinite(v) ? v : getAxisLabelGap();
   };
 
-  const getCPXAxisLabelGap = () => {                   /* NUEVO */
+  const getCPXAxisLabelGap = () => {
     const v = parseFloat(CSS('--cpXAxisLabelGap'));
     return isFinite(v) ? v : getAxisLabelGap();
   };
 
-  const getCPYAxisLabelGap = () => {                   /* NUEVO */
+  const getCPYAxisLabelGap = () => {
     const v = parseFloat(CSS('--cpYAxisLabelGap'));
     return isFinite(v) ? v : getAxisLabelGap();
   };
@@ -869,14 +889,21 @@
     return isFinite(v) ? v : 1;
   };
 
-  const getTimeLegendFontScale = () => {               /* NUEVO */
+  const getTimeLegendFontScale = () => {
     const v = parseFloat(CSS('--timeLegendFontScale'));
     return isFinite(v) ? v : 1;
   };
 
-  const getTimeLegendItemGap = () => {                /* NUEVO */
+  const getTimeLegendItemGap = () => {
     const v = parseFloat(CSS('--timeLegendItemGap'));
     return isFinite(v) ? v : 22;
+  };
+
+  /* NUEVO: distancia vertical desde el eje X (la “gráfica”) hasta la leyenda */
+  const getTimeLegendToChartGap = () => {
+    const v = parseFloat(CSS('--timeLegendToChartGap'));
+    if (isFinite(v)) return v;
+    return getTimeXAxisLabelGap() + 28;
   };
 
   const WORKER_POOL = [
@@ -1003,7 +1030,7 @@
   const fs = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
   const fsTick = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
   const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale() * getChartTextBoost()).toFixed(2);
-  const fsLegend = (px) => (px * getFontScale() * getChartTextBoost() * getTimeLegendFontScale()).toFixed(2); /* NUEVO */
+  const fsLegend = (px) => (px * getFontScale() * getChartTextBoost() * getTimeLegendFontScale()).toFixed(2);
 
   function kEquilibrium(){
     const rho = Math.max(1e-6, state.rho);
@@ -1228,23 +1255,21 @@
     return series;
   }
 
-  /* MÓVIL: leyenda abreviada y siempre en 1 fila */
-    function renderTimeLegendHorizontal(svg, y){
+  function renderTimeLegendHorizontal(svg, y){
     const isNarrow = window.matchMedia && window.matchMedia("(max-width: 520px)").matches;
 
     const items = isNarrow ? [
-        { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
-        { label: "Trab.",     fill: COLORS.workers, op: "0.50" },
-        { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
-        { label: "Jubilados", fill: COLORS.retired, op: "0.50" }
+      { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
+      { label: "Trab.",     fill: COLORS.workers, op: "0.50" },
+      { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
+      { label: "Jubilados", fill: COLORS.retired, op: "0.50" }
     ] : [
-        { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
-        { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
-        { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
-        { label: "Jubilados (65+)", fill: COLORS.retired, op: "0.50" }
+      { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
+      { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
+      { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
+      { label: "Jubilados (65+)", fill: COLORS.retired, op: "0.50" }
     ];
 
-    // Ajuste: que el símbolo/espaciado también crezca con el boost
     const boost = getChartTextBoost();
     const box = Math.round(14 * boost);
     const gap = Math.round(10 * boost);
@@ -1252,64 +1277,58 @@
     const itemGap = Math.round(getTimeLegendItemGap() * boost);
 
     const makeRow = (rowItems, yRow) => {
-        const g = svgEl('g', { "opacity":"0.95" });
-        let x = 0;
+      const g = svgEl('g', { "opacity":"0.95" });
+      let x = 0;
 
-        rowItems.forEach((it) => {
-        // cajita de color
+      rowItems.forEach((it) => {
         g.appendChild(svgEl('rect', {
-            x: x, y: yRow - (box - 2),
-            width: box, height: box,
-            fill: it.fill,
-            "fill-opacity": it.op,
-            stroke: COLORS.text,
-            "stroke-width":"1",
-            "stroke-opacity":"0.20",
-            rx:"3", ry:"3"
+          x: x, y: yRow - (box - 2),
+          width: box, height: box,
+          fill: it.fill,
+          "fill-opacity": it.op,
+          stroke: COLORS.text,
+          "stroke-width":"1",
+          "stroke-opacity":"0.20",
+          rx:"3", ry:"3"
         }));
 
-        // texto
         const t = svgEl('text', {
-            x: x + box + gap,
-            y: yRow + 2,
-            fill: COLORS.text,
-            // Subo un poco la base: antes 12. Con --chartTextBoost esto escala más.
-            "font-size": fsLegend(13),
-            "font-family":"Arial, sans-serif",
-            "text-anchor":"start",
-            "opacity":"0.92"
+          x: x + box + gap,
+          y: yRow + 2,
+          fill: COLORS.text,
+          "font-size": fsLegend(13),
+          "font-family":"Arial, sans-serif",
+          "text-anchor":"start",
+          "opacity":"0.92"
         });
         t.textContent = it.label;
         g.appendChild(t);
 
-        // Medición real del ancho del texto para evitar solapes
         let textW = 0;
         try{
-            if (typeof t.getComputedTextLength === "function"){
+          if (typeof t.getComputedTextLength === "function"){
             textW = t.getComputedTextLength();
-            } else {
+          } else {
             textW = it.label.length * 7.5 * boost;
-            }
+          }
         }catch(e){
-            textW = it.label.length * 7.5 * boost;
+          textW = it.label.length * 7.5 * boost;
         }
 
-        // avance en X (margen final también proporcional)
         x = x + box + gap + textW + itemGap;
-        });
+      });
 
-        svg.appendChild(g);
+      svg.appendChild(g);
 
-        // centrado de la fila
-        try{
+      try{
         const bb = g.getBBox();
         const tx = (1000 - bb.width) / 2 - bb.x;
         g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
-        }catch(e){}
+      }catch(e){}
     };
 
     makeRow(items, y);
-    }
+  }
 
   function viewXFromClientX(svg, clientX){
     const rect = svg.getBoundingClientRect();
@@ -1351,12 +1370,55 @@
     els.timeSvg.addEventListener("pointerleave", end);
   }
 
+  /* ========= CAMBIO IMPORTANTE =========
+     Integra la solución: padding dinámico (sin clamps) para que:
+     - Los gaps de ejes funcionen de verdad.
+     - La leyenda tenga su variable vertical independiente.
+     - La gráfica quede un poco “más pequeña” (más margen real).
+  */
   function renderTimeChart(){
     const svg = els.timeSvg;
     clearSvg(svg);
 
     const W = 1000, H = 700;
-    const pad = {l: 90, r: 30, t: 24, b: 160}; /* móvil: más espacio para leyenda */
+
+    const boost = getChartTextBoost();
+    const xGap = getTimeXAxisLabelGap();
+    const yGap = getTimeYAxisLabelGap();
+    const legendGap = getTimeLegendToChartGap();
+
+    const tickLabelOffset = 26;                 // donde pintas los ticks X
+    const tickH = 14 * boost;                   // estimación altura texto tick
+    const axisLabelH = 18 * boost;              // estimación altura label eje
+    const legendBox = Math.round(14 * boost);
+    const legendH = legendBox + 6;              // margen de baseline/rect
+
+    // Necesidad de espacio debajo del eje X para que “quepa todo” dentro del viewBox.
+    const bottomNeed = Math.max(
+      tickLabelOffset + tickH,
+      xGap + axisLabelH,
+      legendGap + legendH
+    ) + 18;
+
+    // Necesidad de espacio a la izquierda para ticks + gap del label Y
+    const estTickW = 44 * boost; // estimación conservadora ancho de números
+    const leftNeed = 16 + estTickW + yGap + axisLabelH;
+
+    let pad = {
+      l: Math.max(90, leftNeed),
+      r: 30,
+      t: 24,
+      b: Math.max(120, bottomNeed)
+    };
+
+    // Evitar que se “coma” toda la altura si alguien pone gaps enormes:
+    const minInnerH = 260;
+    pad.b = Math.min(pad.b, Math.max(90, H - pad.t - minInnerH));
+
+    // Evitar innerW ridículo si gaps enormes:
+    const minInnerW = 360;
+    pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
+
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -1396,7 +1458,7 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.30"
       }));
       const t = svgEl('text',{
-        x: xToPx(xv), y: pad.t + innerH + 26,
+        x: xToPx(xv), y: pad.t + innerH + tickLabelOffset,
         fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
@@ -1413,17 +1475,20 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = Math.min(H - 64, pad.t + innerH + getTimeXAxisLabelGap());
+    // Label eje X: sin clamps (el padding ya lo “protege”)
+    const xAxisLabelY = pad.t + innerH + xGap;
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
       fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    const legendY = Math.min(H - 18, xAxisLabelY + 28);
+    // Leyenda: NUEVO control directo “leyenda vs gráfica”
+    const legendY = pad.t + innerH + legendGap;
     renderTimeLegendHorizontal(svg, legendY);
 
-    const yLabelX = Math.max(10, pad.l - getTimeYAxisLabelGap());
+    // Label eje Y: sin clamps (pad.l se ajusta para respetar gap)
+    const yLabelX = pad.l - yGap;
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
@@ -1540,12 +1605,44 @@
     return 20;
   }
 
+  /* ========= CAMBIO IMPORTANTE =========
+     Integra la solución también en C–P: padding dinámico sin clamps.
+  */
   function renderCPChartSim(cur, series){
     const svg = els.cpSvg;
     clearSvg(svg);
 
     const W = 1000, H = 700;
-    const pad = {l: 90, r: 30, t: 26, b: 70};
+
+    const boost = getChartTextBoost();
+    const xGap = getCPXAxisLabelGap();
+    const yGap = getCPYAxisLabelGap();
+
+    const tickLabelOffset = 26;
+    const tickH = 14 * boost;
+    const axisLabelH = 18 * boost;
+
+    const bottomNeed = Math.max(
+      tickLabelOffset + tickH,
+      xGap + axisLabelH
+    ) + 18;
+
+    const estTickW = 44 * boost;
+    const leftNeed = 16 + estTickW + yGap + axisLabelH;
+
+    let pad = {
+      l: Math.max(90, leftNeed),
+      r: 30,
+      t: 26,
+      b: Math.max(70, bottomNeed)
+    };
+
+    const minInnerH = 260;
+    pad.b = Math.min(pad.b, Math.max(70, H - pad.t - minInnerH));
+
+    const minInnerW = 360;
+    pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
+
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -1590,7 +1687,7 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.35"
       }));
       const t = svgEl('text',{
-        x: xToPx(v), y: pad.t + innerH + 26,
+        x: xToPx(v), y: pad.t + innerH + tickLabelOffset,
         fill: COLORS.text, "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
@@ -1608,7 +1705,7 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getCPXAxisLabelGap());
+    const xAxisLabelY = pad.t + innerH + xGap;
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
       fill: COLORS.text, "font-size": fsAxisLabel(14),
@@ -1616,7 +1713,7 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
-    const yLabelX = Math.max(10, pad.l - getCPYAxisLabelGap());
+    const yLabelX = pad.l - yGap;
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(14),
