@@ -145,13 +145,6 @@
       text-transform:uppercase;
       white-space:nowrap;
     }
-    .card .csub{
-      font-size:12px;
-      opacity:.85;
-      font-variant-numeric: tabular-nums;
-      width:100%;
-      line-height:1.2;
-    }
     .card .cb{ padding:12px; display:grid; gap:12px; }
 
     .pyr-frame{
@@ -241,20 +234,12 @@
       box-shadow: 0 2px 10px rgba(0,0,0,.35);
     }
 
-    .note{
-      font-size:12px;
-      opacity:.78;
-      line-height:1.35;
-      padding-top:8px;
-      border-top:1px solid rgba(255,255,255,.06);
-    }
-
     .btn-row{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
-      justify-content:space-between;
+      justify-content:flex-end;
       padding-top:8px;
       border-top:1px solid rgba(255,255,255,.06);
     }
@@ -330,7 +315,6 @@
     <h1>Pirámide poblacional</h1>
     <p>
       Configura la estructura por edad que se usará como estado inicial en el simulador.
-      Esta pantalla guarda tu selección automáticamente.
     </p>
   </div>
   <div class="pill">
@@ -344,9 +328,8 @@
     <div class="ph">
       <div class="ttl">Paso 1 — Pirámide</div>
       <div class="sub">
-        <span class="mono" id="metaLine">Población total: 47.0 M</span>
-        <div class="mini" style="margin-top:8px;">
-          <span class="mini-pill" title="Menores (<18)"><span class="mini-dot ylw"></span><span id="shareMin">—</span></span>
+        <div class="mini">
+          <span class="mini-pill" title="Menores (&lt;18)"><span class="mini-dot ylw"></span><span id="shareMin">—</span></span>
           <span class="mini-pill" title="Edad laboral (18–64)"><span class="mini-dot"></span><span id="shareWork">—</span></span>
           <span class="mini-pill" title="Mayores (65+)"><span class="mini-dot ret"></span><span id="shareRet">—</span></span>
         </div>
@@ -358,7 +341,6 @@
       <div class="card" aria-label="Pirámide por quinquenios">
         <div class="ch">
           <div class="cttl">Pirámide</div>
-          <div class="csub mono" id="pyrMeta">Población total: 47.0 M</div>
         </div>
 
         <div class="cb">
@@ -369,11 +351,6 @@
 
             <svg id="pyrSvg" class="pyr-svg" viewBox="0 0 520 650" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide por quinquenios"></svg>
           </div>
-
-          <div class="note">
-            El deslizador vertical mueve el “pico” (quinquenio) del bulto principal.
-            Ajusta σ y las densidades para modelar la forma: parte inferior (jóvenes) y parte superior (mayores).
-          </div>
         </div>
       </div>
 
@@ -381,7 +358,6 @@
       <div class="card" aria-label="Parámetros de pirámide">
         <div class="ch">
           <div class="cttl">Parámetros</div>
-          <div class="csub mono">Estos valores se guardan en localStorage para el siguiente paso.</div>
         </div>
 
         <div class="cb">
@@ -409,30 +385,10 @@
             <input id="densityOldSlider" type="range" min="0.35" max="1.25" step="0.01" value="0.75" />
           </div>
 
-          <div class="ctl">
-            <label>
-              <span>Total población (millones)</span>
-              <span class="val mono" id="popVal">47.0</span>
-            </label>
-            <input id="popSlider" type="range" min="5" max="350" step="0.5" value="47" />
-          </div>
-
-          <div class="note">
-            Nota: la pirámide define shares iniciales: menores (&lt;18), edad laboral (18–64) y jubilados (65+).
-          </div>
-
           <div class="btn-row">
             <div class="btns">
-              <button id="resetBtn" class="btn" type="button">Restablecer</button>
+              <button id="nextBtn" class="btn primary" type="button">Aceptar</button>
             </div>
-            <div class="btns">
-              <!-- Cambia este href al nombre real de tu siguiente pantalla -->
-              <button id="nextBtn" class="btn primary" type="button">Aceptar y continuar</button>
-            </div>
-          </div>
-
-          <div class="note" style="padding-top:10px;">
-            Siguiente paso sugerido: pantalla para parámetros de “Evolución en el tiempo”.
           </div>
         </div>
       </div>
@@ -461,7 +417,7 @@
   ];
 
   const DEFAULTS = {
-    popTotalM: 47.0,
+    popTotalM: 47.0,   // Se mantiene en estado/almacenamiento, pero ya no se muestra ni se edita aquí
     peakIdx: 9,
     sigma: 18,
     densityYoung: 0.75,
@@ -471,8 +427,6 @@
   const state = { ...DEFAULTS };
 
   const els = {
-    metaLine: document.getElementById('metaLine'),
-    pyrMeta: document.getElementById('pyrMeta'),
     pyrSvg: document.getElementById('pyrSvg'),
 
     peakShell: document.getElementById('peakShell'),
@@ -487,14 +441,10 @@
     densityOldSlider: document.getElementById('densityOldSlider'),
     densityOldVal: document.getElementById('densityOldVal'),
 
-    popSlider: document.getElementById('popSlider'),
-    popVal: document.getElementById('popVal'),
-
     shareMin: document.getElementById('shareMin'),
     shareWork: document.getElementById('shareWork'),
     shareRet: document.getElementById('shareRet'),
 
-    resetBtn: document.getElementById('resetBtn'),
     nextBtn: document.getElementById('nextBtn'),
   };
 
@@ -504,7 +454,6 @@
     return el;
   };
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
-  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
   function paintRange(input){
     if (!input) return;
@@ -634,6 +583,24 @@
     els.shareRet.textContent  = `Mayores: ${(sRet*100).toFixed(1)}%`;
   }
 
+  function labelMidAge(label){
+    if (label.includes('+')){
+      const start = parseInt(label, 10);
+      return isFinite(start) ? start : 100;
+    }
+    const [a,b] = label.split('-').map(x => parseInt(x, 10));
+    const start = isFinite(a) ? a : 0;
+    const end = isFinite(b) ? b : start;
+    return (start + end) / 2;
+  }
+
+  function colorForLabel(label){
+    const mid = labelMidAge(label);
+    if (mid < 18) return COLORS.primary;     // Menores
+    if (mid < 65) return COLORS.workers;     // Laboral
+    return COLORS.retired;                   // Mayores
+  }
+
   function renderPyramid(){
     const svg = els.pyrSvg;
     clearSvg(svg);
@@ -703,22 +670,19 @@
         fill: COLORS.retired, "fill-opacity":"0.80"
       }));
 
+      // Etiquetas de edad con color por grupo: Menores / Laboral / Mayores
       const t = svgEl('text',{
         x: 12, y: y + h*0.72,
-        fill: COLORS.text,
+        fill: colorForLabel(AGE_LABELS[i]),
         "font-size": "12",
         "font-family":"Arial, sans-serif",
-        "opacity":"0.90"
+        "opacity":"0.95"
       });
       t.textContent = AGE_LABELS[i];
       svg.appendChild(t);
     }
 
-    els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
-    els.metaLine.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
-
     renderShares();
-
     requestAnimationFrame(syncPeakSliderToSvg);
   }
 
@@ -751,9 +715,6 @@
   }
 
   function syncUI(){
-    els.popSlider.value = state.popTotalM;
-    els.popVal.textContent = state.popTotalM.toFixed(1);
-
     els.peakSlider.value = state.peakIdx;
 
     els.sigmaSlider.value = state.sigma;
@@ -765,7 +726,7 @@
     els.densityOldSlider.value = state.densityOld;
     els.densityOldVal.textContent = state.densityOld.toFixed(2);
 
-    [els.popSlider, els.peakSlider, els.sigmaSlider, els.densityYoungSlider, els.densityOldSlider].forEach(paintRange);
+    [els.peakSlider, els.sigmaSlider, els.densityYoungSlider, els.densityOldSlider].forEach(paintRange);
   }
 
   // Eventos
@@ -800,22 +761,7 @@
     renderPyramid();
   });
 
-  els.popSlider.addEventListener('input', (e) => {
-    state.popTotalM = Number(e.target.value);
-    els.popVal.textContent = state.popTotalM.toFixed(1);
-    paintRange(els.popSlider);
-    saveState();
-    renderPyramid();
-  });
-
-  els.resetBtn.addEventListener('click', () => {
-    Object.assign(state, DEFAULTS);
-    saveState();
-    syncUI();
-    renderPyramid();
-  });
-
-  // Cambia el destino cuando crees la siguiente pantalla
+  // Botón Aceptar (mantiene navegación al siguiente paso)
   els.nextBtn.addEventListener('click', () => {
     saveState();
     window.location.href = "parametrosTiempo.html";
