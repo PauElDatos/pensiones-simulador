@@ -579,6 +579,16 @@
     }
     .cp-kv .k{ opacity:.85; }
     .cp-kv .v{ color:#fff; font-variant-numeric: tabular-nums; }
+
+    /* Solo play/pause/reset en amarillo */
+    #playBtn, #pauseBtn, #resetBtn{
+      background: var(--primary) !important;
+      color: #111 !important;
+      border-color: rgba(0,0,0,.35) !important;
+    }
+    #playBtn:hover, #pauseBtn:hover, #resetBtn:hover{
+      filter: brightness(0.95);
+    }
   </style>
 </head>
 
