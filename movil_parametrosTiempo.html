@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pensiones — Tiempo (móvil)</title>
+  <title>Pensiones — Evolución en el tiempo (Parámetros)</title>
 
   <style>
     :root{
@@ -19,58 +19,59 @@
 
       --stroke:#3a3a3a;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
-      --radius:14px;
+      --radius:16px;
 
       --fontTitle: "Futura","Trebuchet MS",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       --fontText:  Arial,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
 
-      --fontScale: 1.15;
-      --chartTextBoost: 2.0;
+      /* SVG: escalado de fuentes */
+      --fontScale: 1.35;
 
-      --timeXAxisLabelGap: 80px;
-      --timeYAxisLabelGap: 80px;
-      --timeLegendToChartGap: 110px;
-
-      --timeLegendFontScale: 1.25;
-      --timeLegendItemGap: 64px;
+      /* Gaps de ejes/leyenda */
+      --axisLabelGap: 60px;
+      --axisLabelFontScale: 1.4;
 
       --timeChartWidth: 100%;
     }
 
-    *{box-sizing:border-box}
+    *{ box-sizing:border-box; }
     body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--fontText); }
 
     header{
-      padding:14px 12px 6px 12px;
+      padding:14px 14px 10px 14px;
       display:flex;
       align-items:flex-end;
       justify-content:space-between;
-      gap:12px;
+      gap:10px;
       flex-wrap:wrap;
     }
     .h-title h1{
       margin:0;
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size: calc(22px * var(--fontScale));
+      font-size: 24px;
       letter-spacing:.3px;
       line-height:1.05;
     }
     .h-title p{
       margin:6px 0 0 0;
-      font-size: calc(13px * var(--fontScale));
       opacity:.9;
+      font-size:12.5px;
+      max-width:96ch;
       line-height:1.35;
+      text-transform:none;
     }
     .pill{
-      display:inline-flex; align-items:center; gap:8px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       padding:8px 10px;
       border:1px solid var(--stroke);
       border-radius:999px;
       background:rgba(255,255,255,.03);
-      font-size: calc(12px * var(--fontScale));
+      font-size:12px;
       opacity:.9;
-      width:100%;
+      white-space:nowrap;
     }
     .dot{
       width:8px; height:8px; border-radius:50%;
@@ -83,82 +84,86 @@
       border-bottom:1px solid rgba(255,255,255,.18);
       padding-bottom:1px;
     }
+    a.back:hover{ border-bottom-color: rgba(254,247,2,.35); color:#fff; }
 
-    main{
-      min-height: calc(100vh - 70px);
-      padding:10px 10px 16px 10px;
-    }
+    main{ padding:10px 14px 18px 14px; }
 
     .panel{
+      max-width: 1180px;
+      margin: 0 auto;
       background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
       border:1px solid var(--stroke);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
     }
+
     .ph{
-      padding:12px 12px 10px 12px;
+      padding:14px 14px 12px 14px;
       border-bottom:1px solid var(--stroke);
       background:rgba(255,255,255,.02);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .ttl{
+      font-family:var(--fontTitle);
+      color:var(--primary);
+      font-size: 13px;
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+    .sub{
+      font-size: 12px;
+      opacity:.85;
+      line-height:1.35;
+      flex:1 1 auto;
+      min-width:240px;
+    }
+    .mono{ font-variant-numeric: tabular-nums; }
+
+    .content{
+      padding:14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      align-items:start;
+    }
+
+    .card{
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:14px;
+      background:rgba(0,0,0,.08);
+      overflow:hidden;
+    }
+    .card .ch{
+      padding:12px 12px 10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap:10px;
       flex-wrap:wrap;
     }
-    .ttl{
+    .card .cttl{
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size: calc(13px * var(--fontScale));
+      font-size: 12px;
       letter-spacing:.35px;
       text-transform:uppercase;
       white-space:nowrap;
     }
-    .sub{
-      font-size: calc(12px * var(--fontScale));
+    .card .csub{
+      font-size:12px;
       opacity:.85;
+      font-variant-numeric: tabular-nums;
       width:100%;
-      line-height:1.25;
-      font-variant-numeric: tabular-nums;
-    }
-    .mono{ font-variant-numeric: tabular-nums; }
-
-    .area{
-      padding:12px;
-      display:grid;
-      gap:12px;
-    }
-
-    .card{
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:12px;
-      background:rgba(0,0,0,.08);
-      overflow:hidden;
-    }
-    .card .ch{
-      padding:10px 10px 8px 10px;
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-    .cttl{
-      font-family:var(--fontTitle);
-      color:var(--primary);
-      font-size: calc(12px * var(--fontScale));
-      letter-spacing:.35px;
-      text-transform:uppercase;
-      white-space:nowrap;
-    }
-    .csub{
-      margin-top:6px;
-      font-size: calc(12px * var(--fontScale));
-      opacity:.85;
-      font-variant-numeric: tabular-nums;
       line-height:1.2;
     }
-    .cb{
-      padding:10px;
-      display:grid;
-      gap:10px;
-    }
+    .card .cb{ padding:12px; display:grid; gap:12px; }
 
     .bigsvg{
       width:100%;
@@ -171,55 +176,57 @@
     }
     #timeSvg{ width: var(--timeChartWidth); margin: 0 auto; }
 
-    .result-pill{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.03);
-      font-size: calc(12px * var(--fontScale));
-      opacity:.95;
-    }
-    .result-dot{
-      width:10px; height:10px; border-radius:50%;
-      background: var(--primary);
-      box-shadow:0 0 0 3px rgba(254,247,2,.12);
-      flex:0 0 auto;
-    }
-    .result-dot.ok{ background: var(--workers); box-shadow:0 0 0 3px rgba(54,195,255,.12); }
-    .result-dot.bad{ background: var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.12); }
-
     .ctl{ display:grid; gap:6px; }
     .ctl label{
-      font-size: calc(13px * var(--fontScale));
+      font-size:13px;
       opacity:.92;
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
       gap:10px;
     }
     .val{ font-variant-numeric: tabular-nums; opacity:.95; }
 
+    /* ===== SLIDERS ===== */
     input[type="range"]{
       width:100%;
+      display:block;
+      margin:0;
       accent-color: var(--primary);
       background: rgba(255,255,255,.12);
       border-radius:999px;
       height: 4px;
       -webkit-appearance: none;
       appearance: none;
+      touch-action: pan-x;
+    }
+    input[type="range"]::-webkit-slider-runnable-track{
+      height: 4px;
+      background: transparent;
+      border-radius:999px;
     }
     input[type="range"]::-webkit-slider-thumb{
       -webkit-appearance: none;
       appearance: none;
-      width: 14px;
-      height: 14px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       background: var(--primary);
       border: 1px solid rgba(0,0,0,.35);
-      margin-top: -5px;
+      margin-top: -7px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+    input[type="range"]::-moz-range-track{
+      height:4px;
+      background: transparent;
+      border-radius:999px;
+    }
+    input[type="range"]::-moz-range-thumb{
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 1px solid rgba(0,0,0,.35);
       box-shadow: 0 2px 10px rgba(0,0,0,.35);
     }
 
@@ -228,44 +235,75 @@
       grid-template-columns: 1fr auto;
       gap:8px 10px;
       align-items:baseline;
-      padding:10px;
+      padding:12px;
       border:1px solid rgba(255,255,255,.06);
       border-radius:12px;
       background:rgba(0,0,0,.08);
-      font-size: calc(12px * var(--fontScale));
+      font-size:12px;
     }
     .kv .k{ opacity:.85; }
     .kv .v{ color:#fff; font-variant-numeric: tabular-nums; }
 
     .btn-row{
       display:flex;
-      gap:8px;
+      gap:10px;
       flex-wrap:wrap;
+      align-items:center;
+      justify-content:stretch;
+      padding-top:8px;
+      border-top:1px solid rgba(255,255,255,.06);
     }
+    .btns{ display:flex; gap:8px; flex-wrap:wrap; width:100%; justify-content:stretch; }
     .btn{
       cursor:pointer;
       border-radius:12px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.03);
       color:var(--text);
-      padding:10px 12px;
-      flex:1 1 160px;
-      min-width:140px;
+      padding:12px 12px;
+      min-width:0;
+      width:100%;
       text-align:center;
-      font-size: calc(12px * var(--fontScale));
+      font-size:14px;
+    }
+    .btn:hover{
+      border-color: rgba(254,247,2,.35);
+      color:#fff;
+      background: rgba(254,247,2,.06);
     }
     .btn.primary{
       border-color: rgba(254,247,2,.35);
       color:#111;
-      background: rgba(254,247,2,.92);
+      background: rgba(254,247,2,.90);
+    }
+    .btn.primary:hover{ background: rgba(254,247,2,1); }
+
+    /* Smartphone: mejora legibilidad del SVG */
+    @media (max-width: 640px){
+      header{ padding:12px 12px 8px 12px; align-items:flex-start; }
+      .h-title h1{ font-size:22px; }
+      .h-title p{ font-size:12px; }
+
+      main{ padding:10px 12px 16px 12px; }
+      .ph{ padding:12px; }
+      .content{ padding:12px; }
+
+      :root{
+        --fontScale: 1.55;
+        --axisLabelGap: 48px;
+        --axisLabelFontScale: 1.25;
+      }
     }
 
-    .note{
-      font-size: calc(11px * var(--fontScale));
-      opacity:.75;
-      line-height:1.35;
-      border-top:1px solid rgba(255,255,255,.06);
-      padding-top:8px;
+    /* Desktop: vuelve a 2 columnas */
+    @media (min-width: 981px){
+      .content{
+        grid-template-columns: 1.25fr 0.95fr;
+        gap:14px;
+      }
+      .btn{ min-width:170px; width:auto; }
+      .btns{ width:auto; justify-content:flex-end; }
+      .btn-row{ justify-content:space-between; }
     }
   </style>
 </head>
@@ -273,93 +311,88 @@
 <body>
 <header>
   <div class="h-title">
-    <h1>Tiempo</h1>
-    <p>Parámetros + gráfica. Arrastra sobre la gráfica para cambiar t.</p>
+    <h1>Evolución en el tiempo</h1>
+    <p>ajusta el crecimiento de la población y sus diferentes cohortes demográficas</p>
   </div>
   <div class="pill">
     <span class="dot"></span>
-    <span><a class="back" href="movil_piramidePoblacional.html">Volver a pirámide</a></span>
+    <span><a class="back" href="piramidePoblacional.html">Volver a pirámide</a></span>
   </div>
 </header>
 
 <main>
-  <section class="panel" aria-label="Parámetros tiempo (móvil)">
+  <section class="panel" aria-label="Configuración evolución en el tiempo (con gráfica)">
     <div class="ph">
       <div class="ttl">Paso 2 — Tiempo</div>
-      <div class="sub mono" id="pyrSummary">Pirámide: —</div>
-      <div class="sub mono" id="tReadout">t: —</div>
-      <div class="sub mono" id="simMeta">Año: — | Población: —</div>
+      <div class="sub"></div>
     </div>
 
-    <div class="area">
-
-      <div class="card" aria-label="Gráfica">
+    <div class="content">
+      <!-- Gráfica -->
+      <div class="card" aria-label="Gráfica evolución en el tiempo">
         <div class="ch">
-          <div class="cttl">Evolución</div>
-          <div class="csub mono" id="kLine">k = τ/ρ: —</div>
+          <div class="cttl">Gráfica</div>
         </div>
         <div class="cb">
           <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Evolución en el tiempo"></svg>
-          <div class="result-pill">
-            <span class="result-dot" id="resultDot"></span>
-            <span class="mono" id="resultText">—</span>
-          </div>
         </div>
       </div>
 
-      <div class="card" aria-label="Controles">
+      <!-- Controles -->
+      <div class="card" aria-label="Parámetros">
         <div class="ch">
           <div class="cttl">Parámetros</div>
-          <div class="csub mono">Se guardan automáticamente</div>
+          <div class="csub mono" id="kLine">k = τ/ρ: —</div>
         </div>
 
         <div class="cb">
           <div class="ctl">
-            <label><span>ρ</span><span class="val mono" id="rhoVal">0.80</span></label>
-            <input id="rhoSlider" type="range" min="0.40" max="1.40" step="0.01" value="0.80" />
-          </div>
-
-          <div class="ctl">
-            <label><span>τ</span><span class="val mono" id="tauVal">0.29</span></label>
-            <input id="tauSlider" type="range" min="0.05" max="0.45" step="0.01" value="0.29" />
-          </div>
-
-          <div class="ctl">
-            <label><span>u</span><span class="val mono" id="uVal">10%</span></label>
+            <label>
+              <span>Paro (u): % de 18–64 que NO cotiza</span>
+              <span class="val mono" id="uVal">10%</span>
+            </label>
             <input id="uSlider" type="range" min="0" max="35" step="1" value="10" />
           </div>
 
           <div class="ctl">
-            <label><span>Crec. población</span><span class="val mono" id="popGrowthVal">0.30%</span></label>
+            <label>
+              <span>Crec. población anual</span>
+              <span class="val mono" id="popGrowthVal">0.30%</span>
+            </label>
             <input id="popGrowthSlider" type="range" min="-1.50" max="2.50" step="0.05" value="0.30" />
           </div>
 
           <div class="ctl">
-            <label><span>Envejecimiento</span><span class="val mono" id="agingVal">+0.20 pp</span></label>
+            <label>
+              <span>Envejecimiento anual (Δ share 65+)</span>
+              <span class="val mono" id="agingVal">+0.20 pp</span>
+            </label>
             <input id="agingSlider" type="range" min="-0.50" max="0.80" step="0.01" value="0.20" />
           </div>
 
           <div class="ctl">
-            <label><span>Años</span><span class="val mono" id="yearsVal">80</span></label>
+            <label>
+              <span>Años a simular</span>
+              <span class="val mono" id="yearsVal">80</span>
+            </label>
             <input id="yearsSlider" type="range" min="20" max="140" step="5" value="80" />
           </div>
 
-          <div class="kv">
-            <div class="k">k</div><div class="v mono" id="kVal">—</div>
-            <div class="k">u</div><div class="v mono" id="uFrac">—</div>
+          <div class="kv" aria-label="Resumen guardado">
+            <div class="k">k = τ/ρ</div><div class="v mono" id="kVal">—</div>
+            <div class="k">u (fracción)</div><div class="v mono" id="uFrac">—</div>
             <div class="k">popGrowth</div><div class="v mono" id="popGrowthFrac">—</div>
             <div class="k">agingPP</div><div class="v mono" id="agingFrac">—</div>
             <div class="k">years</div><div class="v mono" id="yearsOut">—</div>
           </div>
 
           <div class="btn-row">
-            <button id="resetBtn" class="btn" type="button">Restablecer</button>
-            <button id="nextBtn" class="btn primary" type="button">Aceptar</button>
+            <div class="btns"></div>
+            <div class="btns">
+              <button id="nextBtn" class="btn primary" type="button">Aceptar</button>
+            </div>
           </div>
 
-          <div class="note">
-            Al aceptar se abrirá <span class="mono">movil_simulador.html</span>.
-          </div>
         </div>
       </div>
 
@@ -395,9 +428,9 @@
   const DEFAULT_TIME = {
     rho: 0.80,
     tau: 0.29,
-    u: 0.10,
-    popGrowth: 0.003,
-    agingPP: 0.002,
+    u: 0.10,            // fracción
+    popGrowth: 0.003,   // fracción
+    agingPP: 0.002,     // fracción (0.20 pp)
     years: 80
   };
 
@@ -411,19 +444,12 @@
 
   const els = {
     timeSvg: document.getElementById("timeSvg"),
-    pyrSummary: document.getElementById("pyrSummary"),
-    tReadout: document.getElementById("tReadout"),
-    simMeta: document.getElementById("simMeta"),
 
-    rhoSlider: document.getElementById("rhoSlider"),
-    tauSlider: document.getElementById("tauSlider"),
     uSlider: document.getElementById("uSlider"),
     popGrowthSlider: document.getElementById("popGrowthSlider"),
     agingSlider: document.getElementById("agingSlider"),
     yearsSlider: document.getElementById("yearsSlider"),
 
-    rhoVal: document.getElementById("rhoVal"),
-    tauVal: document.getElementById("tauVal"),
     uVal: document.getElementById("uVal"),
     popGrowthVal: document.getElementById("popGrowthVal"),
     agingVal: document.getElementById("agingVal"),
@@ -436,44 +462,28 @@
     agingFrac: document.getElementById("agingFrac"),
     yearsOut: document.getElementById("yearsOut"),
 
-    resultDot: document.getElementById("resultDot"),
-    resultText: document.getElementById("resultText"),
-
-    resetBtn: document.getElementById("resetBtn"),
     nextBtn: document.getElementById("nextBtn"),
   };
 
   const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
   const toM = (x) => x / 1_000_000;
 
-  const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
-  const getChartTextBoost = () => parseFloat(CSS('--chartTextBoost')) || 1;
+  const isMobile = () => window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
 
-  const getTimeXAxisLabelGap = () => {
-    const v = parseFloat(CSS('--timeXAxisLabelGap'));
-    return isFinite(v) ? v : 80;
+  const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
+
+  const getAxisLabelGap = () => {
+    const v = parseFloat(CSS('--axisLabelGap'));
+    return isFinite(v) ? v : 60;
   };
-  const getTimeYAxisLabelGap = () => {
-    const v = parseFloat(CSS('--timeYAxisLabelGap'));
-    return isFinite(v) ? v : 80;
-  };
-  const getTimeLegendToChartGap = () => {
-    const v = parseFloat(CSS('--timeLegendToChartGap'));
-    return isFinite(v) ? v : 110;
-  };
-  const getTimeLegendFontScale = () => {
-    const v = parseFloat(CSS('--timeLegendFontScale'));
+
+  const getAxisLabelFontScale = () => {
+    const v = parseFloat(CSS('--axisLabelFontScale'));
     return isFinite(v) ? v : 1;
   };
-  const getTimeLegendItemGap = () => {
-    const v = parseFloat(CSS('--timeLegendItemGap'));
-    return isFinite(v) ? v : 64;
-  };
 
-  const fs = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
-  const fsTick = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
-  const fsAxis = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
-  const fsLegend = (px) => (px * getFontScale() * getChartTextBoost() * getTimeLegendFontScale()).toFixed(2);
+  const fsTick = (px) => (px * getFontScale()).toFixed(2);
+  const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale()).toFixed(2);
 
   const svgEl = (name, attrs={}) => {
     const el = document.createElementNS("http://www.w3.org/2000/svg", name);
@@ -587,7 +597,8 @@
         cot: cotEff,
         inactive,
         noncot: unemployed,
-        retired
+        retired,
+        sMin, sWork, sRet
       });
 
       total = total * (1 + state.time.popGrowth);
@@ -611,83 +622,110 @@
     return series;
   }
 
-  function renderTimeLegendHorizontal(svg, y){
+  function renderTimeLegend(svg, y, mobile){
     const items = [
-      { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
-      { label: "Trab.",     fill: COLORS.workers, op: "0.50" },
-      { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
-      { label: "Jubil.",    fill: COLORS.retired, op: "0.50" }
+      { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
+      { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
+      { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
+      { label: "Jubilados (65+)", fill: COLORS.retired, op: "0.50" }
     ];
 
-    const boost = getChartTextBoost();
-    const box = Math.round(14 * boost);
-    const gap = Math.round(10 * boost);
-    const itemGap = Math.round(getTimeLegendItemGap() * boost);
-
     const g = svgEl('g', { "opacity":"0.95" });
-    let x = 0;
+    const box = 14;
 
-    items.forEach((it) => {
-      g.appendChild(svgEl('rect', {
-        x: x, y: y - (box - 2),
-        width: box, height: box,
-        fill: it.fill,
-        "fill-opacity": it.op,
-        stroke: COLORS.text,
-        "stroke-width":"1",
-        "stroke-opacity":"0.20",
-        rx:"3", ry:"3"
-      }));
+    const approxTextW = (s) => s.length * 7.1; // aproximación consistente
 
-      const t = svgEl('text', {
-        x: x + box + gap,
-        y: y + 2,
-        fill: COLORS.text,
-        "font-size": fsLegend(13),
-        "font-family":"Arial, sans-serif",
-        "text-anchor":"start",
-        "opacity":"0.92"
+    if (!mobile){
+      const gap = 10;
+      const after = 90;
+      let x = 0;
+
+      items.forEach((it) => {
+        g.appendChild(svgEl('rect', {
+          x: x, y: y - (box - 2),
+          width: box, height: box,
+          fill: it.fill,
+          "fill-opacity": it.op,
+          stroke: COLORS.text,
+          "stroke-width":"1",
+          "stroke-opacity":"0.20",
+          rx:"3", ry:"3"
+        }));
+
+        const t = svgEl('text', {
+          x: x + box + gap,
+          y: y + 2,
+          fill: COLORS.text,
+          "font-size": fsTick(18),
+          "font-family":"Arial, sans-serif",
+          "text-anchor":"start",
+          "opacity":"0.92"
+        });
+        t.textContent = it.label;
+        g.appendChild(t);
+
+        x = x + box + gap + approxTextW(it.label) + after;
       });
-      t.textContent = it.label;
-      g.appendChild(t);
 
-      let textW = 0;
+      svg.appendChild(g);
+
       try{
-        textW = (typeof t.getComputedTextLength === "function")
-          ? t.getComputedTextLength()
-          : it.label.length * 7.5 * boost;
-      }catch(e){
-        textW = it.label.length * 7.5 * boost;
-      }
+        const bb = g.getBBox();
+        const tx = (1000 - bb.width) / 2 - bb.x;
+        g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
+      } catch(e){}
+      return;
+    }
 
-      x = x + box + gap + textW + itemGap;
+    // Mobile: 2 filas (2 items por fila) centradas
+    const rows = [
+      [items[0], items[1]],
+      [items[2], items[3]]
+    ];
+    const gap = 8;
+    const colGap = 22;
+    const rowGap = 24;
+
+    rows.forEach((row, ri) => {
+      const rowY = y + (ri * rowGap);
+
+      const rowW =
+        row.reduce((acc, it, idx) => {
+          const w = box + gap + approxTextW(it.label);
+          return acc + w + (idx === 0 ? 0 : colGap);
+        }, 0);
+
+      let x = (1000 - rowW) / 2;
+
+      row.forEach((it, idx) => {
+        g.appendChild(svgEl('rect', {
+          x: x, y: rowY - (box - 2),
+          width: box, height: box,
+          fill: it.fill,
+          "fill-opacity": it.op,
+          stroke: COLORS.text,
+          "stroke-width":"1",
+          "stroke-opacity":"0.20",
+          rx:"3", ry:"3"
+        }));
+
+        const t = svgEl('text', {
+          x: x + box + gap,
+          y: rowY + 2,
+          fill: COLORS.text,
+          "font-size": fsTick(18),
+          "font-family":"Arial, sans-serif",
+          "text-anchor":"start",
+          "opacity":"0.92"
+        });
+        t.textContent = it.label;
+        g.appendChild(t);
+
+        x += box + gap + approxTextW(it.label) + colGap;
+      });
     });
 
     svg.appendChild(g);
-
-    try{
-      const bb = g.getBBox();
-      const tx = (1000 - bb.width) / 2 - bb.x;
-      g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
-    }catch(e){}
-  }
-
-  function updateSystemPill(cur){
-    const C = cur.cot;
-    const P = cur.retired;
-    const k = kEquilibrium();
-    const sustainable = (P <= k * C + 1e-9);
-
-    els.resultDot.classList.remove("ok","bad");
-    if (sustainable){
-      els.resultDot.classList.add("ok");
-      els.resultText.textContent = `Sostenible en t=${cur.t} (P ≤ k·C).`;
-    } else {
-      els.resultDot.classList.add("bad");
-      const Cneeded = (k>0) ? (P / k) : Infinity;
-      const missing = (Cneeded===Infinity) ? Infinity : Math.max(0, Cneeded - C);
-      els.resultText.textContent = `No cierra en t=${cur.t}: faltan ${toM(missing).toFixed(2)} M.`;
-    }
   }
 
   function renderTimeChart(){
@@ -695,39 +733,11 @@
     clearSvg(svg);
 
     const W = 1000, H = 700;
+    const mobile = isMobile();
 
-    const boost = getChartTextBoost();
-    const xGap = getTimeXAxisLabelGap();
-    const yGap = getTimeYAxisLabelGap();
-    const legendGap = getTimeLegendToChartGap();
-
-    const tickLabelOffset = 26;
-    const tickH = 14 * boost;
-    const axisLabelH = 18 * boost;
-    const legendBox = Math.round(14 * boost);
-    const legendH = legendBox + 6;
-
-    const bottomNeed = Math.max(
-      tickLabelOffset + tickH,
-      xGap + axisLabelH,
-      legendGap + legendH
-    ) + 18;
-
-    const estTickW = 44 * boost;
-    const leftNeed = 16 + estTickW + yGap + axisLabelH;
-
-    let pad = {
-      l: Math.max(90, leftNeed),
-      r: 30,
-      t: 24,
-      b: Math.max(120, bottomNeed)
-    };
-
-    const minInnerH = 260;
-    pad.b = Math.min(pad.b, Math.max(90, H - pad.t - minInnerH));
-
-    const minInnerW = 360;
-    pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
+    const pad = mobile
+      ? {l: 78, r: 20, t: 24, b: 190}
+      : {l: 90, r: 30, t: 24, b: 140};
 
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
@@ -743,7 +753,7 @@
     const xToPx = (x) => pad.l + (x / T) * innerW;
     const yToPx = (yM) => pad.t + innerH - (yM / yNice) * innerH;
 
-    const yTicks = 6;
+    const yTicks = mobile ? 5 : 6;
     for (let i=0;i<=yTicks;i++){
       const yv = (yNice * i / yTicks);
       svg.appendChild(svgEl('line',{
@@ -753,15 +763,14 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 10, y: yToPx(yv) + 4,
-        fill: COLORS.text, "font-size": fsTick(12),
-        "font-family":"Arial, sans-serif",
+        fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
       t.textContent = String(Math.round(yv));
       svg.appendChild(t);
     }
 
-    const xTicks = 5;
+    const xTicks = mobile ? 4 : 5;
     for (let i=0;i<=xTicks;i++){
       const xv = Math.round(T * i / xTicks);
       svg.appendChild(svgEl('line',{
@@ -769,9 +778,8 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.30"
       }));
       const t = svgEl('text',{
-        x: xToPx(xv), y: pad.t + innerH + tickLabelOffset,
-        fill: COLORS.text, "font-size": fsTick(12),
-        "font-family":"Arial, sans-serif",
+        x: xToPx(xv), y: pad.t + innerH + 26,
+        fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
       t.textContent = String(xv);
@@ -787,28 +795,26 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = pad.t + innerH + xGap;
+    const xAxisLabelY = Math.min(H - 44, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
-      fill: COLORS.text, "font-size": fsAxis(14),
-      "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    const legendY = pad.t + innerH + legendGap;
-    renderTimeLegendHorizontal(svg, legendY);
+    const legendY = Math.min(H - 18, xAxisLabelY + 30);
+    renderTimeLegend(svg, legendY, mobile);
 
-    const yLabelX = pad.l - yGap;
+    const yLabelX = Math.max(10, pad.l - getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size": fsAxis(14),
-      "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
     })).textContent = "Personas (millones)";
 
     const minorsTop = [];
-    const workTop = [];
+    const cotTop = [];
     const noncotTop = [];
     const totalTop = [];
     const basePts = [];
@@ -816,14 +822,14 @@
     data.forEach(d => {
       const x = xToPx(d.t);
       const mM = toM(d.minors);
-      const wM = toM(d.cot + (d.inactive || 0));
+      const cM = toM(d.cot + (d.inactive || 0));
       const nM = toM(d.noncot);
       const rM = toM(d.retired);
 
       minorsTop.push([x, yToPx(mM)]);
-      workTop.push([x, yToPx(mM + wM)]);
-      noncotTop.push([x, yToPx(mM + wM + nM)]);
-      totalTop.push([x, yToPx(mM + wM + nM + rM)]);
+      cotTop.push([x, yToPx(mM + cM)]);
+      noncotTop.push([x, yToPx(mM + cM + nM)]);
+      totalTop.push([x, yToPx(mM + cM + nM + rM)]);
       basePts.push([x, yToPx(0)]);
     });
 
@@ -833,11 +839,13 @@
     }
 
     svg.appendChild(svgEl('path', { d: polyPath(minorsTop, basePts), fill: COLORS.minors, "fill-opacity":"0.35", stroke:"none" }));
-    svg.appendChild(svgEl('path', { d: polyPath(workTop, minorsTop), fill: COLORS.workers, "fill-opacity":"0.50", stroke:"none" }));
+    svg.appendChild(svgEl('path', { d: polyPath(cotTop, minorsTop),   fill: COLORS.workers,"fill-opacity":"0.50", stroke:"none" }));
+
     if (state.time.u > 1e-9){
-      svg.appendChild(svgEl('path', { d: polyPath(noncotTop, workTop), fill: COLORS.noncot, "fill-opacity":"0.55", stroke:"none" }));
+      svg.appendChild(svgEl('path', { d: polyPath(noncotTop, cotTop), fill: COLORS.noncot, "fill-opacity":"0.55", stroke:"none" }));
     }
-    svg.appendChild(svgEl('path', { d: polyPath(totalTop, noncotTop), fill: COLORS.retired, "fill-opacity":"0.50", stroke:"none" }));
+
+    svg.appendChild(svgEl('path', { d: polyPath(totalTop, noncotTop), fill: COLORS.retired,"fill-opacity":"0.50", stroke:"none" }));
 
     svg.appendChild(svgEl('path', {
       d: "M " + totalTop.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L "),
@@ -858,14 +866,11 @@
       "stroke-opacity":"0.65",
       "stroke-dasharray":"8 6"
     }));
+
     svg.appendChild(svgEl('circle', {
       cx: xNow, cy: yToPx(toM(cur.total)), r: "5.5",
       fill: COLORS.primary, "fill-opacity":"0.95"
     }));
-
-    els.tReadout.textContent = `t: ${cur.t}`;
-    els.simMeta.textContent = `Año: ${cur.t} | Población: ${toM(cur.total).toFixed(1)} M`;
-    updateSystemPill(cur);
   }
 
   function viewXFromClientX(svg, clientX){
@@ -954,24 +959,17 @@
   function syncUI(){
     const t = state.time;
 
-    els.pyrSummary.textContent =
-      `Pirámide: ${state.pyr.popTotalM.toFixed(1)} M | pico ${state.pyr.peakIdx} | σ ${state.pyr.sigma}`;
-
-    els.rhoSlider.value = t.rho;
-    els.tauSlider.value = t.tau;
     els.uSlider.value = Math.round(t.u * 100);
     els.popGrowthSlider.value = (t.popGrowth * 100).toFixed(2);
     els.agingSlider.value = (t.agingPP * 100).toFixed(2);
     els.yearsSlider.value = t.years;
 
-    els.rhoVal.textContent = t.rho.toFixed(2);
-    els.tauVal.textContent = t.tau.toFixed(2);
     els.uVal.textContent = `${Math.round(t.u*100)}%`;
     els.popGrowthVal.textContent = `${(t.popGrowth*100).toFixed(2)}%`;
     els.agingVal.textContent = `+${(t.agingPP*100).toFixed(2)} pp`;
     els.yearsVal.textContent = String(t.years);
 
-    [els.rhoSlider, els.tauSlider, els.uSlider, els.popGrowthSlider, els.agingSlider, els.yearsSlider].forEach(paintRange);
+    [els.uSlider, els.popGrowthSlider, els.agingSlider, els.yearsSlider].forEach(paintRange);
 
     syncDerivedUI();
   }
@@ -994,35 +992,40 @@
   }
 
   // Events
-  els.rhoSlider.addEventListener("input", (e) => { state.time.rho = Number(e.target.value); saveTime(); syncUI(); rerender(); });
-  els.tauSlider.addEventListener("input", (e) => { state.time.tau = Number(e.target.value); saveTime(); syncUI(); rerender(); });
-  els.uSlider.addEventListener("input", (e) => { state.time.u = clamp(Number(e.target.value)/100,0,1); saveTime(); syncUI(); rerender(); });
-  els.popGrowthSlider.addEventListener("input", (e) => { state.time.popGrowth = Number(e.target.value)/100; saveTime(); syncUI(); rerender(); });
-  els.agingSlider.addEventListener("input", (e) => { state.time.agingPP = Number(e.target.value)/100; saveTime(); syncUI(); rerender(); });
+  els.uSlider.addEventListener("input", (e) => {
+    state.time.u = clamp(Number(e.target.value)/100, 0, 1);
+    saveTime(); syncUI(); rerender();
+  });
+
+  els.popGrowthSlider.addEventListener("input", (e) => {
+    state.time.popGrowth = Number(e.target.value)/100;
+    saveTime(); syncUI(); rerender();
+  });
+
+  els.agingSlider.addEventListener("input", (e) => {
+    state.time.agingPP = Number(e.target.value)/100;
+    saveTime(); syncUI(); rerender();
+  });
+
   els.yearsSlider.addEventListener("input", (e) => {
-    state.time.years = clamp(Number(e.target.value),20,140);
+    state.time.years = clamp(Number(e.target.value), 20, 140);
     state.t = clamp(state.t, 0, state.time.years);
     saveTime(); syncUI(); rerender();
   });
 
-  els.resetBtn.addEventListener("click", () => {
-    state.time = { ...DEFAULT_TIME };
-    saveTime(); syncUI();
-    state.t = state.time.years;
-    rerender();
-  });
-
   els.nextBtn.addEventListener("click", () => {
     saveTime();
-    window.location.href = "movil_simulador.html";
+    window.location.href = "simulador.html";
   });
 
-  window.addEventListener("resize", () => { rerender(); });
+  window.addEventListener("resize", () => {
+    rerender();
+  });
 
   // Init
   loadPyramid();
   loadTime();
-  state.t = state.time.years;
+  state.t = state.time.years;  // por defecto: marcar el final
   saveTime();
   syncUI();
   rerender();

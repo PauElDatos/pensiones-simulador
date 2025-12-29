@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pensiones — Pirámide (móvil)</title>
+  <title>Pensiones — Pirámide poblacional</title>
 
   <style>
     :root{
@@ -16,49 +16,53 @@
       --workers:#36C3FF;
       --retired:#FF6A00;
 
-      --radius:14px;
+      --radius:16px;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
 
       --fontTitle: "Futura","Trebuchet MS",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       --fontText:  Arial,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
 
-      --fontScale: 1.15;
+      /* Escala general (puedes tocarla si quieres más grande en móvil) */
+      --fontScale: 1.0;
     }
 
-    *{box-sizing:border-box}
+    *{ box-sizing:border-box; }
     body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--fontText); }
 
     header{
-      padding:14px 12px 6px 12px;
+      padding:14px 14px 10px 14px;
       display:flex;
       align-items:flex-end;
       justify-content:space-between;
-      gap:12px;
+      gap:10px;
       flex-wrap:wrap;
     }
-    .h-title{ line-height:1.05; }
     .h-title h1{
       margin:0;
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size: calc(22px * var(--fontScale));
+      font-size: calc(24px * var(--fontScale));
       letter-spacing:.3px;
+      line-height:1.05;
     }
     .h-title p{
       margin:6px 0 0 0;
-      font-size: calc(13px * var(--fontScale));
       opacity:.9;
+      font-size: calc(12.5px * var(--fontScale));
+      max-width:90ch;
       line-height:1.35;
     }
     .pill{
-      display:inline-flex; align-items:center; gap:8px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       padding:8px 10px;
       border:1px solid var(--stroke);
       border-radius:999px;
       background:rgba(255,255,255,.03);
-      font-size: calc(12px * var(--fontScale));
+      font-size:12px;
       opacity:.9;
-      width:100%;
+      white-space:nowrap;
     }
     .dot{
       width:8px; height:8px; border-radius:50%;
@@ -71,91 +75,78 @@
       border-bottom:1px solid rgba(255,255,255,.18);
       padding-bottom:1px;
     }
+    a.back:hover{ border-bottom-color: rgba(254,247,2,.35); color:#fff; }
 
-    main{
-      min-height: calc(100vh - 70px);
-      padding:10px 10px 16px 10px;
-    }
+    main{ padding:10px 14px 18px 14px; }
 
     .panel{
+      max-width: 1120px;
+      margin: 0 auto;
       background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
       border:1px solid var(--stroke);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
     }
+
     .ph{
-      padding:12px 12px 10px 12px;
+      padding:14px 14px 12px 14px;
       border-bottom:1px solid var(--stroke);
       background:rgba(255,255,255,.02);
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      justify-content:flex-start;
+      gap:10px;
+    }
+    .ttl{
+      font-family:var(--fontTitle);
+      color:var(--primary);
+      font-size: 13px;
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+
+    .content{
+      padding:14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      align-items:start;
+    }
+
+    .card{
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:14px;
+      background:rgba(0,0,0,.08);
+      overflow:hidden;
+    }
+    .card .ch{
+      padding:12px 12px 10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap:10px;
       flex-wrap:wrap;
     }
-    .ttl{
+    .card .cttl{
       font-family:var(--fontTitle);
       color:var(--primary);
-      font-size: calc(13px * var(--fontScale));
+      font-size: 12px;
       letter-spacing:.35px;
       text-transform:uppercase;
       white-space:nowrap;
     }
-    .sub{
-      font-size: calc(12px * var(--fontScale));
-      opacity:.85;
-      width:100%;
-      line-height:1.25;
-      font-variant-numeric: tabular-nums;
-    }
+    .card .cb{ padding:12px; display:grid; gap:12px; }
 
-    .area{
-      padding:12px;
-      display:grid;
-      gap:12px;
-    }
-
-    .card{
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:12px;
-      background:rgba(0,0,0,.08);
-      overflow:hidden;
-    }
-
-    .card .ch{
-      padding:10px 10px 8px 10px;
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-    .cttl{
-      font-family:var(--fontTitle);
-      color:var(--primary);
-      font-size: calc(12px * var(--fontScale));
-      letter-spacing:.35px;
-      text-transform:uppercase;
-      white-space:nowrap;
-    }
-    .csub{
-      margin-top:6px;
-      font-size: calc(12px * var(--fontScale));
-      opacity:.85;
-      font-variant-numeric: tabular-nums;
-      line-height:1.2;
-    }
-    .cb{
-      padding:10px;
-      display:grid;
-      gap:10px;
-    }
-
+    /* ===== Pirámide + control Pico ===== */
     .pyr-frame{
       display:grid;
-      grid-template-columns: 56px 1fr;
-      gap:10px;
+      grid-template-columns: 64px 1fr;     /* escritorio: slider vertical + svg */
+      gap:12px;
       align-items:stretch;
-    }
-    @media (max-width: 420px){
-      .pyr-frame{ grid-template-columns: 48px 1fr; }
     }
 
     .pyr-svg{
@@ -180,13 +171,20 @@
       height:100%;
       position:relative;
     }
-    @media (max-width: 420px){
-      .vslider-shell{ padding:8px 4px; border-radius:12px; }
+
+    .peak-cap{
+      display:none; /* móvil lo activa */
+      width:100%;
+      font-size:12px;
+      opacity:.88;
+      margin-bottom:8px;
+      text-align:left;
     }
+
     .vslider-shell input[type="range"]{
       -webkit-appearance: none;
       appearance: none;
-      width: 240px; /* JS lo recalcula */
+      width: 260px; /* JS lo recalcula en desktop */
       height: 4px;
       position:absolute;
       left:50%;
@@ -195,81 +193,115 @@
       transform-origin: center;
       cursor: pointer;
       display:block;
-      accent-color: var(--primary);
       background: rgba(255,255,255,.12);
       border-radius:999px;
+      touch-action: pan-y;
     }
 
     .ctl{ display:grid; gap:6px; }
     .ctl label{
-      font-size: calc(13px * var(--fontScale));
+      font-size:13px;
       opacity:.92;
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
       gap:10px;
     }
     .val{ font-variant-numeric: tabular-nums; opacity:.95; }
 
+    /* ===== SLIDERS ===== */
     input[type="range"]{
       width:100%;
+      display:block;
+      margin:0;
       accent-color: var(--primary);
       background: rgba(255,255,255,.12);
       border-radius:999px;
       height: 4px;
       -webkit-appearance: none;
       appearance: none;
+      touch-action: pan-x;
+    }
+    input[type="range"]::-webkit-slider-runnable-track{
+      height: 4px;
+      background: transparent;
+      border-radius:999px;
     }
     input[type="range"]::-webkit-slider-thumb{
       -webkit-appearance: none;
       appearance: none;
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: var(--primary);
       border: 1px solid rgba(0,0,0,.35);
-      margin-top: -5px;
+      margin-top: -6px;
       box-shadow: 0 2px 10px rgba(0,0,0,.35);
     }
-
-    .note{
-      font-size: calc(11px * var(--fontScale));
-      opacity:.75;
-      line-height:1.35;
-      border-top:1px solid rgba(255,255,255,.06);
-      padding-top:8px;
+    input[type="range"]::-moz-range-track{
+      height:4px;
+      background: transparent;
+      border-radius:999px;
+    }
+    input[type="range"]::-moz-range-thumb{
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 1px solid rgba(0,0,0,.35);
+      box-shadow: 0 2px 10px rgba(0,0,0,.35);
     }
 
     .btn-row{
       display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      padding-top:8px;
+      border-top:1px solid rgba(255,255,255,.06);
+    }
+
+    .btns{
+      display:flex;
       gap:8px;
       flex-wrap:wrap;
+      width:100%;
+      justify-content:flex-end;
     }
+
     .btn{
       cursor:pointer;
       border-radius:12px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.03);
       color:var(--text);
-      padding:10px 12px;
-      flex:1 1 160px;
-      min-width:140px;
+      padding:12px 12px;
+      min-width: 0;
+      width:100%;
       text-align:center;
-      font-size: calc(12px * var(--fontScale));
+      font-size:14px;
+    }
+    .btn:hover{
+      border-color: rgba(254,247,2,.35);
+      color:#fff;
+      background: rgba(254,247,2,.06);
     }
     .btn.primary{
       border-color: rgba(254,247,2,.35);
       color:#111;
-      background: rgba(254,247,2,.92);
+      background: rgba(254,247,2,.90);
     }
+    .btn.primary:hover{ background: rgba(254,247,2,1); }
 
+    /* Pills (Menores / Laboral / Mayores) */
     .mini{
       display:flex;
-      gap:8px;
+      gap:10px;
       flex-wrap:wrap;
       align-items:center;
       justify-content:flex-start;
-      font-size: calc(12px * var(--fontScale));
+      font-size:12px;
       opacity:.92;
     }
     .mini-pill{
@@ -281,6 +313,7 @@
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.03);
       font-variant-numeric: tabular-nums;
+      white-space:nowrap;
     }
     .mini-dot{
       width:9px; height:9px;
@@ -290,61 +323,126 @@
     }
     .mini-dot.ret{ background: var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.12); }
     .mini-dot.ylw{ background: var(--primary); box-shadow:0 0 0 3px rgba(254,247,2,.12); }
+
+    /* ===== Ajustes específicos smartphone ===== */
+    @media (max-width: 640px){
+      header{
+        padding:12px 12px 8px 12px;
+        align-items:flex-start;
+      }
+      .h-title h1{ font-size:22px; }
+      .h-title p{ font-size:12px; }
+
+      main{ padding:10px 12px 16px 12px; }
+      .ph{ padding:12px; }
+      .content{ padding:12px; }
+
+      /* Slider Pico pasa a horizontal arriba del SVG */
+      .pyr-frame{
+        grid-template-columns: 1fr;
+        gap:10px;
+      }
+      .vslider-shell{
+        height:auto;
+        padding:10px 10px 12px 10px;
+        align-items:flex-start;
+        justify-content:flex-start;
+      }
+      .peak-cap{ display:block; }
+
+      .vslider-shell input[type="range"]{
+        position:static;
+        left:auto; top:auto;
+        transform:none;
+        width:100%;
+        height:4px;
+        touch-action: pan-x;
+      }
+
+      /* Mejor tacto */
+      input[type="range"]::-webkit-slider-thumb{
+        width: 18px;
+        height: 18px;
+        margin-top: -7px;
+      }
+      input[type="range"]::-moz-range-thumb{
+        width:18px;
+        height:18px;
+      }
+
+      .btn-row{ justify-content:stretch; }
+      .btns{ justify-content:stretch; }
+      .btn{ width:100%; }
+    }
+
+    /* Desktop: mantiene 2 columnas */
+    @media (min-width: 981px){
+      .content{ grid-template-columns: 1fr 380px; }
+      .btn{ min-width:160px; width:auto; }
+      .btns{ width:auto; }
+    }
   </style>
 </head>
 
 <body>
 <header>
   <div class="h-title">
-    <h1>Pirámide</h1>
-    <p>Configura la pirámide inicial. Se guarda automáticamente.</p>
+    <h1>Pirámide poblacional</h1>
+    <p>Configura la estructura por edad que se usará como estado inicial en el simulador.</p>
   </div>
-  <div class="pill"><span class="dot"></span><span><a class="back" href="index.html">Volver</a></span></div>
+  <div class="pill">
+    <span class="dot"></span>
+    <span><a class="back" href="index.html">Volver</a></span>
+  </div>
 </header>
 
 <main>
-  <section class="panel" aria-label="Pirámide poblacional (móvil)">
+  <section class="panel" aria-label="Configuración de pirámide">
     <div class="ph">
       <div class="ttl">Paso 1 — Pirámide</div>
-      <div class="sub mono" id="metaLine">Población total: 47.0 M</div>
 
-      <div class="mini" style="width:100%;">
-        <span class="mini-pill"><span class="mini-dot ylw"></span><span id="shareMin">—</span></span>
-        <span class="mini-pill"><span class="mini-dot"></span><span id="shareWork">—</span></span>
-        <span class="mini-pill"><span class="mini-dot ret"></span><span id="shareRet">—</span></span>
+      <div class="mini" aria-label="Shares por grupo de edad">
+        <span class="mini-pill" title="Menores (&lt;18)">
+          <span class="mini-dot ylw"></span><span id="shareMin">—</span>
+        </span>
+        <span class="mini-pill" title="Edad laboral (18–64)">
+          <span class="mini-dot"></span><span id="shareWork">—</span>
+        </span>
+        <span class="mini-pill" title="Mayores (65+)">
+          <span class="mini-dot ret"></span><span id="shareRet">—</span>
+        </span>
       </div>
     </div>
 
-    <div class="area">
-      <div class="card">
+    <div class="content">
+      <!-- Pirámide -->
+      <div class="card" aria-label="Pirámide por quinquenios">
         <div class="ch">
           <div class="cttl">Pirámide</div>
-          <div class="csub mono" id="pyrMeta">Población total: 47.0 M</div>
         </div>
+
         <div class="cb">
           <div class="pyr-frame">
             <div class="vslider-shell" id="peakShell" title="Pico (quinquenio)">
+              <div class="peak-cap">Pico (quinquenio)</div>
               <input id="peakSlider" type="range" min="0" max="20" step="1" value="9" />
             </div>
-            <svg id="pyrSvg" class="pyr-svg" viewBox="0 0 520 650" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide por quinquenios"></svg>
-          </div>
 
-          <div class="note">
-            El deslizador vertical mueve el pico del bulto principal. Ajusta σ y las densidades para modificar forma inferior/superior.
+            <svg id="pyrSvg" class="pyr-svg" viewBox="0 0 520 650" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide por quinquenios"></svg>
           </div>
         </div>
       </div>
 
-      <div class="card">
+      <!-- Controles -->
+      <div class="card" aria-label="Parámetros de pirámide">
         <div class="ch">
           <div class="cttl">Parámetros</div>
-          <div class="csub mono">Se guardan en localStorage.</div>
         </div>
 
         <div class="cb">
           <div class="ctl">
             <label>
-              <span>Dispersión (σ)</span>
+              <span>Dispersión del perfil etario (σ)</span>
               <span class="val mono" id="sigmaVal">18</span>
             </label>
             <input id="sigmaSlider" type="range" min="6" max="40" step="1" value="18" />
@@ -352,7 +450,7 @@
 
           <div class="ctl">
             <label>
-              <span>Densidad jóvenes</span>
+              <span>Densidad jóvenes (parte inferior)</span>
               <span class="val mono" id="densityYoungVal">0.75</span>
             </label>
             <input id="densityYoungSlider" type="range" min="0.35" max="1.25" step="0.01" value="0.75" />
@@ -360,28 +458,20 @@
 
           <div class="ctl">
             <label>
-              <span>Densidad mayores</span>
+              <span>Densidad mayores (parte superior)</span>
               <span class="val mono" id="densityOldVal">0.75</span>
             </label>
             <input id="densityOldSlider" type="range" min="0.35" max="1.25" step="0.01" value="0.75" />
           </div>
 
-          <div class="ctl">
-            <label>
-              <span>Población total (M)</span>
-              <span class="val mono" id="popVal">47.0</span>
-            </label>
-            <input id="popSlider" type="range" min="5" max="350" step="0.5" value="47" />
-          </div>
-
           <div class="btn-row">
-            <button id="resetBtn" class="btn" type="button">Restablecer</button>
-            <button id="nextBtn" class="btn primary" type="button">Aceptar</button>
+            <div class="btns">
+              <button id="nextBtn" class="btn primary" type="button">Aceptar</button>
+            </div>
           </div>
-
-          <div class="note">Siguiente: pantalla de parámetros de “Evolución en el tiempo”.</div>
         </div>
       </div>
+
     </div>
   </section>
 </main>
@@ -389,6 +479,7 @@
 <script>
 (() => {
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
   const COLORS = {
     text: CSS('--text'),
     grid: CSS('--grid'),
@@ -404,12 +495,17 @@
     "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95-99","100+"
   ];
 
-  const DEFAULTS = { popTotalM: 47.0, peakIdx: 9, sigma: 18, densityYoung: 0.75, densityOld: 0.75 };
+  const DEFAULTS = {
+    popTotalM: 47.0,
+    peakIdx: 9,
+    sigma: 18,
+    densityYoung: 0.75,
+    densityOld: 0.75
+  };
+
   const state = { ...DEFAULTS };
 
   const els = {
-    metaLine: document.getElementById('metaLine'),
-    pyrMeta: document.getElementById('pyrMeta'),
     pyrSvg: document.getElementById('pyrSvg'),
 
     peakShell: document.getElementById('peakShell'),
@@ -424,14 +520,10 @@
     densityOldSlider: document.getElementById('densityOldSlider'),
     densityOldVal: document.getElementById('densityOldVal'),
 
-    popSlider: document.getElementById('popSlider'),
-    popVal: document.getElementById('popVal'),
-
     shareMin: document.getElementById('shareMin'),
     shareWork: document.getElementById('shareWork'),
     shareRet: document.getElementById('shareRet'),
 
-    resetBtn: document.getElementById('resetBtn'),
     nextBtn: document.getElementById('nextBtn'),
   };
 
@@ -442,13 +534,16 @@
   };
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
 
+  const isMobile = () => window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
+
   function paintRange(input){
     if (!input) return;
     const min = Number(input.min || 0);
     const max = Number(input.max || 100);
     const val = Number(input.value || 0);
     const pct = ((val - min) / Math.max(1e-9, (max - min))) * 100;
-    input.style.background = `linear-gradient(to right, ${COLORS.primary} 0%, ${COLORS.primary} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
+    input.style.background =
+      `linear-gradient(to right, ${COLORS.primary} 0%, ${COLORS.primary} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
   }
 
   function getRenderedSvgHeight(svg){
@@ -469,10 +564,34 @@
     const svg = els.pyrSvg;
     if (!shell || !input || !svg) return;
 
+    // Móvil: slider horizontal (no se liga a altura del SVG)
+    if (isMobile()){
+      shell.style.height = "auto";
+
+      input.style.position = "static";
+      input.style.left = "auto";
+      input.style.top = "auto";
+      input.style.transform = "none";
+      input.style.transformOrigin = "center";
+      input.style.width = "100%";
+      input.style.height = "4px";
+
+      paintRange(input);
+      return;
+    }
+
+    // Desktop: slider vertical ligado a altura del SVG
     let targetH = getRenderedSvgHeight(svg);
     if (targetH <= 1) return;
 
     shell.style.height = `${targetH}px`;
+
+    // Reaplica estilos desktop por si vienes de resize desde móvil
+    input.style.position = "absolute";
+    input.style.left = "50%";
+    input.style.top = "50%";
+    input.style.transform = "translate(-50%,-50%) rotate(-90deg)";
+    input.style.transformOrigin = "center";
 
     const shellRect = shell.getBoundingClientRect();
     const cs = getComputedStyle(shell);
@@ -480,9 +599,10 @@
     const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
     const borderY = (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.borderBottomWidth) || 0);
 
-    const usable = Math.max(120, (shellRect.height || targetH) - padY - borderY);
+    const usable = Math.max(140, (shellRect.height || targetH) - padY - borderY);
     input.style.width = `${usable}px`;
     input.style.height = `4px`;
+
     paintRange(input);
   }
 
@@ -570,6 +690,24 @@
     els.shareRet.textContent  = `Mayores: ${(sRet*100).toFixed(1)}%`;
   }
 
+  function labelMidAge(label){
+    if (label.includes('+')){
+      const start = parseInt(label, 10);
+      return isFinite(start) ? start : 100;
+    }
+    const [a,b] = label.split('-').map(x => parseInt(x, 10));
+    const start = isFinite(a) ? a : 0;
+    const end = isFinite(b) ? b : start;
+    return (start + end) / 2;
+  }
+
+  function colorForLabel(label){
+    const mid = labelMidAge(label);
+    if (mid < 18) return COLORS.primary;
+    if (mid < 65) return COLORS.workers;
+    return COLORS.retired;
+  }
+
   function renderPyramid(){
     const svg = els.pyrSvg;
     clearSvg(svg);
@@ -641,17 +779,14 @@
 
       const t = svgEl('text',{
         x: 12, y: y + h*0.72,
-        fill: COLORS.text,
+        fill: colorForLabel(AGE_LABELS[i]),
         "font-size": "12",
         "font-family":"Arial, sans-serif",
-        "opacity":"0.90"
+        "opacity":"0.95"
       });
       t.textContent = AGE_LABELS[i];
       svg.appendChild(t);
     }
-
-    els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
-    els.metaLine.textContent = `Población total: ${state.popTotalM.toFixed(1)} M`;
 
     renderShares();
     requestAnimationFrame(syncPeakSliderToSvg);
@@ -684,9 +819,6 @@
   }
 
   function syncUI(){
-    els.popSlider.value = state.popTotalM;
-    els.popVal.textContent = state.popTotalM.toFixed(1);
-
     els.peakSlider.value = state.peakIdx;
 
     els.sigmaSlider.value = state.sigma;
@@ -698,7 +830,7 @@
     els.densityOldSlider.value = state.densityOld;
     els.densityOldVal.textContent = state.densityOld.toFixed(2);
 
-    [els.popSlider, els.peakSlider, els.sigmaSlider, els.densityYoungSlider, els.densityOldSlider].forEach(paintRange);
+    [els.peakSlider, els.sigmaSlider, els.densityYoungSlider, els.densityOldSlider].forEach(paintRange);
   }
 
   // Eventos
@@ -733,34 +865,23 @@
     renderPyramid();
   });
 
-  els.popSlider.addEventListener('input', (e) => {
-    state.popTotalM = Number(e.target.value);
-    els.popVal.textContent = state.popTotalM.toFixed(1);
-    paintRange(els.popSlider);
-    saveState();
-    renderPyramid();
-  });
-
-  els.resetBtn.addEventListener('click', () => {
-    Object.assign(state, DEFAULTS);
-    saveState();
-    syncUI();
-    renderPyramid();
-  });
-
   els.nextBtn.addEventListener('click', () => {
     saveState();
     window.location.href = "parametrosTiempo.html";
   });
 
-  window.addEventListener('resize', () => requestAnimationFrame(syncPeakSliderToSvg));
+  window.addEventListener('resize', () => {
+    requestAnimationFrame(syncPeakSliderToSvg);
+  });
 
   // Init
   loadState();
   syncUI();
   renderPyramid();
 
-  window.addEventListener('load', () => requestAnimationFrame(syncPeakSliderToSvg));
+  window.addEventListener('load', () => {
+    requestAnimationFrame(syncPeakSliderToSvg);
+  });
 })();
 </script>
 
