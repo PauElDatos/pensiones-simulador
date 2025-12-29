@@ -863,13 +863,28 @@
     const year = state.popPreferredYear || [...state.popYears].sort().slice(-1)[0] || null;
     if (!year) return null;
 
-    const bucket = byYear.get(year) || null;
-    if (!bucket) return null;
+    const bySex = byYear.get(year) || null;
+    if (!bySex) return null;
 
-    const vals = PYR_AGE_ORDER.map(a => safeNum(bucket.get(a)) ?? null);
-    if (vals.every(v => v === null)) return null;
+    const mMap = bySex.get("_M") || null;
+    const fMap = bySex.get("_F") || null;
+    const tMap = bySex.get("_T") || null;
 
-    return { iso3, year, values: vals, ageCodes: PYR_AGE_ORDER };
+    const mVals = PYR_AGE_ORDER.map(a => safeNum(mMap?.get(a)) ?? null);
+    const fVals = PYR_AGE_ORDER.map(a => safeNum(fMap?.get(a)) ?? null);
+
+    const hasMF = !(mVals.every(v => v === null) || fVals.every(v => v === null));
+
+    if (!hasMF){
+      const tVals = PYR_AGE_ORDER.map(a => safeNum(tMap?.get(a)) ?? null);
+      if (tVals.every(v => v === null)) return null;
+
+      const mHalf = tVals.map(v => (v === null ? null : v/2));
+      const fHalf = tVals.map(v => (v === null ? null : v/2));
+      return { iso3, year, mVals: mHalf, fVals: fHalf, ageCodes: PYR_AGE_ORDER, fromTotal: true };
+    }
+
+    return { iso3, year, mVals, fVals, ageCodes: PYR_AGE_ORDER, fromTotal: false };
   }
 
   function renderPyramid(countryName){
@@ -898,8 +913,9 @@
     const innerH = H - pad.t - pad.b;
     const cx = pad.l + innerW/2;
 
-    const vals = pyr.values.map(v => (v === null ? 0 : v));
-    const maxV = Math.max(1, ...vals);
+    const mRaw = pyr.mVals.map(v => (v === null ? 0 : v));
+    const fRaw = pyr.fVals.map(v => (v === null ? 0 : v));
+    const maxV = Math.max(1, ...mRaw, ...fRaw);
     const barH = innerH / pyr.ageCodes.length;
     const maxPx = (innerW/2) * 0.90;
 
@@ -923,7 +939,7 @@
       "font-family":"Arial, sans-serif",
       "text-anchor":"end", "opacity":"0.88"
     });
-    labL.textContent = "Total";
+    labL.textContent = "Hombre";
     svg.appendChild(labL);
 
     const labR = svgEl('text',{
@@ -933,18 +949,22 @@
       "font-family":"Arial, sans-serif",
       "text-anchor":"start", "opacity":"0.88"
     });
-    labR.textContent = "Total";
+    labR.textContent = "Mujer";
     svg.appendChild(labR);
 
     for (let i=0;i<pyr.ageCodes.length;i++){
       const code = pyr.ageCodes[i];
-      const v = vals[i];
+      const m = mRaw[i];
+      const f = fRaw[i];
+
       const y = pad.t + (pyr.ageCodes.length - 1 - i) * barH + 1;
       const h = Math.max(1, barH - 2);
-      const w = (v / maxV) * maxPx;
 
-      svg.appendChild(svgEl('rect',{ x: cx - w, y, width: w, height: h, fill: COLORS.workers, "fill-opacity":"0.70" }));
-      svg.appendChild(svgEl('rect',{ x: cx,     y, width: w, height: h, fill: COLORS.retired, "fill-opacity":"0.70" }));
+      const wL = (m / maxV) * maxPx;
+      const wR = (f / maxV) * maxPx;
+
+      svg.appendChild(svgEl('rect',{ x: cx - wL, y, width: wL, height: h, fill: COLORS.workers, "fill-opacity":"0.70" }));
+      svg.appendChild(svgEl('rect',{ x: cx,      y, width: wR, height: h, fill: COLORS.retired, "fill-opacity":"0.70" }));
 
       const t = svgEl('text',{
         x: 10, y: y + h*0.72,
@@ -957,10 +977,12 @@
       svg.appendChild(t);
     }
 
-    const totalPop = vals.reduce((a,b)=>a+b,0);
+    const totalPop = mRaw.reduce((a,b)=>a+b,0) + fRaw.reduce((a,b)=>a+b,0);
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
 
-    els.pyrNote.textContent = `OECD POP (HIST), año ${pyr.year}, sexo total. (Se dibuja simétrico por no disponer de M/F`;
+    els.pyrNote.textContent = pyr.fromTotal
+      ? `OECD POP (HIST), año ${pyr.year}. El CSV no trae M/F (solo Total), se dibuja simétrico (Total/2 a cada lado).`
+      : `OECD POP (HIST), año ${pyr.year}. Se dibuja Hombre (izq) y Mujer (der) con datos del CSV.`;
   }
 
   function setExplainPanel(metrics){
@@ -1320,21 +1342,30 @@
 
     for (const r of data){
       const ref = (r[iRef] || "").trim();
-      const sex = (r[iSex] || "").trim();
+      let sex = (r[iSex] || "").trim();
       const age = (r[iAge] || "").trim();
       const year = (r[iYear] || "").trim();
       const val = Number((r[iVal] || "").trim());
 
       if (!ref || !year || !isFinite(val)) continue;
-      if (sex && sex !== "_T") continue;
+
+      if (sex === "M") sex = "_M";
+      if (sex === "F") sex = "_F";
+      if (sex === "T") sex = "_T";
+
+      if (!["_T","_M","_F"].includes(sex)) continue;
       if (!PYR_AGE_ORDER.includes(age)) continue;
 
       state.popYears.add(year);
 
       if (!state.popByIso3.has(ref)) state.popByIso3.set(ref, new Map());
       const byYear = state.popByIso3.get(ref);
+
       if (!byYear.has(year)) byYear.set(year, new Map());
-      byYear.get(year).set(age, val);
+      const bySex = byYear.get(year);
+
+      if (!bySex.has(sex)) bySex.set(sex, new Map());
+      bySex.get(sex).set(age, val);
     }
 
     const years = [...state.popYears].map(y => Number(y)).filter(n => isFinite(n)).sort((a,b)=>a-b);
