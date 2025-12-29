@@ -25,8 +25,8 @@
       --fontText:  Arial,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
 
       /* Escalas del SVG */
-      --fontScale: 1.0;
-      --chartTextBoost: 2.0;
+      --fontScale: 1.35;
+      --chartTextBoost: 1.0;
 
       /* Gaps (controlan padding real) */
       --timeXAxisLabelGap: 86px;
@@ -37,6 +37,9 @@
       --timeLegendItemGap: 72px;
 
       --timeChartWidth: 100%;
+
+      --axisLabelGap: 60px;
+      --axisLabelFontScale: 1.4;
     }
 
     *{ box-sizing:border-box; }
@@ -304,8 +307,7 @@
   <div class="h-title">
     <h1>Evolución en el tiempo</h1>
     <p>
-      Ajusta parámetros y observa la trayectoria agregada. La forma inicial se deriva de la pirámide del paso 1.
-      Los valores se guardan automáticamente para el simulador.
+      ajusta el crecimiento de la población y sus diferentes cohortes demográficas
     </p>
   </div>
   <div class="pill">
@@ -318,11 +320,7 @@
   <section class="panel" aria-label="Configuración evolución en el tiempo (con gráfica)">
     <div class="ph">
       <div class="ttl">Paso 2 — Tiempo</div>
-      <div class="sub">
-        <div class="mono" id="pyrSummary">Pirámide: —</div>
-        <div class="mono" id="tReadout">t: —</div>
-        <div class="mono" id="simMeta">Año: — | Población: —</div>
-      </div>
+      <div class="sub"></div>
     </div>
 
     <div class="content">
@@ -330,14 +328,9 @@
       <div class="card" aria-label="Gráfica evolución en el tiempo">
         <div class="ch">
           <div class="cttl">Gráfica</div>
-          <div class="csub mono" id="legendHint">Arrastra sobre la gráfica para cambiar t.</div>
         </div>
         <div class="cb">
           <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Evolución en el tiempo"></svg>
-          <div class="result-pill" id="resultPill">
-            <span class="result-dot" id="resultDot"></span>
-            <span class="mono" id="resultText">—</span>
-          </div>
         </div>
       </div>
 
@@ -349,22 +342,6 @@
         </div>
 
         <div class="cb">
-          <div class="ctl">
-            <label>
-              <span>Productividad (ρ)</span>
-              <span class="val mono" id="rhoVal">0.80</span>
-            </label>
-            <input id="rhoSlider" type="range" min="0.40" max="1.40" step="0.01" value="0.80" />
-          </div>
-
-          <div class="ctl">
-            <label>
-              <span>Tipo de cotización (τ)</span>
-              <span class="val mono" id="tauVal">0.29</span>
-            </label>
-            <input id="tauSlider" type="range" min="0.05" max="0.45" step="0.01" value="0.29" />
-          </div>
-
           <div class="ctl">
             <label>
               <span>Paro (u): % de 18–64 que NO cotiza</span>
@@ -406,17 +383,12 @@
           </div>
 
           <div class="btn-row">
+            <div class="btns"></div>
             <div class="btns">
-              <button id="resetBtn" class="btn" type="button">Restablecer</button>
-            </div>
-            <div class="btns">
-              <button id="nextBtn" class="btn primary" type="button">Aceptar y entrar al simulador</button>
+              <button id="nextBtn" class="btn primary" type="button">Aceptar</button>
             </div>
           </div>
 
-          <div class="note">
-            Se guardan en <span class="mono">localStorage["pensionSim_time_v1"]</span> y se leerán en <span class="mono">simulador.html</span>.
-          </div>
         </div>
       </div>
 
@@ -468,19 +440,12 @@
 
   const els = {
     timeSvg: document.getElementById("timeSvg"),
-    pyrSummary: document.getElementById("pyrSummary"),
-    tReadout: document.getElementById("tReadout"),
-    simMeta: document.getElementById("simMeta"),
 
-    rhoSlider: document.getElementById("rhoSlider"),
-    tauSlider: document.getElementById("tauSlider"),
     uSlider: document.getElementById("uSlider"),
     popGrowthSlider: document.getElementById("popGrowthSlider"),
     agingSlider: document.getElementById("agingSlider"),
     yearsSlider: document.getElementById("yearsSlider"),
 
-    rhoVal: document.getElementById("rhoVal"),
-    tauVal: document.getElementById("tauVal"),
     uVal: document.getElementById("uVal"),
     popGrowthVal: document.getElementById("popGrowthVal"),
     agingVal: document.getElementById("agingVal"),
@@ -493,10 +458,6 @@
     agingFrac: document.getElementById("agingFrac"),
     yearsOut: document.getElementById("yearsOut"),
 
-    resultDot: document.getElementById("resultDot"),
-    resultText: document.getElementById("resultText"),
-
-    resetBtn: document.getElementById("resetBtn"),
     nextBtn: document.getElementById("nextBtn"),
   };
 
@@ -504,33 +465,20 @@
   const toM = (x) => x / 1_000_000;
 
   const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
-  const getChartTextBoost = () => parseFloat(CSS('--chartTextBoost')) || 1;
 
-  const getTimeXAxisLabelGap = () => {
-    const v = parseFloat(CSS('--timeXAxisLabelGap'));
-    return isFinite(v) ? v : 80;
-  };
-  const getTimeYAxisLabelGap = () => {
-    const v = parseFloat(CSS('--timeYAxisLabelGap'));
-    return isFinite(v) ? v : 70;
-  };
-  const getTimeLegendToChartGap = () => {
-    const v = parseFloat(CSS('--timeLegendToChartGap'));
-    return isFinite(v) ? v : 120;
-  };
-  const getTimeLegendFontScale = () => {
-    const v = parseFloat(CSS('--timeLegendFontScale'));
-    return isFinite(v) ? v : 1;
-  };
-  const getTimeLegendItemGap = () => {
-    const v = parseFloat(CSS('--timeLegendItemGap'));
+  const getAxisLabelGap = () => {
+    const v = parseFloat(CSS('--axisLabelGap'));
     return isFinite(v) ? v : 60;
   };
 
-  const fs = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
-  const fsTick = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
-  const fsAxis = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
-  const fsLegend = (px) => (px * getFontScale() * getChartTextBoost() * getTimeLegendFontScale()).toFixed(2);
+  const getAxisLabelFontScale = () => {
+    const v = parseFloat(CSS('--axisLabelFontScale'));
+    return isFinite(v) ? v : 1;
+  };
+
+  const fs = (px) => (px * getFontScale()).toFixed(2);
+  const fsTick = (px) => (px * getFontScale()).toFixed(2);
+  const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale()).toFixed(2);
 
   const svgEl = (name, attrs={}) => {
     const el = document.createElementNS("http://www.w3.org/2000/svg", name);
@@ -670,26 +618,19 @@
   }
 
   function renderTimeLegendHorizontal(svg, y){
-    const isNarrow = window.matchMedia && window.matchMedia("(max-width: 520px)").matches;
-
-    const items = isNarrow ? [
-      { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
-      { label: "Trab.",     fill: COLORS.workers, op: "0.50" },
-      { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
-      { label: "Jubilados", fill: COLORS.retired, op: "0.50" }
-    ] : [
+    const items = [
       { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
-      { label: "Edad laboral", fill: COLORS.workers, op: "0.50" },
+      { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
       { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
       { label: "Jubilados (65+)", fill: COLORS.retired, op: "0.50" }
     ];
 
-    const boost = getChartTextBoost();
-    const box = Math.round(14 * boost);
-    const gap = Math.round(10 * boost);
-    const itemGap = Math.round(getTimeLegendItemGap() * boost);
-
     const g = svgEl('g', { "opacity":"0.95" });
+
+    const box = 14;
+    const gap = 10;
+    const after = 105;
+
     let x = 0;
 
     items.forEach((it) => {
@@ -708,7 +649,7 @@
         x: x + box + gap,
         y: y + 2,
         fill: COLORS.text,
-        "font-size": fsLegend(13),
+        "font-size": fsTick(18),
         "font-family":"Arial, sans-serif",
         "text-anchor":"start",
         "opacity":"0.92"
@@ -716,16 +657,7 @@
       t.textContent = it.label;
       g.appendChild(t);
 
-      let textW = 0;
-      try{
-        textW = (typeof t.getComputedTextLength === "function")
-          ? t.getComputedTextLength()
-          : it.label.length * 7.5 * boost;
-      }catch(e){
-        textW = it.label.length * 7.5 * boost;
-      }
-
-      x = x + box + gap + textW + itemGap;
+      x = x + box + gap + (it.label.length * 7.2) + after;
     });
 
     svg.appendChild(g);
@@ -734,26 +666,7 @@
       const bb = g.getBBox();
       const tx = (1000 - bb.width) / 2 - bb.x;
       g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
-    }catch(e){}
-  }
-
-  function updateSystemPill(cur){
-    const C = cur.cot;
-    const P = cur.retired;
-    const k = kEquilibrium();
-    const sustainable = (P <= k * C + 1e-9);
-
-    els.resultDot.classList.remove("ok","bad");
-    if (sustainable){
-      els.resultDot.classList.add("ok");
-      els.resultText.textContent = `Sostenible en t=${cur.t} (P ≤ k·C).`;
-    } else {
-      els.resultDot.classList.add("bad");
-      const Cneeded = (k>0) ? (P / k) : Infinity;
-      const missing = (Cneeded===Infinity) ? Infinity : Math.max(0, Cneeded - C);
-      els.resultText.textContent =
-        `No cierra en t=${cur.t}: faltan ${toM(missing).toFixed(2)} M cotizantes (a τ y ρ actuales).`;
-    }
+    } catch(e){}
   }
 
   function renderTimeChart(){
@@ -761,40 +674,7 @@
     clearSvg(svg);
 
     const W = 1000, H = 700;
-
-    const boost = getChartTextBoost();
-    const xGap = getTimeXAxisLabelGap();
-    const yGap = getTimeYAxisLabelGap();
-    const legendGap = getTimeLegendToChartGap();
-
-    const tickLabelOffset = 26;
-    const tickH = 14 * boost;
-    const axisLabelH = 18 * boost;
-    const legendBox = Math.round(14 * boost);
-    const legendH = legendBox + 6;
-
-    const bottomNeed = Math.max(
-      tickLabelOffset + tickH,
-      xGap + axisLabelH,
-      legendGap + legendH
-    ) + 18;
-
-    const estTickW = 44 * boost;
-    const leftNeed = 16 + estTickW + yGap + axisLabelH;
-
-    let pad = {
-      l: Math.max(90, leftNeed),
-      r: 30,
-      t: 24,
-      b: Math.max(120, bottomNeed)
-    };
-
-    const minInnerH = 260;
-    pad.b = Math.min(pad.b, Math.max(90, H - pad.t - minInnerH));
-
-    const minInnerW = 360;
-    pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
-
+    const pad = {l: 90, r: 30, t: 24, b: 140};
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -819,8 +699,7 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 10, y: yToPx(yv) + 4,
-        fill: COLORS.text, "font-size": fsTick(12),
-        "font-family":"Arial, sans-serif",
+        fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
       t.textContent = String(Math.round(yv));
@@ -835,9 +714,8 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.30"
       }));
       const t = svgEl('text',{
-        x: xToPx(xv), y: pad.t + innerH + tickLabelOffset,
-        fill: COLORS.text, "font-size": fsTick(12),
-        "font-family":"Arial, sans-serif",
+        x: xToPx(xv), y: pad.t + innerH + 26,
+        fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
       t.textContent = String(xv);
@@ -853,28 +731,26 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = pad.t + innerH + xGap;
+    const xAxisLabelY = Math.min(H - 44, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
-      fill: COLORS.text, "font-size": fsAxis(14),
-      "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    const legendY = pad.t + innerH + legendGap;
+    const legendY = Math.min(H - 16, xAxisLabelY + 30);
     renderTimeLegendHorizontal(svg, legendY);
 
-    const yLabelX = pad.l - yGap;
+    const yLabelX = Math.max(10, pad.l - getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size": fsAxis(14),
-      "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
     })).textContent = "Personas (millones)";
 
     const minorsTop = [];
-    const workTop = [];
+    const cotTop = [];
     const noncotTop = [];
     const totalTop = [];
     const basePts = [];
@@ -882,14 +758,14 @@
     data.forEach(d => {
       const x = xToPx(d.t);
       const mM = toM(d.minors);
-      const wM = toM(d.cot + (d.inactive || 0));
+      const cM = toM(d.cot + (d.inactive || 0));
       const nM = toM(d.noncot);
       const rM = toM(d.retired);
 
       minorsTop.push([x, yToPx(mM)]);
-      workTop.push([x, yToPx(mM + wM)]);
-      noncotTop.push([x, yToPx(mM + wM + nM)]);
-      totalTop.push([x, yToPx(mM + wM + nM + rM)]);
+      cotTop.push([x, yToPx(mM + cM)]);
+      noncotTop.push([x, yToPx(mM + cM + nM)]);
+      totalTop.push([x, yToPx(mM + cM + nM + rM)]);
       basePts.push([x, yToPx(0)]);
     });
 
@@ -899,12 +775,13 @@
     }
 
     svg.appendChild(svgEl('path', { d: polyPath(minorsTop, basePts), fill: COLORS.minors, "fill-opacity":"0.35", stroke:"none" }));
-    svg.appendChild(svgEl('path', { d: polyPath(workTop, minorsTop), fill: COLORS.workers, "fill-opacity":"0.50", stroke:"none" }));
+    svg.appendChild(svgEl('path', { d: polyPath(cotTop, minorsTop),   fill: COLORS.workers,"fill-opacity":"0.50", stroke:"none" }));
 
     if (state.time.u > 1e-9){
-      svg.appendChild(svgEl('path', { d: polyPath(noncotTop, workTop), fill: COLORS.noncot, "fill-opacity":"0.55", stroke:"none" }));
+      svg.appendChild(svgEl('path', { d: polyPath(noncotTop, cotTop), fill: COLORS.noncot, "fill-opacity":"0.55", stroke:"none" }));
     }
-    svg.appendChild(svgEl('path', { d: polyPath(totalTop, noncotTop), fill: COLORS.retired, "fill-opacity":"0.50", stroke:"none" }));
+
+    svg.appendChild(svgEl('path', { d: polyPath(totalTop, noncotTop), fill: COLORS.retired,"fill-opacity":"0.50", stroke:"none" }));
 
     svg.appendChild(svgEl('path', {
       d: "M " + totalTop.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L "),
@@ -925,15 +802,11 @@
       "stroke-opacity":"0.65",
       "stroke-dasharray":"8 6"
     }));
+
     svg.appendChild(svgEl('circle', {
       cx: xNow, cy: yToPx(toM(cur.total)), r: "5.5",
       fill: COLORS.primary, "fill-opacity":"0.95"
     }));
-
-    els.tReadout.textContent = `t: ${cur.t}`;
-    els.simMeta.textContent = `Año: ${cur.t} | Población: ${toM(cur.total).toFixed(1)} M`;
-
-    updateSystemPill(cur);
   }
 
   function viewXFromClientX(svg, clientX){
@@ -1022,24 +895,17 @@
   function syncUI(){
     const t = state.time;
 
-    els.pyrSummary.textContent =
-      `Pirámide: población ${state.pyr.popTotalM.toFixed(1)} M | pico ${state.pyr.peakIdx} | σ ${state.pyr.sigma} | densY ${state.pyr.densityYoung.toFixed(2)} | densO ${state.pyr.densityOld.toFixed(2)}`;
-
-    els.rhoSlider.value = t.rho;
-    els.tauSlider.value = t.tau;
     els.uSlider.value = Math.round(t.u * 100);
     els.popGrowthSlider.value = (t.popGrowth * 100).toFixed(2);
     els.agingSlider.value = (t.agingPP * 100).toFixed(2);
     els.yearsSlider.value = t.years;
 
-    els.rhoVal.textContent = t.rho.toFixed(2);
-    els.tauVal.textContent = t.tau.toFixed(2);
     els.uVal.textContent = `${Math.round(t.u*100)}%`;
     els.popGrowthVal.textContent = `${(t.popGrowth*100).toFixed(2)}%`;
     els.agingVal.textContent = `+${(t.agingPP*100).toFixed(2)} pp`;
     els.yearsVal.textContent = String(t.years);
 
-    [els.rhoSlider, els.tauSlider, els.uSlider, els.popGrowthSlider, els.agingSlider, els.yearsSlider].forEach(paintRange);
+    [els.uSlider, els.popGrowthSlider, els.agingSlider, els.yearsSlider].forEach(paintRange);
 
     syncDerivedUI();
   }
@@ -1062,16 +928,6 @@
   }
 
   // Events
-  els.rhoSlider.addEventListener("input", (e) => {
-    state.time.rho = Number(e.target.value);
-    saveTime(); syncUI(); rerender();
-  });
-
-  els.tauSlider.addEventListener("input", (e) => {
-    state.time.tau = Number(e.target.value);
-    saveTime(); syncUI(); rerender();
-  });
-
   els.uSlider.addEventListener("input", (e) => {
     state.time.u = clamp(Number(e.target.value)/100, 0, 1);
     saveTime(); syncUI(); rerender();
@@ -1091,13 +947,6 @@
     state.time.years = clamp(Number(e.target.value), 20, 140);
     state.t = clamp(state.t, 0, state.time.years);
     saveTime(); syncUI(); rerender();
-  });
-
-  els.resetBtn.addEventListener("click", () => {
-    state.time = { ...DEFAULT_TIME };
-    saveTime(); syncUI();
-    state.t = state.time.years;
-    rerender();
   });
 
   els.nextBtn.addEventListener("click", () => {
