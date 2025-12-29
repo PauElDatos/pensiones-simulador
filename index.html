@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Pensiones — Inicio</title>
+
   <style>
     :root{
       --bg:#252525;
@@ -126,19 +127,46 @@
       padding:0 2px;
     }
   </style>
+
+  <!-- Opción B: el index decide a qué versión manda (móvil o desktop) -->
+  <script>
+  (function () {
+    function isMobileDevice() {
+      // Evita falsos positivos por “resize” en desktop:
+      // requiere pantalla relativamente pequeña Y/o puntero táctil.
+      const small = window.matchMedia("(max-width: 768px)").matches;
+      const coarse = window.matchMedia("(pointer: coarse)").matches;
+      const touch = (navigator.maxTouchPoints || 0) > 0;
+      return small && (coarse || touch);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const mobile = isMobileDevice();
+
+      document.querySelectorAll("a[data-mobile-href][data-desktop-href]").forEach(a => {
+        a.setAttribute("href", mobile ? a.dataset.mobileHref : a.dataset.desktopHref);
+      });
+    });
+  })();
+  </script>
 </head>
+
 <body>
   <div class="shell">
     <header>
       <h1>Sostenibilidad de las Pensiones de la OCDE</h1>
       <p>
-        Dos módulos: <br> (1) comparativa OCDE (punto país y línea de equilibrio calculada por país) <br> (2) simulador normativo
-        (pirámide + parámetros)
+        Dos módulos: <br>
+        (1) comparativa OCDE (punto país y línea de equilibrio calculada por país) <br>
+        (2) simulador normativo (pirámide + parámetros)
       </p>
     </header>
 
     <div class="grid">
-      <a class="card" href="piramidePoblacional.html">
+      <a class="card"
+         href="piramidePoblacional.html"
+         data-desktop-href="piramidePoblacional.html"
+         data-mobile-href="movil_piramidePoblacional.html">
         <div class="kicker">Módulo 1</div>
         <h2 class="title">Simulador</h2>
         <p class="desc">
@@ -148,7 +176,10 @@
         <div class="arrow">→</div>
       </a>
 
-      <a class="card" href="ocde.html">
+      <a class="card"
+         href="ocde.html"
+         data-desktop-href="ocde.html"
+         data-mobile-href="movil_ocde.html">
         <div class="kicker">Módulo 2</div>
         <h2 class="title">Sostenibilidad países OCDE</h2>
         <p class="desc">
