@@ -196,14 +196,22 @@
     }
     .val{ font-variant-numeric: tabular-nums; opacity:.95; }
 
+    /* ====== SLIDERS: misma modificación que el código de referencia (thumb centrado) ====== */
     input[type="range"]{
       width:100%;
+      display:block;
+      margin:0;
       accent-color: var(--primary);
       background: rgba(255,255,255,.12);
       border-radius:999px;
       height: 4px;
       -webkit-appearance: none;
       appearance: none;
+    }
+    input[type="range"]::-webkit-slider-runnable-track{
+      height: 4px;
+      background: transparent;
+      border-radius:999px;
     }
     input[type="range"]::-webkit-slider-thumb{
       -webkit-appearance: none;
@@ -215,6 +223,11 @@
       border: 1px solid rgba(0,0,0,.35);
       margin-top: -5px;
       box-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+    input[type="range"]::-moz-range-track{
+      height:4px;
+      background: transparent;
+      border-radius:999px;
     }
     input[type="range"]::-moz-range-thumb{
       width: 14px;
