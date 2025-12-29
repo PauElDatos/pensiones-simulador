@@ -87,15 +87,16 @@
       overflow:hidden;
     }
 
+    /* ====== CABECERA DEL PANEL: ahora en columna para que las pills queden debajo del título ====== */
     .ph{
       padding:14px 16px 12px 16px;
       border-bottom:1px solid var(--stroke);
       background:rgba(255,255,255,.02);
       display:flex;
+      flex-direction:column;
       align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
+      justify-content:flex-start;
+      gap:10px;
     }
     .ttl{
       font-family:var(--fontTitle);
@@ -105,14 +106,6 @@
       text-transform:uppercase;
       white-space:nowrap;
     }
-    .sub{
-      font-size: 12px;
-      opacity:.85;
-      line-height:1.3;
-      flex:1 1 auto;
-      min-width:260px;
-    }
-    .sub .mono{ font-variant-numeric: tabular-nums; }
 
     .content{
       padding:14px 16px 16px 16px;
@@ -189,7 +182,6 @@
       transform-origin: center;
       cursor: pointer;
       display:block;
-      accent-color: var(--primary);
       background: rgba(255,255,255,.12);
       border-radius:999px;
     }
@@ -199,20 +191,28 @@
       font-size:13px;
       opacity:.92;
       display:flex;
-      align-items:flex-start;
+      align-items:center;          /* igual que el código de referencia */
       justify-content:space-between;
       gap:10px;
     }
     .val{ font-variant-numeric: tabular-nums; opacity:.95; }
 
+    /* ====== SLIDERS: mismos “track” que tu código de referencia (thumb centrado) ====== */
     input[type="range"]{
       width:100%;
+      display:block;              /* evita efectos de baseline */
+      margin:0;
       accent-color: var(--primary);
       background: rgba(255,255,255,.12);
       border-radius:999px;
       height: 4px;
       -webkit-appearance: none;
       appearance: none;
+    }
+    input[type="range"]::-webkit-slider-runnable-track{
+      height: 4px;
+      background: transparent;
+      border-radius:999px;
     }
     input[type="range"]::-webkit-slider-thumb{
       -webkit-appearance: none;
@@ -222,8 +222,13 @@
       border-radius: 50%;
       background: var(--primary);
       border: 1px solid rgba(0,0,0,.35);
-      margin-top: -5px;
+      margin-top: -5px;           /* centrado del thumb sobre track de 4px */
       box-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+    input[type="range"]::-moz-range-track{
+      height:4px;
+      background: transparent;
+      border-radius:999px;
     }
     input[type="range"]::-moz-range-thumb{
       width: 14px;
@@ -275,6 +280,7 @@
       background: rgba(254,247,2,1);
     }
 
+    /* Pills (Menores / Laboral / Mayores) */
     .mini{
       display:flex;
       gap:10px;
@@ -327,12 +333,18 @@
   <section class="panel" aria-label="Configuración de pirámide">
     <div class="ph">
       <div class="ttl">Paso 1 — Pirámide</div>
-      <div class="sub">
-        <div class="mini">
-          <span class="mini-pill" title="Menores (&lt;18)"><span class="mini-dot ylw"></span><span id="shareMin">—</span></span>
-          <span class="mini-pill" title="Edad laboral (18–64)"><span class="mini-dot"></span><span id="shareWork">—</span></span>
-          <span class="mini-pill" title="Mayores (65+)"><span class="mini-dot ret"></span><span id="shareRet">—</span></span>
-        </div>
+
+      <!-- Ahora estos 3 elementos quedan debajo del título -->
+      <div class="mini" aria-label="Shares por grupo de edad">
+        <span class="mini-pill" title="Menores (&lt;18)">
+          <span class="mini-dot ylw"></span><span id="shareMin">—</span>
+        </span>
+        <span class="mini-pill" title="Edad laboral (18–64)">
+          <span class="mini-dot"></span><span id="shareWork">—</span>
+        </span>
+        <span class="mini-pill" title="Mayores (65+)">
+          <span class="mini-dot ret"></span><span id="shareRet">—</span>
+        </span>
       </div>
     </div>
 
@@ -417,7 +429,7 @@
   ];
 
   const DEFAULTS = {
-    popTotalM: 47.0,   // Se mantiene en estado/almacenamiento, pero ya no se muestra ni se edita aquí
+    popTotalM: 47.0,
     peakIdx: 9,
     sigma: 18,
     densityYoung: 0.75,
@@ -596,9 +608,9 @@
 
   function colorForLabel(label){
     const mid = labelMidAge(label);
-    if (mid < 18) return COLORS.primary;     // Menores
-    if (mid < 65) return COLORS.workers;     // Laboral
-    return COLORS.retired;                   // Mayores
+    if (mid < 18) return COLORS.primary;
+    if (mid < 65) return COLORS.workers;
+    return COLORS.retired;
   }
 
   function renderPyramid(){
@@ -670,7 +682,6 @@
         fill: COLORS.retired, "fill-opacity":"0.80"
       }));
 
-      // Etiquetas de edad con color por grupo: Menores / Laboral / Mayores
       const t = svgEl('text',{
         x: 12, y: y + h*0.72,
         fill: colorForLabel(AGE_LABELS[i]),
@@ -761,7 +772,6 @@
     renderPyramid();
   });
 
-  // Botón Aceptar (mantiene navegación al siguiente paso)
   els.nextBtn.addEventListener('click', () => {
     saveState();
     window.location.href = "parametrosTiempo.html";
