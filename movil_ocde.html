@@ -1120,15 +1120,15 @@
     const pxW = svg.clientWidth || 900;
     const pxH = svg.clientHeight || 560;
 
-    const xTicks = thinTicksForWidth(xTicksAll, pxW * 0.78, 46 * UI_SCALE);
-    const yTicks = thinTicksForWidth(yTicksAll, pxH * 0.65, 34 * UI_SCALE);
+    const xTicks = thinTicksForWidth(xTicksAll, pxW * 0.78, 70 * UI_SCALE);
+    const yTicks = thinTicksForWidth(yTicksAll, pxH * 0.65, 54 * UI_SCALE);
 
     const xMin=0, yMin=0;
 
     const xToPx = (x) => pad.l + ((x-xMin)/(xMax-xMin))*innerW;
     const yToPx = (y) => pad.t + innerH - ((y-yMin)/(yMax-yMin))*innerH;
 
-    const fTick  = 12 * UI_SCALE;
+    const fTick  = 20 * UI_SCALE;
     const fAxis  = 14 * UI_SCALE;
     const fPoint = 14 * UI_SCALE;
     const fAxisLabel = fAxis * axisLabelScale;
@@ -1141,7 +1141,7 @@
       }));
       const t = svgEl('text',{
         x: pad.l - Math.round(10 * UI_SCALE),
-        y: yToPx(v) + 4,
+        y: yToPx(v) + 6,
         fill: COLORS.text,
         "font-size": String(fTick),
         "font-family":"Arial, sans-serif",
@@ -1158,7 +1158,7 @@
       }));
       const t = svgEl('text',{
         x: xToPx(v),
-        y: pad.t + innerH + Math.round(26 * UI_SCALE),
+        y: pad.t + innerH + Math.round(22 * UI_SCALE),
         fill: COLORS.text,
         "font-size": String(fTick),
         "font-family":"Arial, sans-serif",
@@ -1177,11 +1177,12 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const axisOffsetPx = CP_AXIS_LABEL_OFFSET * UI_SCALE;
+    const axisOffsetPxX = CP_AXIS_LABEL_OFFSET * UI_SCALE;
+    const axisOffsetPxY = (CP_AXIS_LABEL_OFFSET * UI_SCALE) * 0.55;
 
     const xLabelY = Math.min(
-      H - Math.round(16 * UI_SCALE),
-      (pad.t + innerH + axisOffsetPx)
+      H - Math.round(6 * UI_SCALE),
+      (pad.t + innerH + axisOffsetPxX)
     );
     const xl = svgEl('text',{
       x: pad.l + innerW/2, y: xLabelY,
@@ -1195,7 +1196,7 @@
 
     const yLabelX = Math.max(
       Math.round(18 * UI_SCALE),
-      (pad.l - axisOffsetPx)
+      (pad.l - axisOffsetPxY)
     );
     const yLabelY = pad.t + innerH/2;
     const yl = svgEl('text',{
