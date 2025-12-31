@@ -902,6 +902,59 @@
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const toM = (x) => x / 1_000_000;
 
+  /* ========= MODIFICACIÓN: leer estado desde localStorage ========= */
+  const PYR_KEY  = "pensionSim_pyramid_v1";
+  const TIME_KEY = "pensionSim_time_v1";
+
+  function loadPyramidFromStorage(){
+    try{
+      const raw = localStorage.getItem(PYR_KEY);
+      if (!raw) return;
+      const obj = JSON.parse(raw);
+      if (!obj || typeof obj !== "object") return;
+
+      if (isFinite(Number(obj.popTotalM))) state.popTotalM = clamp(Number(obj.popTotalM), 5, 350);
+      if (isFinite(Number(obj.peakIdx))) state.peakIdx = clamp(Math.round(Number(obj.peakIdx)), 0, 20);
+      if (isFinite(Number(obj.sigma))) state.sigma = clamp(Math.round(Number(obj.sigma)), 6, 40);
+
+      if (isFinite(Number(obj.densityYoung))) state.densityYoung = clamp(Number(obj.densityYoung), 0.35, 1.25);
+      if (isFinite(Number(obj.densityOld)))   state.densityOld   = clamp(Number(obj.densityOld),   0.35, 1.25);
+    }catch(e){}
+  }
+
+  function loadTimeFromStorage(){
+    try{
+      const raw = localStorage.getItem(TIME_KEY);
+      if (!raw) return;
+      const obj = JSON.parse(raw);
+      if (!obj || typeof obj !== "object") return;
+
+      if (isFinite(Number(obj.rho))) state.rho = clamp(Number(obj.rho), 0.40, 1.40);
+      if (isFinite(Number(obj.tau))) state.tau = clamp(Number(obj.tau), 0.05, 0.45);
+
+      if (isFinite(Number(obj.u))){
+        let u = Number(obj.u);
+        if (u > 1.5) u = u / 100.0; // si venía en %
+        state.u = clamp(u, 0, 1);
+      }
+
+      if (isFinite(Number(obj.popGrowth))){
+        let g = Number(obj.popGrowth);
+        if (Math.abs(g) > 0.2) g = g / 100.0; // si venía en %
+        state.popGrowth = g;
+      }
+
+      if (isFinite(Number(obj.agingPP))){
+        let a = Number(obj.agingPP);
+        if (Math.abs(a) > 0.2) a = a / 100.0; // si venía en pp (ej 0.20), pasarlo a fracción (0.002)
+        state.agingPP = a;
+      }
+
+      if (isFinite(Number(obj.years))) state.years = clamp(Math.round(Number(obj.years)), 20, 140);
+    }catch(e){}
+  }
+  /* ========= /MODIFICACIÓN ========= */
+
   const fs = (px) => (px * getFontScale()).toFixed(2);
   const fsTick = (px) => (px * getFontScale()).toFixed(2);
   const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale()).toFixed(2);
@@ -1970,6 +2023,11 @@
   // ======================
   // init
   // ======================
+  /* ========= MODIFICACIÓN: aplicar localStorage ANTES de pintar UI ========= */
+  loadPyramidFromStorage();
+  loadTimeFromStorage();
+  /* ========= /MODIFICACIÓN ========= */
+
   ensureWorkerSeq(30);
 
   syncUI();

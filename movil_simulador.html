@@ -1053,6 +1053,121 @@
     input.style.background = `linear-gradient(to right, ${CSS('--primary')} 0%, ${CSS('--primary')} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
   }
 
+  /* ========= MODIFICACIÓN: leer datos introducidos en pensionSim_pyramid_v1 y pensionSim_time_v1 ========= */
+  function safeJsonParse(s){
+    try{ return JSON.parse(s); }catch(e){ return null; }
+  }
+
+  function readStoredObject(key){
+    let raw = null;
+    try{ raw = localStorage.getItem(key); }catch(e){}
+    if (raw == null){
+      try{ raw = sessionStorage.getItem(key); }catch(e){}
+    }
+    if (raw == null) return null;
+
+    const obj = safeJsonParse(raw);
+    if (obj && typeof obj === "object") return obj;
+    return null;
+  }
+
+  function asNumber(v){
+    if (v == null) return NaN;
+    if (typeof v === "number") return v;
+    if (typeof v === "string"){
+      const s = v.trim().replace(",", ".");
+      if (!s) return NaN;
+      const n = Number(s.replace("%",""));
+      return isFinite(n) ? n : NaN;
+    }
+    return NaN;
+  }
+
+  function asPercentToUnit(v){
+    if (typeof v === "string" && v.trim().endsWith("%")){
+      const n = asNumber(v);
+      return isFinite(n) ? (n / 100) : NaN;
+    }
+    const n = asNumber(v);
+    if (!isFinite(n)) return NaN;
+    return (n > 1) ? (n / 100) : n;
+  }
+
+  function unwrapCfg(cfg){
+    if (cfg && typeof cfg === "object" && cfg.values && typeof cfg.values === "object") return cfg.values;
+    return cfg;
+  }
+
+  function applyPyramidCfg(cfg){
+    cfg = unwrapCfg(cfg);
+    if (!cfg || typeof cfg !== "object") return;
+
+    const pop = asNumber(cfg.popTotalM ?? cfg.popTotal ?? cfg.popM ?? cfg.population ?? cfg.poblacion ?? cfg.pop);
+    if (isFinite(pop)) state.popTotalM = clamp(pop, 5, 350);
+
+    const peak = asNumber(cfg.peakIdx ?? cfg.peak ?? cfg.pico ?? cfg.peakQuinquenio);
+    if (isFinite(peak)) state.peakIdx = clamp(Math.round(peak), 0, 20);
+
+    const sigma = asNumber(cfg.sigma ?? cfg.dispersion ?? cfg.sig);
+    if (isFinite(sigma)) state.sigma = clamp(Math.round(sigma), 6, 40);
+
+    const dy = asNumber(cfg.densityYoung ?? cfg.densYoung ?? cfg.jovenes ?? cfg.densidadJovenes);
+    if (isFinite(dy)) state.densityYoung = clamp(dy, 0.35, 1.25);
+
+    const dox = asNumber(cfg.densityOld ?? cfg.densOld ?? cfg.mayores ?? cfg.densidadMayores);
+    if (isFinite(dox)) state.densityOld = clamp(dox, 0.35, 1.25);
+  }
+
+  function applyTimeCfg(cfg){
+    cfg = unwrapCfg(cfg);
+    if (!cfg || typeof cfg !== "object") return;
+
+    const rho = asNumber(cfg.rho ?? cfg.productividad ?? cfg.productivity);
+    if (isFinite(rho)) state.rho = clamp(rho, 0.40, 1.40);
+
+    const tau = asNumber(cfg.tau ?? cfg.tipoCotizacion ?? cfg.contribucion ?? cfg.contributionRate);
+    if (isFinite(tau)) state.tau = clamp(tau, 0.05, 0.45);
+
+    const u = asPercentToUnit(cfg.u ?? cfg.paro ?? cfg.unemployment);
+    if (isFinite(u)) state.u = clamp(u, 0, 0.35);
+
+    const pgRaw = cfg.popGrowth ?? cfg.crecPoblacion ?? cfg.populationGrowth ?? cfg.popGrowthPct;
+    const pgN = asNumber(pgRaw);
+    if (isFinite(pgN)){
+      const pg = (Math.abs(pgN) > 0.05) ? (pgN / 100) : pgN;
+      state.popGrowth = clamp(pg, -0.015, 0.025);
+    }
+
+    const agRaw = cfg.agingPP ?? cfg.envejecimiento ?? cfg.aging ?? cfg.agingPct;
+    const agN = asNumber(agRaw);
+    if (isFinite(agN)){
+      const ag = (Math.abs(agN) > 0.02) ? (agN / 100) : agN;
+      state.agingPP = clamp(ag, -0.005, 0.008);
+    }
+
+    const years = asNumber(cfg.years ?? cfg.anos ?? cfg.anios ?? cfg.horizon ?? cfg.T);
+    if (isFinite(years)) state.years = clamp(Math.round(years), 20, 140);
+  }
+
+  function loadInputsFromPensionSim(){
+    const pyr =
+      readStoredObject("pensionSim_pyramid_v1") ||
+      readStoredObject("pensionSim_pyramid_v1_state") ||
+      readStoredObject("pensionSim_pyramid_v1_data");
+
+    const tim =
+      readStoredObject("pensionSim_time_v1") ||
+      readStoredObject("pensionSim_time_v1_state") ||
+      readStoredObject("pensionSim_time_v1_data");
+
+    applyPyramidCfg(pyr);
+    applyTimeCfg(tim);
+
+    state.t = 0;
+    state.playing = false;
+  }
+  /* ========= FIN MODIFICACIÓN ========= */
+
   function getRenderedSvgHeight(svg){
     if (!svg) return 0;
 
@@ -2187,6 +2302,10 @@
   });
 
   ensureWorkerSeq(30);
+
+  /* ========= MODIFICACIÓN: aplicar valores guardados antes de pintar UI/gráficas ========= */
+  loadInputsFromPensionSim();
+  /* ========= FIN MODIFICACIÓN ========= */
 
   syncUI();
   renderPyramid();
