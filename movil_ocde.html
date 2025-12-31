@@ -12,7 +12,7 @@
 
       /* Labels de ejes (mantener compactos en móvil) */
       --cpAxisLabelOffset: 34;
-      --cpAxisLabelFontScaleMobile: 1.10;
+      --cpAxisLabelFontScaleMobile: 1.55;
 
       --bg:#252525;
       --primary:#FEF702;
@@ -477,6 +477,12 @@
         <button class="ph-btn" id="btnSortLeastSustainable" type="button" aria-pressed="false" title="Ordena por mayor tensión: (P − k·C) relativo (mayor a menor)">
           Menos sostenibles ↓
         </button>
+        <button class="ph-btn" id="btnPrevCountry" type="button" title="Ir al país anterior">
+          ← País anterior
+        </button>
+        <button class="ph-btn" id="btnNextCountry" type="button" title="Ir al país siguiente">
+          País siguiente →
+        </button>
       </div>
 
       <div class="sub mono" id="cpReadout">C: — | P: —</div>
@@ -495,6 +501,11 @@
         </div>
 
         <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
+
+        <div class="badge ok" id="resultBadge">
+          <span class="dot2"></span>
+          <span id="resultBadgeText">Selecciona un país</span>
+        </div>
       </div>
 
       <!-- EXPLANATION -->
@@ -515,11 +526,6 @@
             <div class="pyrnote" id="pyrNote">
               Fuente: OECD Population (HIST). Si el CSV solo tiene sexo total, se muestra una pirámide simétrica (total/2 a cada lado).
             </div>
-          </div>
-
-          <div class="badge ok" id="resultBadge">
-            <span class="dot2"></span>
-            <span id="resultBadgeText">Selecciona un país</span>
           </div>
 
           <div class="blkwrap" aria-label="Número de cotizantes por pensionista">
@@ -634,6 +640,8 @@
     btnSortProductivity: document.getElementById('btnSortProductivity'),
     btnSortMostProfitable: document.getElementById('btnSortMostProfitable'),
     btnSortLeastSustainable: document.getElementById('btnSortLeastSustainable'),
+    btnPrevCountry: document.getElementById('btnPrevCountry'),
+    btnNextCountry: document.getElementById('btnNextCountry'),
 
     resultMini: document.getElementById('resultMini'),
     resultBadge: document.getElementById('resultBadge'),
@@ -805,6 +813,27 @@
       const name = e.target.value;
       if (name) selectCountry(name, {syncSelect:false});
     });
+  }
+
+  function wireNavButtons(){
+    if (els.btnPrevCountry){
+      els.btnPrevCountry.addEventListener("click", () => {
+        if (!state.oecdNames.length) return;
+        const idx = state.selectedCountry ? state.oecdNames.indexOf(state.selectedCountry) : -1;
+        const newIdx = (idx <= 0) ? (state.oecdNames.length - 1) : (idx - 1);
+        const name = state.oecdNames[newIdx];
+        if (name) selectCountry(name, {syncSelect:true});
+      });
+    }
+    if (els.btnNextCountry){
+      els.btnNextCountry.addEventListener("click", () => {
+        if (!state.oecdNames.length) return;
+        const idx = state.selectedCountry ? state.oecdNames.indexOf(state.selectedCountry) : -1;
+        const newIdx = (idx < 0 || idx >= state.oecdNames.length - 1) ? 0 : (idx + 1);
+        const name = state.oecdNames[newIdx];
+        if (name) selectCountry(name, {syncSelect:true});
+      });
+    }
   }
 
   function getPyramidForCountry(countryName){
@@ -1355,6 +1384,7 @@
       await Promise.all([ loadPensionsJSON(), loadPopulationCSV() ]);
       wireSortButtons();
       wireCountrySelect();
+      wireNavButtons();
 
       els.loadBox.style.display = "none";
 
