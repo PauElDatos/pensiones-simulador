@@ -11,8 +11,8 @@
       --uiScale: 1.05;
 
       /* Labels de ejes (mantener compactos en móvil) */
-      --cpAxisLabelOffset: 34;
-      --cpAxisLabelFontScaleMobile: 1.55;
+      --cpAxisLabelOffset: 70;
+      --cpAxisLabelFontScaleMobile: 2.20;
 
       --bg:#252525;
       --primary:#FEF702;
@@ -172,6 +172,16 @@
       border-color: rgba(254,247,2,.35);
       background:rgba(254,247,2,.08);
       color:#fff;
+    }
+
+    .nav-row{
+      display:flex;
+      gap:8px;
+      width:100%;
+    }
+    .nav-row .ph-btn{
+      width:auto;
+      flex:1 1 0;
     }
 
     .countries{ display:flex; flex-direction:column; }
@@ -477,12 +487,14 @@
         <button class="ph-btn" id="btnSortLeastSustainable" type="button" aria-pressed="false" title="Ordena por mayor tensión: (P − k·C) relativo (mayor a menor)">
           Menos sostenibles ↓
         </button>
-        <button class="ph-btn" id="btnPrevCountry" type="button" title="Ir al país anterior">
-          ← País anterior
-        </button>
-        <button class="ph-btn" id="btnNextCountry" type="button" title="Ir al país siguiente">
-          País siguiente →
-        </button>
+        <div class="nav-row">
+          <button class="ph-btn" id="btnPrevCountry" type="button" title="Ir al país anterior">
+            ← País anterior
+          </button>
+          <button class="ph-btn" id="btnNextCountry" type="button" title="Ir al país siguiente">
+            País siguiente →
+          </button>
+        </div>
       </div>
 
       <div class="sub mono" id="cpReadout">C: — | P: —</div>
@@ -495,7 +507,7 @@
         <div class="chart-legend">
           <div class="legend-left">
             <div class="legend-item"><span class="swatch primary"></span><span>Línea de equilibrio (k = τ/ρ)</span></div>
-            <div class="legend-item"><span class="swatch retired"></span><span>Punto país</span></div>
+            <div class="legend-item"><span class="swatch retired"></span><span>País</span></div>
           </div>
           <div class="legend-item mono" id="kReadout">k: —</div>
         </div>
