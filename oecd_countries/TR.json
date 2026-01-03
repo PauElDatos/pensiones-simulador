@@ -1,0 +1,188 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Turquía",
+    "iso2": "TR"
+  },
+  "inputs": {
+    "rho": 0.72,
+    "tau": 0.2,
+    "k": 0.2777777777777778,
+    "C_people": 32000000.0,
+    "P_people": 16000000.0,
+    "C_m": 32.0,
+    "P_m": 16.0,
+    "u": null,
+    "pop_growth": null,
+    "aging_pp": null,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 32000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por la seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "TR_TURKSTAT_EMPLOYMENT_2023",
+          "url": "https://data.tuik.gov.tr/Bulten/Index?p=Labour-Force-Statistics-2023",
+          "publisher": "Turkish Statistical Institute (TurkStat)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 16000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas del sistema SGK (vejez, invalidez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "TR_SGK_PENSIONERS_2023",
+          "url": "https://www.sgk.gov.tr/Content/Post/2e0b1d9f-5f64-4d3f-9e6b-2e0a7b1b6f6a/Istatistikler",
+          "publisher": "Sosyal Güvenlik Kurumu (SGK)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.72,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_TR_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.2,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización al sistema público de pensiones (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "TR_SGK_CONTRIB_2024",
+            "url": "https://www.sgk.gov.tr/Content/Post/9f7a7e0d-0f8e-4a2c-bc9a-1b5f5e5c8f2a/Prim-Oranlari",
+            "publisher": "Sosyal Güvenlik Kurumu (SGK)"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 16000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas del sistema SGK (vejez, invalidez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "TR_SGK_PENSIONERS_2023",
+          "url": "https://www.sgk.gov.tr/Content/Post/2e0b1d9f-5f64-4d3f-9e6b-2e0a7b1b6f6a/Istatistikler",
+          "publisher": "Sosyal Güvenlik Kurumu (SGK)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 32000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por la seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "TR_TURKSTAT_EMPLOYMENT_2023",
+          "url": "https://data.tuik.gov.tr/Bulten/Index?p=Labour-Force-Statistics-2023",
+          "publisher": "Turkish Statistical Institute (TurkStat)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.2,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización al sistema público de pensiones (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "TR_SGK_CONTRIB_2024",
+          "url": "https://www.sgk.gov.tr/Content/Post/9f7a7e0d-0f8e-4a2c-bc9a-1b5f5e5c8f2a/Prim-Oranlari",
+          "publisher": "Sosyal Güvenlik Kurumu (SGK)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.72,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_TR_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.086,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_TR_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [
+    "u",
+    "pop_growth",
+    "aging_pp"
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Israel",
+    "iso2": "IL"
+  },
+  "inputs": {
+    "rho": 0.47,
+    "tau": 0.125,
+    "k": 0.26595744680851063,
+    "C_people": 4100000.0,
+    "P_people": 1150000.0,
+    "C_m": 4.1,
+    "P_m": 1.15,
+    "u": null,
+    "pop_growth": null,
+    "aging_pp": null,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 4100000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes al sistema obligatorio).",
+      "sources": [
+        {
+          "source_id": "IL_CBS_EMPLOYMENT_2023",
+          "url": "https://www.cbs.gov.il/en/subjects/Pages/Labour-Force.aspx",
+          "publisher": "Israel Central Bureau of Statistics"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 1150000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensión pública de vejez del National Insurance Institute (Bituach Leumi).",
+      "sources": [
+        {
+          "source_id": "IL_NII_PENSIONERS_2023",
+          "url": "https://www.btl.gov.il/English%20Homepage/Publications/Annual%20Survey/Pages/default.aspx",
+          "publisher": "National Insurance Institute of Israel"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.47,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pensión pública + planes obligatorios).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_IL_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.125,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo efectivo de cotización obligatoria a pensiones (pensión pública básica + planes obligatorios).",
+        "sources": [
+          {
+            "source_id": "IL_NII_CONTRIB_2024",
+            "url": "https://www.btl.gov.il/English%20Homepage/Insurance/Pages/Contributions.aspx",
+            "publisher": "National Insurance Institute of Israel"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 1150000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensión pública de vejez del National Insurance Institute (Bituach Leumi).",
+      "sources": [
+        {
+          "source_id": "IL_NII_PENSIONERS_2023",
+          "url": "https://www.btl.gov.il/English%20Homepage/Publications/Annual%20Survey/Pages/default.aspx",
+          "publisher": "National Insurance Institute of Israel"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 4100000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes al sistema obligatorio).",
+      "sources": [
+        {
+          "source_id": "IL_CBS_EMPLOYMENT_2023",
+          "url": "https://www.cbs.gov.il/en/subjects/Pages/Labour-Force.aspx",
+          "publisher": "Israel Central Bureau of Statistics"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.125,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo efectivo de cotización obligatoria a pensiones (pensión pública básica + planes obligatorios).",
+      "sources": [
+        {
+          "source_id": "IL_NII_CONTRIB_2024",
+          "url": "https://www.btl.gov.il/English%20Homepage/Insurance/Pages/Contributions.aspx",
+          "publisher": "National Insurance Institute of Israel"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.47,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pensión pública + planes obligatorios).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_IL_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.055,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_IL_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [
+    "u",
+    "pop_growth",
+    "aging_pp"
+  ]
+}

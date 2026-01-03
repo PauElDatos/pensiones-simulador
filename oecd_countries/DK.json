@@ -1,0 +1,188 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Dinamarca",
+    "iso2": "DK"
+  },
+  "inputs": {
+    "rho": 0.54,
+    "tau": 0.0,
+    "k": 0.0,
+    "C_people": 3050000.0,
+    "P_people": 1100000.0,
+    "C_m": 3.05,
+    "P_m": 1.1,
+    "u": null,
+    "pop_growth": null,
+    "aging_pp": null,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 3050000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "DK_DST_EMPLOYMENT_2023",
+          "url": "https://www.dst.dk/en/Statistik/emner/arbejde-og-indkomst/beskaeftigelse",
+          "publisher": "Statistics Denmark (Danmarks Statistik)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 1100000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la pensión pública básica (Folkepension), incluyendo complemento.",
+      "sources": [
+        {
+          "source_id": "DK_DST_PENSIONERS_2023",
+          "url": "https://www.dst.dk/en/Statistik/emner/sociale-forhold/indkomster-og-formue/pensioner",
+          "publisher": "Statistics Denmark (Danmarks Statistik)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.54,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + ocupacional cuasi-obligatoria) para trabajador medio.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_DK_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_public",
+        "value": 0.0,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "La pensión pública (Folkepension) se financia vía impuestos generales, no mediante cotización específica.",
+        "sources": [
+          {
+            "source_id": "DK_MINFIN_PENSION_FIN",
+            "url": "https://fm.dk/arbejdsomraader/oekonomi-og-budget/folkepension/",
+            "publisher": "Ministry of Finance of Denmark"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 1100000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la pensión pública básica (Folkepension), incluyendo complemento.",
+      "sources": [
+        {
+          "source_id": "DK_DST_PENSIONERS_2023",
+          "url": "https://www.dst.dk/en/Statistik/emner/sociale-forhold/indkomster-og-formue/pensioner",
+          "publisher": "Statistics Denmark (Danmarks Statistik)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 3050000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "DK_DST_EMPLOYMENT_2023",
+          "url": "https://www.dst.dk/en/Statistik/emner/arbejde-og-indkomst/beskaeftigelse",
+          "publisher": "Statistics Denmark (Danmarks Statistik)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_public",
+      "value": 0.0,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "La pensión pública (Folkepension) se financia vía impuestos generales, no mediante cotización específica.",
+      "sources": [
+        {
+          "source_id": "DK_MINFIN_PENSION_FIN",
+          "url": "https://fm.dk/arbejdsomraader/oekonomi-og-budget/folkepension/",
+          "publisher": "Ministry of Finance of Denmark"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.54,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + ocupacional cuasi-obligatoria) para trabajador medio.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_DK_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.096,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_DK_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [
+    "u",
+    "pop_growth",
+    "aging_pp"
+  ]
+}
