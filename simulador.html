@@ -901,7 +901,8 @@
   // ======================
   // Datasets OCDE (mismo esquema que tu página "Sostenibilidad — países OCDE")
   // ======================
-  const OECD_PENSIONS_JSON = "oecd_pensions_merged.json";
+  // MODIFICADO: ahora apunta a tu JSON unificado "bundle" (mode: map, countries: {ISO2: entry})
+  const OECD_PENSIONS_JSON = "merged_countries.json";
   const OECD_POP_CSV = "OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,1.0+.POP.PS._T..H.csv";
 
   const NAME_TO_ISO3 = {
@@ -1144,8 +1145,45 @@
     return { tau: sum, date: maxDate };
   }
 
+  // MODIFICADO: soporta tu JSON unificado (countryEntry.inputs y latest_observations_used),
+  // manteniendo compatibilidad con el esquema anterior basado en observations.
   function resolveCountryMetrics(countryEntry){
-    if (!countryEntry || !Array.isArray(countryEntry.observations)) return null;
+    if (!countryEntry) return null;
+
+    // Preferencia: inputs ya procesados (tu merged_countries.json)
+    const inputs = countryEntry?.inputs;
+    if (inputs && typeof inputs === "object"){
+      const C_people = safeNum(inputs.C_people);
+      const P_people = safeNum(inputs.P_people);
+      const rho = safeNum(inputs.rho);
+      const tau = safeNum(inputs.tau);
+      const k0 = safeNum(inputs.k);
+      const k = (k0 !== null) ? k0 : ((tau !== null && rho !== null && rho > 0) ? (tau / rho) : null);
+
+      const lu = countryEntry?.latest_observations_used || null;
+      const cDate = lu?.C?.period?.date || null;
+      const pDate = lu?.P?.period?.date || null;
+      const rhoDate = lu?.rho?.period?.date || null;
+
+      let tauDate = null;
+      if (Array.isArray(lu?.tau_components) && lu.tau_components.length){
+        const ds = lu.tau_components
+          .map(o => (o?.period?.date || null))
+          .filter(d => typeof d === "string" && d);
+        ds.sort();
+        tauDate = ds.length ? ds[ds.length-1] : null;
+      }
+
+      return {
+        name: countryEntry.country?.name ?? "—",
+        C_people, P_people,
+        tau, rho, k,
+        dates: { tauDate, rhoDate, cDate, pDate }
+      };
+    }
+
+    // Fallback: esquema antiguo basado en observations
+    if (!Array.isArray(countryEntry.observations)) return null;
     const obs = countryEntry.observations;
 
     const pObs = pickLatestObservation(obs, o => o.metric === "pensioners_people");
@@ -1209,12 +1247,24 @@
     return { header: rows[0].map(h => h.trim()), data: rows.slice(1) };
   }
 
+  // MODIFICADO: ahora soporta JSON "bundle" en modo map (countries: {ISO2: entry})
   async function loadPensionsJSON(){
     const res = await fetch(OECD_PENSIONS_JSON, { cache: "no-store" });
     if (!res.ok) throw new Error(`JSON pensiones: HTTP ${res.status}`);
     const json = await res.json();
 
-    const countries = Array.isArray(json?.countries) ? json.countries : [];
+    // Acepta:
+    // - antiguo: { countries: [ ... ] }
+    // - nuevo:   { mode:"map", countries: { "AT": {...}, ... } }
+    let countries = [];
+    if (Array.isArray(json?.countries)) {
+      countries = json.countries;
+    } else if (json?.countries && typeof json.countries === "object") {
+      countries = Object.values(json.countries);
+    } else {
+      countries = [];
+    }
+
     state.oecd.countriesByName.clear();
     state.oecd.oecdNames = [];
 
@@ -1481,6 +1531,30 @@
     // Snapshot hipotético si es la primera vez que activamos OCDE
     if (!state.oecd.mode) snapshotHypoState();
 
+    // MODIFICADO: si tu JSON trae inputs (u, pop_growth, aging_pp, years), aplicarlos también
+    const inputs = (entry?.inputs && typeof entry.inputs === "object") ? entry.inputs : null;
+
+    if (inputs){
+      // u (slider está en %; state.u en fracción)
+      const uPack = clampToSlider((safeNum(inputs.u) ?? NaN) * 100, els.uSlider);
+      if (isFinite(uPack.v)) state.u = uPack.v / 100.0;
+
+      // pop_growth (slider en %, state.popGrowth en fracción)
+      const pgPack = clampToSlider((safeNum(inputs.pop_growth) ?? NaN) * 100, els.popGrowthSlider);
+      if (isFinite(pgPack.v)) state.popGrowth = pgPack.v / 100.0;
+
+      // aging_pp (slider en pp%, state.agingPP en fracción)
+      const agPack = clampToSlider((safeNum(inputs.aging_pp) ?? NaN) * 100, els.agingSlider);
+      if (isFinite(agPack.v)) state.agingPP = agPack.v / 100.0;
+
+      // years
+      const yPack = clampToSlider(safeNum(inputs.years) ?? NaN, els.yearsSlider);
+      if (isFinite(yPack.v)) state.years = Math.round(yPack.v);
+
+      // participation: por defecto 1.0 (podemos recalibrarla después si hay C_people + shares)
+      state.participation = 1.0;
+    }
+
     // τ y ρ desde dataset (clamp a sliders)
     const tauPack = clampToSlider(m.tau ?? NaN, els.tauSlider);
     const rhoPack = clampToSlider(m.rho ?? NaN, els.rhoSlider);
@@ -1535,27 +1609,35 @@
       };
     }
 
-    // Calibración de u/participation para aproximar C_people (si existe y hay baseShares)
+    // MODIFICADO: calibración de participation para aproximar C_people (respetando u si viene en inputs)
     if (baseShares && m.C_people !== null && totalPeople > 0){
       const workingPeople = totalPeople * baseShares.sWork;
       if (workingPeople > 1){
         const targetC = m.C_people;
-        let participation = 1.0;
-        let u = 1 - (targetC / (workingPeople * participation));
 
-        // si u > 0.35, fijamos u=0.35 y bajamos participation si se puede
-        if (u > 0.35){
-          u = 0.35;
-          participation = targetC / (workingPeople * (1 - u));
+        if (inputs && safeNum(inputs.u) !== null){
+          const uFixed = clamp(safeNum(inputs.u), 0, 0.35);
+          state.u = uFixed;
+          let participation = targetC / (workingPeople * Math.max(1e-9, (1 - uFixed)));
           participation = clamp(participation, 0, 1);
-          // recompute u real con participation clamp
-          u = 1 - (targetC / (workingPeople * Math.max(1e-9, participation)));
+          state.participation = participation;
+        } else {
+          // lógica original (ajusta u y participation)
+          let participation = 1.0;
+          let u = 1 - (targetC / (workingPeople * participation));
+
+          if (u > 0.35){
+            u = 0.35;
+            participation = targetC / (workingPeople * (1 - u));
+            participation = clamp(participation, 0, 1);
+            u = 1 - (targetC / (workingPeople * Math.max(1e-9, participation)));
+          }
+
+          u = clamp(u, 0, 0.35);
+
+          state.participation = clamp(participation, 0, 1);
+          state.u = u;
         }
-
-        u = clamp(u, 0, 0.35);
-
-        state.participation = clamp(participation, 0, 1);
-        state.u = u;
       }
     }
 
