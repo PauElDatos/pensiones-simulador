@@ -105,6 +105,124 @@
     }
     a.back:hover{ border-bottom-color: rgba(254,247,2,.35); color:#fff; }
 
+    /* ========= NUEVO: barra OCDE (móvil + desktop) ========= */
+    .oecd-bar{
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      padding: 10px 10px;
+      background: linear-gradient(180deg, rgba(0,0,0,.88), rgba(0,0,0,.70));
+      border-bottom: 1px solid var(--stroke);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .oecd-left{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      flex: 1 1 640px;
+      min-width: 0;
+    }
+    .oecd-brand{
+      font-family: var(--fontTitle);
+      color: var(--primary);
+      letter-spacing: .4px;
+      font-size: calc(12px * var(--fontScale));
+      font-weight: 800;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      white-space: nowrap;
+    }
+    .oecd-field{
+      flex: 1 1 240px;
+      min-width: 180px;
+    }
+    .oecd-input{
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      outline: none;
+      font-size: calc(12px * var(--fontScale));
+    }
+    .oecd-input::placeholder{ color: rgba(255,255,255,.55); }
+    .oecd-input:focus{
+      border-color: rgba(254,247,2,.35);
+      box-shadow: 0 0 0 3px rgba(254,247,2,.10);
+    }
+    .oecd-btn{
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: calc(12px * var(--fontScale));
+      white-space: nowrap;
+    }
+    .oecd-btn:hover{
+      border-color: rgba(254,247,2,.25);
+      color: #fff;
+    }
+    .oecd-btn-primary{
+      background: var(--primary);
+      color: #111;
+      border-color: rgba(0,0,0,.35);
+      font-weight: 700;
+    }
+    .oecd-btn-primary:hover{ filter: brightness(0.95); }
+
+    .oecd-toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      font-size: calc(12px * var(--fontScale));
+      white-space: nowrap;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .oecd-toggle input{
+      width: 14px; height: 14px;
+      accent-color: var(--primary);
+    }
+
+    .oecd-right{
+      opacity: .85;
+      font-size: calc(12px * var(--fontScale));
+      white-space: nowrap;
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+    }
+
+    @media (max-width: 520px){
+      .oecd-field{ flex: 1 1 100%; min-width: 0; }
+      .oecd-btn{ flex: 1 1 140px; }
+      .oecd-toggle{ width: 100%; justify-content:flex-start; }
+      .oecd-right{
+        width: 100%;
+        white-space: normal;
+      }
+    }
+    /* ========= FIN barra OCDE ========= */
+
     main{
       min-height: calc(100vh - 70px);
       padding:10px 10px 16px 10px;   /* móvil */
@@ -603,6 +721,29 @@
   </div>
 </header>
 
+<!-- ========= NUEVO: barra OCDE (la de la captura, también en móvil) ========= -->
+<div class="oecd-bar" aria-label="OCDE">
+  <div class="oecd-left">
+    <div class="oecd-brand">OCDE</div>
+
+    <div class="oecd-field">
+      <input id="oecdCountryInput" class="oecd-input" type="text" list="oecdCountries" value="Alemania" placeholder="Escribe un país…" autocomplete="off" />
+      <datalist id="oecdCountries"></datalist>
+    </div>
+
+    <button id="loadCountryBtn" type="button" class="oecd-btn oecd-btn-primary">Cargar país</button>
+    <button id="backHypoBtn" type="button" class="oecd-btn">Volver a hipotético</button>
+
+    <label class="oecd-toggle" title="Al activar, el simulador toma los valores del país seleccionado (si hay dataset)">
+      <input id="useOecdChk" type="checkbox" />
+      <span>Usar datos OCDE</span>
+    </label>
+  </div>
+
+  <div class="oecd-right mono" id="oecdStatus">Datasets: cargando…</div>
+</div>
+<!-- ========= FIN barra OCDE ========= -->
+
 <main>
   <section class="panel" aria-label="Gráficas del simulador">
     <div class="ph">
@@ -839,7 +980,7 @@
 </main>
 
 <script>
-(() => {
+(async () => {
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const COLORS = {
     primary: CSS('--primary'),
@@ -920,14 +1061,29 @@
     "figuras/noun-nun-5116487.svg"
   ];
 
-  /* ========= MOD (OCDE): JSON unificado ========= */
-  const OECD_PENSIONS_JSON = "merged_countries.json";
-  /* ========= FIN MOD (OCDE) ========= */
-
   const AGE_LABELS = [
     "0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
     "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95-99","100+"
   ];
+
+  /* ========= NUEVO: rutas/candidatos de datasets (ajusta si tus nombres difieren) ========= */
+  const OECD_COUNTRIES_JSON_CANDIDATES = [
+    "merged_countries.json",
+    "data/merged_countries.json",
+    "datasets/merged_countries.json",
+    "oecd/merged_countries.json"
+  ];
+
+  const POP_PYRAMIDS_JSON_CANDIDATES = [
+    "pyramids_iso3_2024.json",
+    "pyramids_2024.json",
+    "population_pyramids_2024.json",
+    "pyramids.json",
+    "data/pyramids_iso3_2024.json",
+    "datasets/pyramids_iso3_2024.json",
+    "oecd/pyramids_iso3_2024.json"
+  ];
+  /* ========= FIN NUEVO ========= */
 
   const state = {
     popTotalM: 47.0,
@@ -954,15 +1110,25 @@
     timeLayout: null,
     draggingTime: false,
 
-    /* ========= MOD (OCDE): caché de dataset ========= */
+    /* ========= NUEVO: modo OCDE ========= */
     oecd: {
       loaded: false,
-      error: null,
       countries: [],
-      countriesByName: new Map(),
-      countriesByISO2: new Map()
-    }
-    /* ========= FIN MOD (OCDE) ========= */
+      byName: new Map(),
+      byIso3: new Map(),
+      pyramidsLoaded: false,
+      pyramidsByIso3: new Map(),
+      popYear: null
+    },
+    oecdUse: false,
+    oecdCountry: "Alemania",
+
+    pyramidOverride: null,     /* Array[21] shares total */
+    pyramidOverrideMF: null,   /* {m:Array[21], f:Array[21]} opcional */
+    pyramidYear: null,
+
+    hypoSnapshot: null
+    /* ========= FIN NUEVO ========= */
   };
 
   const els = {
@@ -1029,6 +1195,15 @@
     rhoVal2: document.getElementById('rhoVal2'),
     kVal2: document.getElementById('kVal2'),
     PStar2: document.getElementById('PStar2'),
+
+    /* ========= NUEVO: barra OCDE ========= */
+    oecdCountryInput: document.getElementById('oecdCountryInput'),
+    oecdCountries: document.getElementById('oecdCountries'),
+    loadCountryBtn: document.getElementById('loadCountryBtn'),
+    backHypoBtn: document.getElementById('backHypoBtn'),
+    useOecdChk: document.getElementById('useOecdChk'),
+    oecdStatus: document.getElementById('oecdStatus')
+    /* ========= FIN NUEVO ========= */
   };
 
   const svgEl = (name, attrs={}) => {
@@ -1066,180 +1241,6 @@
 
     input.style.background = `linear-gradient(to right, ${CSS('--primary')} 0%, ${CSS('--primary')} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
   }
-
-  /* ========= MOD (OCDE): compatibilidad countries:[] y countries:{ISO2:entry} + inputs/latest_observations_used ========= */
-  const safeNum = (x) => (typeof x === "number" && isFinite(x)) ? x : null;
-
-  function pickLatestObservation(observations, predicate){
-    const arr = observations.filter(o => predicate(o));
-    if (!arr.length) return null;
-    arr.sort((a,b) => (b?.period?.date || "").localeCompare(a?.period?.date || ""));
-    return arr[0];
-  }
-
-  // Suma τ usando "último dato" de cada componente contribution_rate_*
-  function sumContributionRatesLatest(observations){
-    const byMetric = new Map();
-    observations.forEach(o => {
-      const m = o?.metric;
-      if (typeof m !== "string" || !m.startsWith("contribution_rate_")) return;
-      const dt = (o?.period?.date || "");
-      if (!byMetric.has(m)) byMetric.set(m, o);
-      else {
-        const cur = byMetric.get(m);
-        if ((dt || "").localeCompare(cur?.period?.date || "") > 0) byMetric.set(m, o);
-      }
-    });
-
-    let sum = 0;
-    let maxDate = null;
-    let count = 0;
-
-    for (const o of byMetric.values()){
-      const v = safeNum(o.value);
-      if (v === null) continue;
-      sum += v;
-      count++;
-      const dt = o?.period?.date || null;
-      if (dt && (!maxDate || dt.localeCompare(maxDate) > 0)) maxDate = dt;
-    }
-    if (!count) return { tau: null, date: null };
-    return { tau: sum, date: maxDate };
-  }
-
-  function resolveCountryMetrics(countryEntry){
-    if (!countryEntry) return null;
-
-    // Preferencia: inputs ya procesados (merged_countries.json)
-    const inputs = countryEntry?.inputs;
-    if (inputs && typeof inputs === "object"){
-      const C_people = safeNum(inputs.C_people);
-      const P_people = safeNum(inputs.P_people);
-      const rho = safeNum(inputs.rho);
-      const tau = safeNum(inputs.tau);
-      const k0 = safeNum(inputs.k);
-      const k = (k0 !== null) ? k0 : ((tau !== null && rho !== null && rho > 0) ? (tau / rho) : null);
-
-      const lu = countryEntry?.latest_observations_used || null;
-      const cDate = lu?.C?.period?.date || null;
-      const pDate = lu?.P?.period?.date || null;
-      const rhoDate = lu?.rho?.period?.date || null;
-
-      let tauDate = null;
-      if (Array.isArray(lu?.tau_components) && lu.tau_components.length){
-        const ds = lu.tau_components
-          .map(o => (o?.period?.date || null))
-          .filter(d => typeof d === "string" && d);
-        ds.sort();
-        tauDate = ds.length ? ds[ds.length-1] : null;
-      }
-
-      return {
-        name: countryEntry.country?.name ?? "—",
-        C_people, P_people,
-        tau, rho, k,
-        dates: { tauDate, rhoDate, cDate, pDate }
-      };
-    }
-
-    // Fallback: esquema antiguo basado en observations
-    if (!Array.isArray(countryEntry.observations)) return null;
-    const obs = countryEntry.observations;
-
-    const pObs = pickLatestObservation(obs, o => o.metric === "pensioners_people");
-    const P_people = pObs ? safeNum(pObs.value) : null;
-    const pDate = pObs?.period?.date || null;
-
-    const cObs = pickLatestObservation(obs, o =>
-      o.metric === "contributors_employed_people" ||
-      o.metric === "contributors_affiliates_people" ||
-      o.metric === "contributors_affiliated_people"
-    );
-    const C_people = cObs ? safeNum(cObs.value) : null;
-    const cDate = cObs?.period?.date || null;
-
-    const rhoObs = pickLatestObservation(obs, o => o.metric === "replacement_rate_gross_full_career");
-    const rho = rhoObs ? safeNum(rhoObs.value) : null;
-    const rhoDate = rhoObs?.period?.date || null;
-
-    const tauPack = sumContributionRatesLatest(obs);
-    const tau = tauPack.tau;
-    const tauDate = tauPack.date;
-
-    const k = (tau !== null && rho !== null && rho > 0) ? (tau / rho) : null;
-
-    return {
-      name: countryEntry.country?.name ?? "—",
-      C_people, P_people,
-      tau, rho, k,
-      dates: { tauDate, rhoDate, cDate, pDate }
-    };
-  }
-
-  async function loadPensionsJSON(){
-    const res = await fetch(OECD_PENSIONS_JSON, { cache: "no-store" });
-    if (!res.ok) throw new Error(`JSON pensiones: HTTP ${res.status}`);
-    const json = await res.json();
-
-    // Acepta:
-    // - antiguo: { countries: [ ... ] }
-    // - nuevo:   { mode:"map", countries: { "AT": {...}, ... } }
-    let countries = [];
-    if (Array.isArray(json?.countries)) {
-      countries = json.countries;
-    } else if (json?.countries && typeof json.countries === "object") {
-      countries = Object.values(json.countries);
-    } else {
-      countries = [];
-    }
-    return countries;
-  }
-
-  async function initOECDDataset(){
-    try{
-      const countries = await loadPensionsJSON();
-      state.oecd.countries = countries;
-
-      const byName = new Map();
-      const byISO2 = new Map();
-
-      for (const c of countries){
-        const name = c?.country?.name || null;
-        const iso2 =
-          c?.country?.iso2 ||
-          c?.country?.code ||
-          c?.iso2 ||
-          c?.iso ||
-          null;
-
-        if (name) byName.set(name, c);
-        if (iso2) byISO2.set(String(iso2).toUpperCase(), c);
-      }
-
-      state.oecd.countriesByName = byName;
-      state.oecd.countriesByISO2 = byISO2;
-      state.oecd.loaded = true;
-      state.oecd.error = null;
-    }catch(err){
-      state.oecd.loaded = false;
-      state.oecd.error = String(err?.message || err);
-      // Importante: no rompemos el simulador si no existe el JSON en móvil.
-      console.warn("No se pudo cargar merged_countries.json:", err);
-    }
-  }
-
-  // Helpers opcionales (no usados por la UI móvil, pero disponibles)
-  function getOECDMetricsByCountryName(name){
-    if (!name || !state.oecd?.countriesByName) return null;
-    const entry = state.oecd.countriesByName.get(name);
-    return resolveCountryMetrics(entry);
-  }
-  function getOECDMetricsByISO2(iso2){
-    if (!iso2 || !state.oecd?.countriesByISO2) return null;
-    const entry = state.oecd.countriesByISO2.get(String(iso2).toUpperCase());
-    return resolveCountryMetrics(entry);
-  }
-  /* ========= FIN MOD (OCDE) ========= */
 
   /* ========= MODIFICACIÓN: leer datos introducidos en pensionSim_pyramid_v1 y pensionSim_time_v1 ========= */
   function safeJsonParse(s){
@@ -1356,6 +1357,475 @@
   }
   /* ========= FIN MODIFICACIÓN ========= */
 
+  /* ========= NUEVO: utilidades OCDE ========= */
+  function nowStrip(s){
+    if (s == null) return "";
+    const t = String(s).trim().toLowerCase();
+    try{
+      return t.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+    }catch(e){
+      return t.replace(/á/g,"a").replace(/é/g,"e").replace(/í/g,"i").replace(/ó/g,"o").replace(/ú/g,"u").replace(/ñ/g,"n");
+    }
+  }
+
+  function setOECDStatusTemp(msg, ms=2500){
+    const base = computeOECDStatusLine();
+    els.oecdStatus.textContent = msg;
+    window.clearTimeout(setOECDStatusTemp._t);
+    setOECDStatusTemp._t = window.setTimeout(() => { els.oecdStatus.textContent = base; }, ms);
+  }
+
+  function computeOECDStatusLine(){
+    const nC = state.oecd.countries.length || 0;
+    const nP = state.oecd.pyramidsByIso3 ? state.oecd.pyramidsByIso3.size : 0;
+    const y  = state.oecd.popYear ?? state.pyramidYear ?? "";
+    if (nC <= 0){
+      return "Datasets: no cargados";
+    }
+    const ok = (nC > 0) ? "Datasets OK" : "Datasets";
+    const yPart = y ? ` · año POP=${y}` : "";
+    const pPart = (nP > 0) ? ` · pirámides(ISO3)=${nP}` : ` · pirámides(ISO3)=0`;
+    return `${ok} · países=${nC}${pPart}${yPart}`;
+  }
+
+  async function fetchJsonFirst(candidates){
+    for (const url of candidates){
+      try{
+        const r = await fetch(url, { cache: "no-store" });
+        if (!r.ok) continue;
+        const j = await r.json();
+        return { url, json: j };
+      }catch(e){}
+    }
+    return null;
+  }
+
+  function extractCountriesArray(json){
+    if (!json) return [];
+    if (Array.isArray(json)) return json;
+    if (Array.isArray(json.countries)) return json.countries;
+    if (Array.isArray(json.data)) return json.data;
+    if (Array.isArray(json.items)) return json.items;
+    return [];
+  }
+
+  function pickFirst(obj, keys){
+    if (!obj || typeof obj !== "object") return undefined;
+    for (const k of keys){
+      if (k in obj) return obj[k];
+    }
+    return undefined;
+  }
+
+  function normalizeCountryEntry(raw){
+    if (!raw || typeof raw !== "object") return null;
+
+    const name =
+      pickFirst(raw, ["name_es","name","country_es","country","pais","país","label"]) ??
+      (raw.meta && pickFirst(raw.meta, ["name_es","name","country"])) ??
+      null;
+
+    const iso3 =
+      pickFirst(raw, ["iso3","ISO3","alpha3","code3"]) ??
+      (raw.codes && pickFirst(raw.codes, ["iso3","ISO3","alpha3"])) ??
+      null;
+
+    const iso2 =
+      pickFirst(raw, ["iso2","ISO2","alpha2","code2"]) ??
+      (raw.codes && pickFirst(raw.codes, ["iso2","ISO2","alpha2"])) ??
+      null;
+
+    const metrics = raw.metrics && typeof raw.metrics === "object" ? raw.metrics : raw;
+
+    return {
+      raw,
+      name: name ? String(name).trim() : null,
+      iso3: iso3 ? String(iso3).trim().toUpperCase() : null,
+      iso2: iso2 ? String(iso2).trim().toUpperCase() : null,
+      metrics
+    };
+  }
+
+  function populateCountryDatalist(){
+    if (!els.oecdCountries) return;
+    els.oecdCountries.innerHTML = "";
+
+    const seen = new Set();
+    for (const c of state.oecd.countries){
+      if (!c || !c.name) continue;
+      const n = c.name.trim();
+      if (!n || seen.has(n.toLowerCase())) continue;
+      seen.add(n.toLowerCase());
+      const opt = document.createElement("option");
+      opt.value = n;
+      els.oecdCountries.appendChild(opt);
+    }
+  }
+
+  function indexPyramidsData(json){
+    const map = new Map();
+
+    const asArray = (v) => Array.isArray(v) ? v : null;
+
+    let year = null;
+
+    const ingestRecord = (iso3, rec) => {
+      if (!iso3) return;
+      iso3 = String(iso3).trim().toUpperCase();
+      if (!iso3) return;
+
+      if (!rec || typeof rec !== "object"){
+        if (Array.isArray(rec)){
+          const arr = rec.slice();
+          const out = normalizePyramidArrays({ total: arr });
+          if (out && out.totalShares) map.set(iso3, out);
+        }
+        return;
+      }
+
+      const y = pickFirst(rec, ["year","popYear","POP_YEAR","anio","año"]);
+      if (year == null && isFinite(asNumber(y))) year = Math.round(asNumber(y));
+
+      const total = pickFirst(rec, ["total","all","t","values","vals","age5","age_5","age5_total","shares","share"]);
+      const male  = pickFirst(rec, ["male","m","men","hombres","varones","age5_male","shares_male"]);
+      const female= pickFirst(rec, ["female","f","women","mujeres","age5_female","shares_female"]);
+
+      const out = normalizePyramidArrays({
+        total: Array.isArray(total) ? total : null,
+        male: Array.isArray(male) ? male : null,
+        female: Array.isArray(female) ? female : null,
+        year: isFinite(asNumber(y)) ? Math.round(asNumber(y)) : null,
+        popTotal: pickFirst(rec, ["popTotal","population","pop","totalPop","total_population","popTotalM"])
+      });
+
+      if (out && (out.totalShares || out.mfShares)){
+        map.set(iso3, out);
+      }
+    };
+
+    let arr = null;
+
+    if (Array.isArray(json)){
+      arr = json;
+    } else if (json && typeof json === "object"){
+      if (Array.isArray(json.pyramids)) arr = json.pyramids;
+      else if (Array.isArray(json.data)) arr = json.data;
+      else if (Array.isArray(json.items)) arr = json.items;
+    }
+
+    if (arr){
+      for (const rec of arr){
+        const iso3 = pickFirst(rec, ["iso3","ISO3","alpha3","code3","id"]);
+        ingestRecord(iso3, rec);
+      }
+    } else if (json && typeof json === "object"){
+      // Caso: objeto indexado por ISO3
+      for (const [k,v] of Object.entries(json)){
+        if (!k) continue;
+        if (k === "meta" || k === "countries" || k === "pyramids" || k === "data") continue;
+        ingestRecord(k, v);
+      }
+    }
+
+    return { map, year };
+  }
+
+  function normalizePyramidArrays({ total, male, female, year, popTotal }){
+    const out = {
+      year: (year != null) ? year : null,
+      popTotalM: null,
+      totalShares: null,
+      mfShares: null
+    };
+
+    const popN = asNumber(popTotal);
+    if (isFinite(popN)){
+      // si viene en millones ya, lo dejamos; si viene en personas, convertimos
+      out.popTotalM = (popN > 500) ? (popN / 1_000_000) : popN;
+    }
+
+    const normToShares = (arr) => {
+      if (!Array.isArray(arr) || arr.length < 10) return null;
+      const a = arr.slice(0, 21).map(x => Math.max(0, Number(x) || 0));
+      let s = a.reduce((p,c)=>p+c,0);
+      if (!isFinite(s) || s <= 0) return null;
+
+      // si ya parecen shares (s ~ 1), dejamos; si no, normalizamos
+      if (s > 0.98 && s < 1.02){
+        return a.map(v => v / s);
+      }
+      return a.map(v => v / s);
+    };
+
+    const tS = normToShares(total);
+    const mS = normToShares(male);
+    const fS = normToShares(female);
+
+    if (mS && fS){
+      out.mfShares = { m: mS, f: fS };
+      const tot = mS.map((v,i)=> v + (fS[i]||0));
+      let s = tot.reduce((p,c)=>p+c,0);
+      if (s > 0) out.totalShares = tot.map(v => v / s);
+    } else if (tS){
+      out.totalShares = tS;
+    }
+
+    return (out.totalShares || out.mfShares) ? out : null;
+  }
+
+  function sharesFromAge5(totalShares){
+    // totalShares: Array[21] sum 1
+    const shares = totalShares;
+    const minors =
+      (shares[0]||0) + (shares[1]||0) + (shares[2]||0) + 0.60*(shares[3]||0);
+
+    let work = 0.40*(shares[3]||0);
+    for (let i=4;i<=12;i++) work += (shares[i]||0);
+
+    let retired = 0;
+    for (let i=13;i<shares.length;i++) retired += (shares[i]||0);
+
+    let s = minors + work + retired;
+    if (s <= 1e-9) s = 1;
+    return { sMin: minors/s, sWork: work/s, sRet: retired/s };
+  }
+
+  function takeHypoSnapshot(){
+    state.hypoSnapshot = {
+      popTotalM: state.popTotalM,
+      peakIdx: state.peakIdx,
+      sigma: state.sigma,
+      densityYoung: state.densityYoung,
+      densityOld: state.densityOld,
+
+      rho: state.rho,
+      tau: state.tau,
+      u: state.u,
+      popGrowth: state.popGrowth,
+      agingPP: state.agingPP,
+      years: state.years,
+      participation: state.participation,
+
+      pyramidOverride: state.pyramidOverride,
+      pyramidOverrideMF: state.pyramidOverrideMF,
+      pyramidYear: state.pyramidYear
+    };
+  }
+
+  function restoreHypothetical(){
+    if (!state.hypoSnapshot) return;
+
+    const s = state.hypoSnapshot;
+
+    state.popTotalM = s.popTotalM;
+    state.peakIdx = s.peakIdx;
+    state.sigma = s.sigma;
+    state.densityYoung = s.densityYoung;
+    state.densityOld = s.densityOld;
+
+    state.rho = s.rho;
+    state.tau = s.tau;
+    state.u = s.u;
+    state.popGrowth = s.popGrowth;
+    state.agingPP = s.agingPP;
+    state.years = s.years;
+    state.participation = s.participation;
+
+    state.pyramidOverride = s.pyramidOverride || null;
+    state.pyramidOverrideMF = s.pyramidOverrideMF || null;
+    state.pyramidYear = s.pyramidYear || null;
+
+    state.t = 0;
+    state.playing = false;
+  }
+
+  function setOecdUse(val){
+    state.oecdUse = !!val;
+    if (els.useOecdChk) els.useOecdChk.checked = state.oecdUse;
+    try{ localStorage.setItem("pensionSim_oecd_use", state.oecdUse ? "1" : "0"); }catch(e){}
+  }
+
+  function setOecdCountryName(name){
+    state.oecdCountry = (name || "").trim() || state.oecdCountry;
+    if (els.oecdCountryInput) els.oecdCountryInput.value = state.oecdCountry;
+    try{ localStorage.setItem("pensionSim_oecd_country", state.oecdCountry); }catch(e){}
+  }
+
+  function getCountryEntryByAnyKey(input){
+    const q = (input || "").trim();
+    if (!q) return null;
+
+    const qIso = q.toUpperCase();
+    if (qIso.length === 3 && state.oecd.byIso3.has(qIso)) return state.oecd.byIso3.get(qIso);
+
+    const key = nowStrip(q);
+    if (state.oecd.byName.has(key)) return state.oecd.byName.get(key);
+
+    // fallback: contains match
+    for (const [k,v] of state.oecd.byName.entries()){
+      if (k.includes(key)) return v;
+    }
+    return null;
+  }
+
+  function applyCountryToState(entry){
+    if (!entry) return false;
+
+    // Guardar snapshot si venimos de hipotético
+    if (!state.oecdUse){
+      takeHypoSnapshot();
+    }
+
+    setOecdUse(true);
+    setOecdCountryName(entry.name || state.oecdCountry);
+
+    // 1) Métricas (si existen en tu merged_countries.json)
+    const m = entry.metrics || entry.raw || {};
+
+    const rho = asNumber(pickFirst(m, ["rho","productividad","productivity","RHO"]));
+    if (isFinite(rho)) state.rho = clamp(rho, 0.40, 1.40);
+
+    const tau = asNumber(pickFirst(m, ["tau","tipoCotizacion","contribution_rate","contribucion","τ","TAU"]));
+    if (isFinite(tau)) state.tau = clamp(tau, 0.05, 0.45);
+
+    const years = asNumber(pickFirst(m, ["years","horizon","T","anos","anios"]));
+    if (isFinite(years)) state.years = clamp(Math.round(years), 20, 140);
+
+    // 2) Pirámide (si existe en dataset de pirámides ISO3)
+    let pyr = null;
+
+    // primero: si el propio entry trae pirámide
+    const embeddedTotal = pickFirst(m, ["pyramid_total","pyramid","age5","age5_total","shares_age5","pyramidShares"]);
+    const embeddedMale  = pickFirst(m, ["pyramid_male","male","age5_male","shares_male"]);
+    const embeddedFem   = pickFirst(m, ["pyramid_female","female","age5_female","shares_female"]);
+
+    if (Array.isArray(embeddedTotal) || (Array.isArray(embeddedMale) && Array.isArray(embeddedFem))){
+      pyr = normalizePyramidArrays({
+        total: Array.isArray(embeddedTotal) ? embeddedTotal : null,
+        male: Array.isArray(embeddedMale) ? embeddedMale : null,
+        female: Array.isArray(embeddedFem) ? embeddedFem : null,
+        year: asNumber(pickFirst(m, ["popYear","year","anio","año"])),
+        popTotal: pickFirst(m, ["popTotal","population","pop","totalPop","popTotalM"])
+      });
+    }
+
+    // si no, buscamos por ISO3 en dataset de pirámides
+    if (!pyr && entry.iso3 && state.oecd.pyramidsByIso3 && state.oecd.pyramidsByIso3.has(entry.iso3)){
+      pyr = state.oecd.pyramidsByIso3.get(entry.iso3);
+    }
+
+    if (pyr && (pyr.totalShares || pyr.mfShares)){
+      state.pyramidOverride = pyr.totalShares || null;
+      state.pyramidOverrideMF = pyr.mfShares || null;
+      state.pyramidYear = pyr.year || state.oecd.popYear || null;
+
+      if (isFinite(pyr.popTotalM)){
+        state.popTotalM = clamp(pyr.popTotalM, 5, 350);
+      }
+
+      // Calibración opcional de u para que C(t0) cuadre si el dataset trae "cotizantes" (C) y hay shares
+      const C0 = asNumber(pickFirst(m, ["C","cotizantes","contributors","contribuyentes","workers_contrib","cot"]));
+      if (isFinite(C0) && state.pyramidOverride){
+        const { sWork } = sharesFromAge5(state.pyramidOverride);
+        const pop0 = state.popTotalM * 1_000_000;
+        const denom = pop0 * sWork * clamp(state.participation,0,1);
+        if (denom > 0){
+          const uCal = 1 - (C0 / denom);
+          if (isFinite(uCal)) state.u = clamp(uCal, 0, 0.35);
+        }
+      }
+    } else {
+      // Si no hay pirámide, no tocamos override; el país igual puede cargar rho/tau
+      state.pyramidOverride = null;
+      state.pyramidOverrideMF = null;
+      state.pyramidYear = null;
+    }
+
+    state.t = 0;
+    state.playing = false;
+    return true;
+  }
+
+  async function initOECDDatasets(){
+    els.oecdStatus.textContent = "Datasets: cargando…";
+
+    // 1) countries/metrics
+    const countriesRes = await fetchJsonFirst(OECD_COUNTRIES_JSON_CANDIDATES);
+    if (countriesRes && countriesRes.json){
+      const arr = extractCountriesArray(countriesRes.json);
+      const norm = [];
+      const byName = new Map();
+      const byIso3 = new Map();
+
+      for (const raw of arr){
+        const c = normalizeCountryEntry(raw);
+        if (!c || (!c.name && !c.iso3)) continue;
+        norm.push(c);
+        if (c.name){
+          byName.set(nowStrip(c.name), c);
+        }
+        if (c.iso3){
+          byIso3.set(c.iso3, c);
+        }
+      }
+
+      state.oecd.countries = norm;
+      state.oecd.byName = byName;
+      state.oecd.byIso3 = byIso3;
+      state.oecd.loaded = true;
+
+      populateCountryDatalist();
+    }
+
+    // 2) pyramids
+    const pyrRes = await fetchJsonFirst(POP_PYRAMIDS_JSON_CANDIDATES);
+    if (pyrRes && pyrRes.json){
+      const idx = indexPyramidsData(pyrRes.json);
+      state.oecd.pyramidsByIso3 = idx.map || new Map();
+      state.oecd.pyramidsLoaded = state.oecd.pyramidsByIso3.size > 0;
+      if (idx.year) state.oecd.popYear = idx.year;
+    }
+
+    // 3) leer preferencia guardada
+    let use = null;
+    let savedCountry = null;
+    try{
+      use = localStorage.getItem("pensionSim_oecd_use");
+      savedCountry = localStorage.getItem("pensionSim_oecd_country");
+    }catch(e){}
+
+    if (savedCountry && savedCountry.trim()){
+      state.oecdCountry = savedCountry.trim();
+      if (els.oecdCountryInput) els.oecdCountryInput.value = state.oecdCountry;
+    }
+
+    if (use === "1"){
+      state.oecdUse = true;
+      if (els.useOecdChk) els.useOecdChk.checked = true;
+    } else if (use === "0"){
+      state.oecdUse = false;
+      if (els.useOecdChk) els.useOecdChk.checked = false;
+    } else {
+      // por defecto, desactivado (para no pisar hipotético)
+      state.oecdUse = false;
+      if (els.useOecdChk) els.useOecdChk.checked = false;
+    }
+
+    // 4) si estaba activado y tenemos país, aplicamos
+    if (state.oecdUse && state.oecd.loaded){
+      const entry = getCountryEntryByAnyKey(state.oecdCountry);
+      if (entry){
+        applyCountryToState(entry);
+      } else {
+        setOECDStatusTemp(`País no encontrado: ${state.oecdCountry}`);
+      }
+    }
+
+    // status final
+    els.oecdStatus.textContent = computeOECDStatusLine();
+  }
+  /* ========= FIN NUEVO ========= */
+
   function getRenderedSvgHeight(svg){
     if (!svg) return 0;
 
@@ -1453,6 +1923,16 @@
   }
 
   function buildSyntheticTotalShares(){
+    /* ========= NUEVO: si hay override (OCDE), usarlo ========= */
+    if (state.pyramidOverride && Array.isArray(state.pyramidOverride) && state.pyramidOverride.length >= 10){
+      const a = state.pyramidOverride.slice(0, 21).map(x => Math.max(0, Number(x) || 0));
+      let s = a.reduce((p,c)=>p+c,0);
+      if (s <= 0) s = 1;
+      for (let i=0;i<a.length;i++) a[i] /= s;
+      return a;
+    }
+    /* ========= FIN NUEVO ========= */
+
     const n = AGE_LABELS.length;
     const peak = state.peakIdx;
     const sigmaModel = state.sigma / 6.0;
@@ -1667,10 +2147,6 @@
     els.timeSvg.addEventListener("pointerleave", end);
   }
 
-  /* ========= CAMBIO IMPORTANTE =========
-     - Asegura que NADA se solape: ticks → label X → leyenda (en vertical) y todo dentro del SVG.
-     - Ajusta padding dinámico con el tamaño real de texto (boost incluido).
-  */
   function renderTimeChart(){
     const svg = els.timeSvg;
     clearSvg(svg);
@@ -2220,6 +2696,28 @@
   }
 
   function buildSyntheticSharesMF(){
+    /* ========= NUEVO: si hay pirámide por sexo, usarla ========= */
+    if (state.pyramidOverrideMF && state.pyramidOverrideMF.m && state.pyramidOverrideMF.f){
+      const m = state.pyramidOverrideMF.m.slice(0,21).map(x => Math.max(0, Number(x)||0));
+      const f = state.pyramidOverrideMF.f.slice(0,21).map(x => Math.max(0, Number(x)||0));
+      let sm = m.reduce((p,c)=>p+c,0); if (sm<=0) sm=1;
+      let sf = f.reduce((p,c)=>p+c,0); if (sf<=0) sf=1;
+
+      // normalizar cada lado respecto a su propio total, pero mantener proporciones coherentes:
+      // si el dataset ya venía en shares de total, esto no se ejecuta normalmente porque sumaría ~<1.
+      // Aun así, lo dejamos robusto.
+      // Mejor: normalizar a shares del total: si m+f ya suma 1, no tocamos.
+      const tot = m.map((v,i)=>v+(f[i]||0));
+      let st = tot.reduce((p,c)=>p+c,0);
+      if (st>0){
+        const mm = m.map(v => v / st);
+        const ff = f.map(v => v / st);
+        return { m: mm, f: ff };
+      }
+      return { m: m.map(v=>v/sm), f: f.map(v=>v/sf) };
+    }
+    /* ========= FIN NUEVO ========= */
+
     const total = buildSyntheticTotalShares();
     const n = total.length;
 
@@ -2384,6 +2882,8 @@
   els.peakSlider.addEventListener('input', (e) => {
     state.peakIdx = Number(e.target.value);
     paintRange(els.peakSlider);
+    // si estamos usando OCDE con override, mover sliders sigue afectando sólo al modo sintético
+    if (state.pyramidOverride) { /* no-op */ }
     renderPyramid();
     renderTimeChart();
   });
@@ -2491,13 +2991,103 @@
 
   ensureWorkerSeq(30);
 
-  /* ========= MODIFICACIÓN: aplicar valores guardados antes de pintar UI/gráficas ========= */
-  loadInputsFromPensionSim();
-  /* ========= FIN MODIFICACIÓN ========= */
+  /* ========= NUEVO: wiring barra OCDE ========= */
+  if (els.oecdCountryInput){
+    els.oecdCountryInput.addEventListener("input", (e) => {
+      setOecdCountryName(e.target.value);
+    });
+    els.oecdCountryInput.addEventListener("change", (e) => {
+      setOecdCountryName(e.target.value);
+    });
+  }
 
-  /* ========= MOD (OCDE): cargar merged_countries.json sin romper el simulador ========= */
-  initOECDDataset();
-  /* ========= FIN MOD (OCDE) ========= */
+  if (els.useOecdChk){
+    els.useOecdChk.addEventListener("change", (e) => {
+      const on = !!e.target.checked;
+      if (!on){
+        // salir de OCDE => volver a hipotético
+        setOecdUse(false);
+        restoreHypothetical();
+        // al salir, quitamos override para volver al modelo sintético (si el snapshot no lo tenía)
+        if (!state.hypoSnapshot || !state.hypoSnapshot.pyramidOverride){
+          state.pyramidOverride = null;
+          state.pyramidOverrideMF = null;
+          state.pyramidYear = null;
+        }
+        syncUI();
+        renderPyramid();
+        renderTimeChart();
+      } else {
+        setOecdUse(true);
+        // no aplicamos automáticamente aquí: se aplica al pulsar "Cargar país"
+      }
+    });
+  }
+
+  if (els.loadCountryBtn){
+    els.loadCountryBtn.addEventListener("click", () => {
+      if (!state.oecd.loaded){
+        setOECDStatusTemp("Dataset de países no cargado (revisa rutas/JSON)");
+        return;
+      }
+
+      // si estaba apagado, al cargar país asumimos que lo quieres encender
+      if (!state.oecdUse){
+        takeHypoSnapshot();
+        setOecdUse(true);
+      }
+
+      const name = (els.oecdCountryInput ? els.oecdCountryInput.value : state.oecdCountry) || state.oecdCountry;
+      setOecdCountryName(name);
+
+      const entry = getCountryEntryByAnyKey(name);
+      if (!entry){
+        setOECDStatusTemp(`País no encontrado: ${name}`);
+        return;
+      }
+
+      const ok = applyCountryToState(entry);
+      if (!ok){
+        setOECDStatusTemp("No se pudo aplicar el país (datos incompletos)");
+        return;
+      }
+
+      // refrescar UI + gráficas
+      syncUI();
+      renderPyramid();
+      renderTimeChart();
+
+      // status vuelve al base (datasets)
+      els.oecdStatus.textContent = computeOECDStatusLine();
+    });
+  }
+
+  if (els.backHypoBtn){
+    els.backHypoBtn.addEventListener("click", () => {
+      setOecdUse(false);
+      restoreHypothetical();
+
+      // forzar a modo sintético si snapshot no trae override
+      if (!state.hypoSnapshot || !state.hypoSnapshot.pyramidOverride){
+        state.pyramidOverride = null;
+        state.pyramidOverrideMF = null;
+        state.pyramidYear = null;
+      }
+
+      syncUI();
+      renderPyramid();
+      renderTimeChart();
+    });
+  }
+  /* ========= FIN NUEVO ========= */
+
+  /* ========= aplicar valores guardados antes de pintar UI/gráficas ========= */
+  loadInputsFromPensionSim();
+  /* ========= FIN ========= */
+
+  /* ========= NUEVO: cargar datasets OCDE (para barra móvil) ========= */
+  await initOECDDatasets();
+  /* ========= FIN NUEVO ========= */
 
   syncUI();
   renderPyramid();
