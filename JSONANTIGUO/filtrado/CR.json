@@ -1,0 +1,205 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Costa Rica",
+    "iso2": "CR"
+  },
+  "inputs": {
+    "rho": 0.58,
+    "tau": 0.105,
+    "k": 0.1810344827586207,
+    "C_people": 2250000.0,
+    "P_people": 1500000.0,
+    "C_m": 2.25,
+    "P_m": 1.5,
+    "u": 0.078481,
+    "pop_growth": 0.004765,
+    "aging_pp": 0.005063,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 2250000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas ocupadas cotizantes al sistema de seguridad social (IVM).",
+      "sources": [
+        {
+          "source_id": "CR_INEC_EMPLOYMENT_2023",
+          "url": "https://www.inec.cr/estadisticas/mercado-laboral",
+          "publisher": "Instituto Nacional de Estadística y Censos (INEC)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 1500000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensión del régimen de Invalidez, Vejez y Muerte (IVM) y otros regímenes públicos.",
+      "sources": [
+        {
+          "source_id": "CR_CCSS_PENSIONERS_2023",
+          "url": "https://www.ccss.sa.cr/estadisticas",
+          "publisher": "Caja Costarricense de Seguro Social (CCSS)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.58,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta teórica para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CR_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.105,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Cotización total al régimen IVM (empleador + trabajador + Estado).",
+        "sources": [
+          {
+            "source_id": "CR_CCSS_CONTRIB_RATE_2024",
+            "url": "https://www.ccss.sa.cr/ivm",
+            "publisher": "Caja Costarricense de Seguro Social (CCSS)"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "value_percent": 7.84813223238032,
+      "year": 2024,
+      "series": "World Bank WDI SL.UEM.TOTL.ZS (modeled ILO estimate)",
+      "definition": "Unemployment, total (% of total labor force) — proxy for % de 18–64 que no cotiza (u)."
+    },
+    "pop_growth": {
+      "value_percent": 0.476482848761595,
+      "year": 2024,
+      "series": "World Bank WDI SP.POP.GROW",
+      "definition": "Population growth (annual %) — converted to fraction for simulator."
+    },
+    "aging_pp": {
+      "value_pp": 0.5063133430000004,
+      "years": [
+        2023,
+        2024
+      ],
+      "series": "World Bank WDI SP.POP.65UP.TO.ZS",
+      "definition": "Annual change in population ages 65+ share (percentage points), converted to fraction (pp/100)."
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 1500000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensión del régimen de Invalidez, Vejez y Muerte (IVM) y otros regímenes públicos.",
+      "sources": [
+        {
+          "source_id": "CR_CCSS_PENSIONERS_2023",
+          "url": "https://www.ccss.sa.cr/estadisticas",
+          "publisher": "Caja Costarricense de Seguro Social (CCSS)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 2250000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas ocupadas cotizantes al sistema de seguridad social (IVM).",
+      "sources": [
+        {
+          "source_id": "CR_INEC_EMPLOYMENT_2023",
+          "url": "https://www.inec.cr/estadisticas/mercado-laboral",
+          "publisher": "Instituto Nacional de Estadística y Censos (INEC)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.105,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Cotización total al régimen IVM (empleador + trabajador + Estado).",
+      "sources": [
+        {
+          "source_id": "CR_CCSS_CONTRIB_RATE_2024",
+          "url": "https://www.ccss.sa.cr/ivm",
+          "publisher": "Caja Costarricense de Seguro Social (CCSS)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.58,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta teórica para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CR_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.072,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_CR_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

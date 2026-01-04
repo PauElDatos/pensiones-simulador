@@ -1,0 +1,221 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Grecia",
+    "iso2": "GR"
+  },
+  "inputs": {
+    "rho": 0.78,
+    "tau": 0.2,
+    "k": 0.25641025641025644,
+    "C_people": 4100000.0,
+    "P_people": 2600000.0,
+    "C_m": 4.1,
+    "P_m": 2.6,
+    "u": 0.10099999999999999,
+    "pop_growth": -0.000213045,
+    "aging_pp": 0.004567599999999992,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 4100000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por la seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "GR_ELSTAT_EMPLOYMENT_2023",
+          "url": "https://www.statistics.gr/en/statistics/-/publication/SJO01/-",
+          "publisher": "Hellenic Statistical Authority (ELSTAT)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 2600000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia) del sistema EFKA.",
+      "sources": [
+        {
+          "source_id": "GR_EFKA_PENSIONERS_2023",
+          "url": "https://www.efka.gov.gr/el/statistika",
+          "publisher": "e-EFKA (Unified Social Security Fund)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.78,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_GR_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.2,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización a pensiones del sistema público (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "GR_MINLAB_CONTRIB_2024",
+            "url": "https://ypergasias.gov.gr/koinoniki-asfalisi/",
+            "publisher": "Ministry of Labour and Social Affairs of Greece"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_15_74_total",
+      "value": 10.1,
+      "unit": "percent",
+      "period": {
+        "date": "2024-01-01"
+      },
+      "notes": "Se usa la tasa anual de desempleo (15-74) como proxy del parámetro u del simulador (% de 18–64 que NO cotiza).",
+      "sources": [
+        "https://fred.stlouisfed.org/series/LRUN74TTGRA156N"
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": -0.0213045,
+      "unit": "percent",
+      "period": {
+        "date": "2024-01-01"
+      },
+      "notes": "Crecimiento anual de población (World Bank WDI via FRED). El simulador lo usa como fracción anual (valor/100).",
+      "sources": [
+        "https://fred.stlouisfed.org/series/SPPOPGROWGRC"
+      ]
+    },
+    "aging_pp": {
+      "metric": "population_65plus_share_change",
+      "value": 0.45675999999999917,
+      "unit": "pp",
+      "period": {
+        "from": "2023-01-01",
+        "to": "2024-01-01"
+      },
+      "notes": "Δ share 65+ (pp) = (2024 − 2023) usando WDI via FRED. El simulador lo usa como fracción anual (pp/100).",
+      "sources": [
+        "https://fred.stlouisfed.org/series/SPPOP65UPTOZSGRC"
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 2600000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia) del sistema EFKA.",
+      "sources": [
+        {
+          "source_id": "GR_EFKA_PENSIONERS_2023",
+          "url": "https://www.efka.gov.gr/el/statistika",
+          "publisher": "e-EFKA (Unified Social Security Fund)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 4100000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por la seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "GR_ELSTAT_EMPLOYMENT_2023",
+          "url": "https://www.statistics.gr/en/statistics/-/publication/SJO01/-",
+          "publisher": "Hellenic Statistical Authority (ELSTAT)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.2,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización a pensiones del sistema público (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "GR_MINLAB_CONTRIB_2024",
+          "url": "https://ypergasias.gov.gr/koinoniki-asfalisi/",
+          "publisher": "Ministry of Labour and Social Affairs of Greece"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.78,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_GR_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.164,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB (el más alto de la OCDE).",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_GR_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

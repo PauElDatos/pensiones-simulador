@@ -1,0 +1,3617 @@
+{
+  "schema_version": "1.0",
+  "generated_from": "merge_country_jsons.py",
+  "countries": [
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "AT",
+        "name": "Austria"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 2360000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Número total de beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+          "sources": [
+            {
+              "source_id": "AT_PVA_PENSIONERS_2023",
+              "url": "https://www.pv.at/cdscontent/?contentid=10007.816993",
+              "publisher": "Pensionsversicherungsanstalt (PVA)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 4040000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el seguro público de pensiones (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "AT_STAT_EMPLOYMENT_2023",
+              "url": "https://www.statistik.at/en/statistics/labour-market/employment",
+              "publisher": "Statistik Austria"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.228,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al seguro público de pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "AT_SOC_SEC_CONTRIB_2024",
+              "url": "https://www.usp.gv.at/en/employing-staff/social-security-contributions.html",
+              "publisher": "USP / Austrian Federal Economic Chamber"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.78,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_AT_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.147,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB (uno de los más altos de la OCDE).",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_AT_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "AU",
+        "name": "Australia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 4100000,
+          "unit": "people",
+          "period": {
+            "date": "2024-06-30",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben la Age Pension (pensión pública contributiva/asistencial).",
+          "sources": [
+            {
+              "source_id": "AU_SERVICES_AU_AGE_PENSION_2024",
+              "url": "https://www.servicesaustralia.gov.au/age-pension-statistics",
+              "publisher": "Services Australia"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 14300000,
+          "unit": "people",
+          "period": {
+            "date": "2024-06-30",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas (proxy de cotizantes al sistema).",
+          "sources": [
+            {
+              "source_id": "AU_ABS_LABOUR_2024",
+              "url": "https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia",
+              "publisher": "Australian Bureau of Statistics (ABS)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_superannuation",
+          "value": 0.115,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-07-01",
+            "granularity": "year"
+          },
+          "notes": "Superannuation Guarantee: aportación obligatoria del empleador al sistema de capitalización.",
+          "sources": [
+            {
+              "source_id": "AU_ATO_SUPER_RATE_2024",
+              "url": "https://www.ato.gov.au/business/super-for-employers/superannuation-guarantee",
+              "publisher": "Australian Taxation Office (ATO)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.41,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + superannuation) para trabajador medio con carrera completa.",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_AU_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.045,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB (uno de los más bajos de la OCDE).",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_AU_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "BE",
+        "name": "Bélgica"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 3100000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas legales (vejez y supervivencia).",
+          "sources": [
+            {
+              "source_id": "BE_SFP_PENSIONERS_2023",
+              "url": "https://www.sfpd.fgov.be/fr/statistiques",
+              "publisher": "Service fédéral des Pensions (SFP)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 5050000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "BE_STATBEL_EMPLOYMENT_2023",
+              "url": "https://statbel.fgov.be/fr/themes/emploi-formation/marche-du-travail",
+              "publisher": "Statbel (Office belge de statistique)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.249,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización a la seguridad social para pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "BE_SOCSEC_CONTRIB_2024",
+              "url": "https://www.socialsecurity.belgium.be/fr/employeurs/cotisations",
+              "publisher": "Sécurité sociale belge"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.63,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (pensión pública legal).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_BE_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.122,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_BE_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "CA",
+        "name": "Canadá"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 7200000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben prestaciones públicas de jubilación (CPP/QPP y Old Age Security).",
+          "sources": [
+            {
+              "source_id": "CA_STATCAN_PENSIONERS_2023",
+              "url": "https://www150.statcan.gc.ca/n1/daily-quotidien/240327/dq240327a-eng.htm",
+              "publisher": "Statistics Canada"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 20600000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas (proxy de cotizantes al sistema CPP/QPP).",
+          "sources": [
+            {
+              "source_id": "CA_STATCAN_EMPLOYMENT_2023",
+              "url": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410002301",
+              "publisher": "Statistics Canada"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_cpp_total",
+          "value": 0.119,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al Canada Pension Plan (empleador + trabajador, incluyendo mejora CPP).",
+          "sources": [
+            {
+              "source_id": "CA_CRA_CPP_RATE_2024",
+              "url": "https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html",
+              "publisher": "Canada Revenue Agency"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.39,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_CA_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.061,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_CA_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "CH",
+        "name": "Suiza"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 2600000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez (primer pilar: AHV/AVS).",
+          "sources": [
+            {
+              "source_id": "CH_FSO_PENSIONERS_2023",
+              "url": "https://www.bfs.admin.ch/bfs/en/home/statistics/social-security/pensions.html",
+              "publisher": "Federal Statistical Office (FSO)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 5200000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cotizantes a la seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "CH_FSO_EMPLOYMENT_2023",
+              "url": "https://www.bfs.admin.ch/bfs/en/home/statistics/work-income/employment.html",
+              "publisher": "Federal Statistical Office (FSO)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.103,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al primer pilar (AHV/AVS), empleador + trabajador.",
+          "sources": [
+            {
+              "source_id": "CH_AVS_CONTRIB_2024",
+              "url": "https://www.ahv-iv.ch/en/Social-insurances/AHV",
+              "publisher": "Federal Social Insurance Office (FSIO)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.6,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria (pilares I + II) para trabajador medio con carrera completa.",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_CH_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.081,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_CH_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "CL",
+        "name": "Chile"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 2700000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben pensiones contributivas (AFP) y/o solidarias (PGU).",
+          "sources": [
+            {
+              "source_id": "CL_SP_PENSIONERS_2023",
+              "url": "https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-10053.html",
+              "publisher": "Superintendencia de Pensiones"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_affiliated_people",
+          "value": 10300000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Afiliados al sistema de pensiones (cotizantes efectivos y no efectivos).",
+          "sources": [
+            {
+              "source_id": "CL_SP_AFFILIATES_2023",
+              "url": "https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-10054.html",
+              "publisher": "Superintendencia de Pensiones"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_mandatory_afp",
+          "value": 0.1,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Cotización obligatoria del trabajador a cuentas individuales (no incluye comisiones).",
+          "sources": [
+            {
+              "source_id": "CL_SP_CONTRIB_RATE_2024",
+              "url": "https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-10044.html",
+              "publisher": "Superintendencia de Pensiones"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.34,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema contributivo).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_CL_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.053,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones (incluyendo pilar solidario) como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_CL_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "CO",
+        "name": "Colombia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 1700000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben pensión en los regímenes contributivo público (Colpensiones) y privado.",
+          "sources": [
+            {
+              "source_id": "CO_COLPENSIONES_PENSIONERS_2023",
+              "url": "https://www.colpensiones.gov.co/publicaciones/estadisticas",
+              "publisher": "Colpensiones"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 22400000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas ocupadas en la economía (proxy amplia de cotizantes potenciales).",
+          "sources": [
+            {
+              "source_id": "CO_DANE_EMPLOYMENT_2023",
+              "url": "https://www.dane.gov.co/index.php/estadisticas-por-tema/mercado-laboral",
+              "publisher": "DANE (Departamento Administrativo Nacional de Estadística)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.16,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Cotización obligatoria al sistema pensional: 16% del salario (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "CO_MINTRABAJO_CONTRIB_2024",
+              "url": "https://www.mintrabajo.gov.co/web/guest/pensiones",
+              "publisher": "Ministerio del Trabajo de Colombia"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.65,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta teórica para trabajador medio con carrera completa en el régimen público.",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_CO_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.041,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_CO_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "CR",
+        "name": "Costa Rica"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 1500000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben pensión del régimen de Invalidez, Vejez y Muerte (IVM) y otros regímenes públicos.",
+          "sources": [
+            {
+              "source_id": "CR_CCSS_PENSIONERS_2023",
+              "url": "https://www.ccss.sa.cr/estadisticas",
+              "publisher": "Caja Costarricense de Seguro Social (CCSS)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 2250000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas ocupadas cotizantes al sistema de seguridad social (IVM).",
+          "sources": [
+            {
+              "source_id": "CR_INEC_EMPLOYMENT_2023",
+              "url": "https://www.inec.cr/estadisticas/mercado-laboral",
+              "publisher": "Instituto Nacional de Estadística y Censos (INEC)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.105,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Cotización total al régimen IVM (empleador + trabajador + Estado).",
+          "sources": [
+            {
+              "source_id": "CR_CCSS_CONTRIB_RATE_2024",
+              "url": "https://www.ccss.sa.cr/ivm",
+              "publisher": "Caja Costarricense de Seguro Social (CCSS)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.58,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta teórica para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_CR_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.072,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_CR_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "CZ",
+        "name": "Chequia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 2850000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+          "sources": [
+            {
+              "source_id": "CZ_CSSZ_PENSIONERS_2023",
+              "url": "https://www.cssz.cz/web/en/statistics",
+              "publisher": "Czech Social Security Administration (ČSSZ)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 5200000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "CZ_CSU_EMPLOYMENT_2023",
+              "url": "https://www.czso.cz/csu/czso/employment-unemployment",
+              "publisher": "Czech Statistical Office (ČSÚ)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.28,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al seguro público de pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "CZ_MOLSA_CONTRIB_2024",
+              "url": "https://www.mpsv.cz/web/en/social-insurance",
+              "publisher": "Ministry of Labour and Social Affairs (MPSV)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.5,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_CZ_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.083,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_CZ_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "DE",
+        "name": "Alemania"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 21400000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas del sistema obligatorio (Deutsche Rentenversicherung).",
+          "sources": [
+            {
+              "source_id": "DE_DRV_PENSIONERS_2023",
+              "url": "https://www.deutsche-rentenversicherung.de/DRV/DE/Statistiken-und-Berichte/statistiken-und-berichte_node.html",
+              "publisher": "Deutsche Rentenversicherung"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 45500000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el seguro obligatorio de pensiones (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "DE_DEST_EMPLOYMENT_2023",
+              "url": "https://www.destatis.de/EN/Themes/Labour/Labour-Market/Employment/_node.html",
+              "publisher": "Destatis (Federal Statistical Office)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.186,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al seguro público de pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "DE_BMAS_CONTRIB_2024",
+              "url": "https://www.bmas.de/EN/Social-Security/Pension-Insurance/pension-insurance.html",
+              "publisher": "Federal Ministry of Labour and Social Affairs (BMAS)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.52,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_DE_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.103,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_DE_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "DK",
+        "name": "Dinamarca"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 1100000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben la pensión pública básica (Folkepension), incluyendo complemento.",
+          "sources": [
+            {
+              "source_id": "DK_DST_PENSIONERS_2023",
+              "url": "https://www.dst.dk/en/Statistik/emner/sociale-forhold/indkomster-og-formue/pensioner",
+              "publisher": "Statistics Denmark (Danmarks Statistik)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 3050000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas en la economía (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "DK_DST_EMPLOYMENT_2023",
+              "url": "https://www.dst.dk/en/Statistik/emner/arbejde-og-indkomst/beskaeftigelse",
+              "publisher": "Statistics Denmark (Danmarks Statistik)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_public",
+          "value": 0.0,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "La pensión pública (Folkepension) se financia vía impuestos generales, no mediante cotización específica.",
+          "sources": [
+            {
+              "source_id": "DK_MINFIN_PENSION_FIN",
+              "url": "https://fm.dk/arbejdsomraader/oekonomi-og-budget/folkepension/",
+              "publisher": "Ministry of Finance of Denmark"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.54,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + ocupacional cuasi-obligatoria) para trabajador medio.",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_DK_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.096,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_DK_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "EE",
+        "name": "Estonia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 425000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+          "sources": [
+            {
+              "source_id": "EE_SSA_PENSIONERS_2023",
+              "url": "https://www.sotsiaalkindlustusamet.ee/en/statistics",
+              "publisher": "Estonian Social Insurance Board"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 705000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "EE_STAT_EMPLOYMENT_2023",
+              "url": "https://www.stat.ee/en/find-statistics/statistics-theme/work-life/employment",
+              "publisher": "Statistics Estonia"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.2,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al seguro público de pensiones (pilar I).",
+          "sources": [
+            {
+              "source_id": "EE_SOC_TAX_PENSION",
+              "url": "https://www.emta.ee/en/business-client/taxes-and-payment/social-tax",
+              "publisher": "Estonian Tax and Customs Board"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.4,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pilares I + II).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_EE_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.079,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_EE_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "ES",
+        "name": "España"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 9300000,
+          "unit": "people",
+          "period": {
+            "date": "2025-01-01",
+            "granularity": "month"
+          },
+          "notes": "Personas pensionistas (nómina de enero 2025).",
+          "sources": [
+            {
+              "source_id": "ES_SS_REVISTA_2025-01-28",
+              "url": "https://revista.seg-social.es/-/la-seguridad-social-abona-10-3-millones-de-pensiones-a-9-3-millones-de-pensionistas-en-enero",
+              "publisher": "Revista Seguridad Social (Ministerio de Inclusión, Seguridad Social y Migraciones)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_affiliates_people",
+          "value": 21344487,
+          "unit": "people",
+          "period": {
+            "date": "2024-12-01",
+            "granularity": "month"
+          },
+          "notes": "Afiliación (serie desestacionalizada y con efecto calendario) en diciembre 2024.",
+          "sources": [
+            {
+              "source_id": "ES_SS_REVISTA_2024-12",
+              "url": "https://revista.seg-social.es/-/la-seguridad-social-supera-un-a%C3%B1o-m%C3%A1s-los-500.000-nuevos-afiliados-en-2024-y-se-consolida-por-encima-de-los-21-3-millones",
+              "publisher": "Revista Seguridad Social (Ministerio de Inclusión, Seguridad Social y Migraciones)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_affiliates_people",
+          "value": 21839592,
+          "unit": "people",
+          "period": {
+            "date": "2025-10-01",
+            "granularity": "month"
+          },
+          "notes": "Afiliación media (octubre 2025).",
+          "sources": [
+            {
+              "source_id": "ES_SS_REVISTA_2025-11-04",
+              "url": "https://revista.seg-social.es/-/la-afiliaci%C3%B3n-a-la-seguridad-social-supera-los-21-8-millones-de-afiliados-medios-en-el-segundo-mejor-octubre-de-la-serie",
+              "publisher": "Revista Seguridad Social (Ministerio de Inclusión, Seguridad Social y Migraciones)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_contingencias_comunes",
+          "value": 0.283,
+          "unit": "ratio",
+          "period": {
+            "date": "2025-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo de cotización por contingencias comunes (total; empresa+trabajador).",
+          "sources": [
+            {
+              "source_id": "ES_SS_TIPOS_2025",
+              "url": "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/CotizacionRecaudacionTrabajadores/36537",
+              "publisher": "Seguridad Social (seg-social.es)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_mei",
+          "value": 0.008,
+          "unit": "ratio",
+          "period": {
+            "date": "2025-01-01",
+            "granularity": "year"
+          },
+          "notes": "Mecanismo de Equidad Intergeneracional (MEI) 2025 (tipo adicional total).",
+          "sources": [
+            {
+              "source_id": "ES_SS_TIPOS_2025_MEI",
+              "url": "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/CotizacionRecaudacionTrabajadores/36537",
+              "publisher": "Seguridad Social (seg-social.es)"
+            },
+            {
+              "source_id": "ES_BOE_PJC178_2025",
+              "url": "https://www.boe.es/buscar/doc.php?id=BOE-A-2025-3780",
+              "publisher": "Boletín Oficial del Estado (BOE)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.8,
+          "unit": "ratio",
+          "period": {
+            "date": "2025-11-27",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta (trabajador varón con carrera completa) — referencia OCDE (Pensions at a Glance 2025).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2025_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/2025/11/pensions-at-a-glance-2025_76510fe4/full-report/gross-pension-replacement-rates_95e3eed6.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_net",
+          "value": 0.133,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-03-31",
+            "granularity": "quarter"
+          },
+          "notes": "Nivel de gasto en pensiones públicas neto de medidas de ingresos (referencia marco regla de gasto).",
+          "sources": [
+            {
+              "source_id": "ES_AIREf_REGLA_GASTO_2025",
+              "url": "https://www.airef.es/wp-content/uploads/2025/03/Informe_regla_de_gasto_de_pensiones/Informe.pdf",
+              "publisher": "AIReF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "FI",
+        "name": "Finlandia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 1600000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+          "sources": [
+            {
+              "source_id": "FI_ETK_PENSIONERS_2023",
+              "url": "https://www.etk.fi/en/statistics/",
+              "publisher": "Finnish Centre for Pensions (ETK)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 2600000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el sistema de pensiones (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "FI_STAT_EMPLOYMENT_2023",
+              "url": "https://www.stat.fi/en/statistics/tyokay",
+              "publisher": "Statistics Finland"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.243,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total medio de cotización al sistema de pensiones relacionadas con los ingresos (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "FI_ETK_CONTRIB_2024",
+              "url": "https://www.etk.fi/en/work-and-pensions-abroad/pension-insurance-contributions/",
+              "publisher": "Finnish Centre for Pensions (ETK)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.55,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa.",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_FI_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.137,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_FI_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "FR",
+        "name": "Francia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 17100000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas (todos los regímenes: general, especiales y complementarios obligatorios).",
+          "sources": [
+            {
+              "source_id": "FR_DREES_PENSIONERS_2023",
+              "url": "https://drees.solidarites-sante.gouv.fr/statistiques/pensions-de-retraite",
+              "publisher": "DREES – Ministère des Solidarités et de la Santé"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 30400000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas ocupadas cotizando a algún régimen de seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "FR_INSEE_EMPLOYMENT_2023",
+              "url": "https://www.insee.fr/fr/statistiques/emploi",
+              "publisher": "INSEE"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.283,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización a pensiones (regímenes básicos + complementarios obligatorios, promedio agregado).",
+          "sources": [
+            {
+              "source_id": "FR_CLEISS_CONTRIB_2024",
+              "url": "https://www.cleiss.fr/employeurs/cotisations/france.html",
+              "publisher": "CLEISS"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.74,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (regímenes público y complementarios).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_FR_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.143,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB (uno de los más elevados de la OCDE).",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_FR_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "GB",
+        "name": "Reino Unido"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 12500000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben la State Pension (básica y nueva State Pension).",
+          "sources": [
+            {
+              "source_id": "UK_DWP_STATE_PENSIONERS_2023",
+              "url": "https://www.gov.uk/government/statistics/state-pension-statistics",
+              "publisher": "Department for Work and Pensions (DWP)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 33600000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas en la economía (proxy de cotizantes al National Insurance).",
+          "sources": [
+            {
+              "source_id": "UK_ONS_EMPLOYMENT_2023",
+              "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes",
+              "publisher": "Office for National Statistics (ONS)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_public",
+          "value": 0.122,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo efectivo aproximado de cotización a National Insurance destinado a pensiones públicas.",
+          "sources": [
+            {
+              "source_id": "UK_HMRC_NI_RATES_2024",
+              "url": "https://www.gov.uk/national-insurance-rates-letters",
+              "publisher": "HM Revenue & Customs (HMRC)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.29,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (State Pension + auto-enrolment).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_GB_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.104,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_GB_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "GR",
+        "name": "Grecia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 2600000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia) del sistema EFKA.",
+          "sources": [
+            {
+              "source_id": "GR_EFKA_PENSIONERS_2023",
+              "url": "https://www.efka.gov.gr/el/statistika",
+              "publisher": "e-EFKA (Unified Social Security Fund)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 4100000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por la seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "GR_ELSTAT_EMPLOYMENT_2023",
+              "url": "https://www.statistics.gr/en/statistics/-/publication/SJO01/-",
+              "publisher": "Hellenic Statistical Authority (ELSTAT)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.2,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización a pensiones del sistema público (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "GR_MINLAB_CONTRIB_2024",
+              "url": "https://ypergasias.gov.gr/koinoniki-asfalisi/",
+              "publisher": "Ministry of Labour and Social Affairs of Greece"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.78,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_GR_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.164,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB (el más alto de la OCDE).",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_GR_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "HU",
+        "name": "Hungría"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 2000000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez y supervivencia del sistema estatal.",
+          "sources": [
+            {
+              "source_id": "HU_KSH_PENSIONERS_2023",
+              "url": "https://www.ksh.hu/stadat_files/szo/en/szo0037.html",
+              "publisher": "Hungarian Central Statistical Office (KSH)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 4700000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "HU_KSH_EMPLOYMENT_2023",
+              "url": "https://www.ksh.hu/stadat_files/mun/en/mun0016.html",
+              "publisher": "Hungarian Central Statistical Office (KSH)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.18,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total efectivo de financiación de pensiones vía cotizaciones e impuestos sobre salarios.",
+          "sources": [
+            {
+              "source_id": "HU_NAV_SOC_TAX_2024",
+              "url": "https://nav.gov.hu/en/taxation/social-contribution-tax",
+              "publisher": "National Tax and Customs Administration (NAV)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.82,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_HU_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.081,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_HU_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "IE",
+        "name": "Irlanda"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 720000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben la pensión estatal contributiva y no contributiva.",
+          "sources": [
+            {
+              "source_id": "IE_DEASP_PENSIONERS_2023",
+              "url": "https://www.gov.ie/en/collection/2fd22-statistical-information-on-social-welfare-services/",
+              "publisher": "Department of Social Protection (DEASP)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 2600000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas en la economía (proxy de cotizantes al sistema PRSI).",
+          "sources": [
+            {
+              "source_id": "IE_CSO_EMPLOYMENT_2023",
+              "url": "https://www.cso.ie/en/statistics/labourmarket/",
+              "publisher": "Central Statistics Office (CSO)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.148,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo combinado efectivo de contribución PRSI destinado a pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "IE_REVENUE_PRSI_2024",
+              "url": "https://www.revenue.ie/en/employing-people/becoming-an-employer-and-ongoing-obligations/employer-prsi.aspx",
+              "publisher": "Irish Revenue"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.35,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pensión estatal).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_IE_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.046,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_IE_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "IL",
+        "name": "Israel"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 1150000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben pensión pública de vejez del National Insurance Institute (Bituach Leumi).",
+          "sources": [
+            {
+              "source_id": "IL_NII_PENSIONERS_2023",
+              "url": "https://www.btl.gov.il/English%20Homepage/Publications/Annual%20Survey/Pages/default.aspx",
+              "publisher": "National Insurance Institute of Israel"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 4100000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas en la economía (proxy de cotizantes al sistema obligatorio).",
+          "sources": [
+            {
+              "source_id": "IL_CBS_EMPLOYMENT_2023",
+              "url": "https://www.cbs.gov.il/en/subjects/Pages/Labour-Force.aspx",
+              "publisher": "Israel Central Bureau of Statistics"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.125,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo efectivo de cotización obligatoria a pensiones (pensión pública básica + planes obligatorios).",
+          "sources": [
+            {
+              "source_id": "IL_NII_CONTRIB_2024",
+              "url": "https://www.btl.gov.il/English%20Homepage/Insurance/Pages/Contributions.aspx",
+              "publisher": "National Insurance Institute of Israel"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.47,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pensión pública + planes obligatorios).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_IL_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.055,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_IL_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "IS",
+        "name": "Islandia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 78000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben pensiones públicas de vejez y prestaciones relacionadas.",
+          "sources": [
+            {
+              "source_id": "IS_STAT_PENSIONERS_2023",
+              "url": "https://www.statice.is/statistics/society/pensions/",
+              "publisher": "Statistics Iceland"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 215000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas en la economía (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "IS_STAT_EMPLOYMENT_2023",
+              "url": "https://www.statice.is/statistics/society/labour-market/",
+              "publisher": "Statistics Iceland"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.156,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Aportación total obligatoria a planes de pensiones ocupacionales (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "IS_MINFIN_PENSION_CONTRIB_2024",
+              "url": "https://www.government.is/topics/labour-and-employment/occupational-pensions/",
+              "publisher": "Government of Iceland"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.56,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + ocupacional) para trabajador medio.",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_IS_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.067,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_IS_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "IT",
+        "name": "Italia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 16300000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia) del sistema INPS.",
+          "sources": [
+            {
+              "source_id": "IT_INPS_PENSIONERS_2023",
+              "url": "https://www.inps.it/it/it/dati-e-bilanci/osservatori-statistici.html",
+              "publisher": "INPS – Istituto Nazionale della Previdenza Sociale"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 23500000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por la seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "IT_ISTAT_EMPLOYMENT_2023",
+              "url": "https://www.istat.it/it/archivio/occupati",
+              "publisher": "ISTAT"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.33,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total medio de cotización al sistema público de pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "IT_INPS_CONTRIB_2024",
+              "url": "https://www.inps.it/it/it/previdenza-e-pensioni/aliquote-contributive.html",
+              "publisher": "INPS"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.79,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_IT_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.156,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB (entre los más altos de la OCDE).",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_IT_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "JP",
+        "name": "Japón"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 36000000,
+          "unit": "people",
+          "period": {
+            "date": "2023-03-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas (National Pension + Employees’ Pension Insurance).",
+          "sources": [
+            {
+              "source_id": "JP_MHLW_PENSIONERS_2023",
+              "url": "https://www.mhlw.go.jp/english/database/db-hss/dl/pension_2023.pdf",
+              "publisher": "Ministry of Health, Labour and Welfare (MHLW)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 67000000,
+          "unit": "people",
+          "period": {
+            "date": "2023-03-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por los sistemas obligatorios de pensiones (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "JP_STAT_EMPLOYMENT_2023",
+              "url": "https://www.stat.go.jp/english/data/roudou/index.html",
+              "publisher": "Statistics Bureau of Japan"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.183,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al Employees’ Pension Insurance (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "JP_MHLW_CONTRIB_2024",
+              "url": "https://www.nenkin.go.jp/international/japanese-system/employeespension.html",
+              "publisher": "Japan Pension Service / MHLW"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.61,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa.",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_JP_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.108,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_JP_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "KR",
+        "name": "Corea del Sur"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 6000000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas (National Pension Scheme y Basic Pension).",
+          "sources": [
+            {
+              "source_id": "KR_MOHW_PENSIONERS_2023",
+              "url": "https://www.mohw.go.kr/eng/pl/pl0101.jsp",
+              "publisher": "Ministry of Health and Welfare (MOHW)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 28800000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el National Pension Scheme (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "KR_KOSIS_EMPLOYMENT_2023",
+              "url": "https://kosis.kr/eng/statisticsList/statisticsListIndex.do?menuId=M_01_01",
+              "publisher": "KOSIS – Statistics Korea"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.09,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al National Pension Scheme (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "KR_NPS_CONTRIB_2024",
+              "url": "https://www.nps.or.kr/jsppage/english/scheme/scheme_01.jsp",
+              "publisher": "National Pension Service (NPS)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.4,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_KR_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.038,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_KR_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "LT",
+        "name": "Lituania"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 610000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia.",
+          "sources": [
+            {
+              "source_id": "LT_SODRA_PENSIONERS_2023",
+              "url": "https://www.sodra.lt/en/statistics",
+              "publisher": "State Social Insurance Fund Board (SODRA)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 1400000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "LT_STAT_EMPLOYMENT_2023",
+              "url": "https://osp.stat.gov.lt/en/statistical-themes/labour-market",
+              "publisher": "Statistics Lithuania"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.212,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Parte del impuesto social destinada al pilar público de pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "LT_SOC_TAX_PENSION_2024",
+              "url": "https://www.sodra.lt/en/contributions",
+              "publisher": "SODRA"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.43,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pilares I + II).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_LT_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.078,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_LT_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "LU",
+        "name": "Luxemburgo"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 215000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia del sistema general.",
+          "sources": [
+            {
+              "source_id": "LU_IGSS_PENSIONERS_2023",
+              "url": "https://igss.gouvernement.lu/en/statistiques.html",
+              "publisher": "Inspection Générale de la Sécurité Sociale (IGSS)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 515000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cotizantes a la seguridad social (incluye trabajadores transfronterizos).",
+          "sources": [
+            {
+              "source_id": "LU_STATEC_EMPLOYMENT_2023",
+              "url": "https://statistiques.public.lu/en/themes/emploi.html",
+              "publisher": "STATEC Luxembourg"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.24,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al régimen general de pensiones (empleador + trabajador + Estado).",
+          "sources": [
+            {
+              "source_id": "LU_SOCSEC_CONTRIB_2024",
+              "url": "https://ccss.public.lu/en/employeurs/cotisations.html",
+              "publisher": "Centre Commun de la Sécurité Sociale (CCSS)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.9,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_LU_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.093,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_LU_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "LV",
+        "name": "Letonia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 470000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia.",
+          "sources": [
+            {
+              "source_id": "LV_SSIA_PENSIONERS_2023",
+              "url": "https://www.vsaa.gov.lv/en/statistics",
+              "publisher": "State Social Insurance Agency (VSAA)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 895000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "LV_CSB_EMPLOYMENT_2023",
+              "url": "https://stat.gov.lv/en/statistics-themes/labour-market",
+              "publisher": "Central Statistical Bureau of Latvia (CSB)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.2,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Parte del impuesto social destinada al pilar público de pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "LV_SOC_TAX_PENSION_2024",
+              "url": "https://www.vid.gov.lv/en/social-security-contributions",
+              "publisher": "State Revenue Service of Latvia (VID)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.45,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pilares I + II).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_LV_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.082,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_LV_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "MX",
+        "name": "México"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 7200000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben pensiones contributivas (IMSS/ISSSTE) y no contributivas (Pensión para el Bienestar).",
+          "sources": [
+            {
+              "source_id": "MX_GOB_PENSIONERS_2023",
+              "url": "https://www.gob.mx/bienestar/prensa/pension-para-el-bienestar-de-las-personas-adultas-mayores",
+              "publisher": "Gobierno de México"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 58500000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas ocupadas en la economía (proxy amplia de cotizantes potenciales).",
+          "sources": [
+            {
+              "source_id": "MX_INEGI_EMPLOYMENT_2023",
+              "url": "https://www.inegi.org.mx/temas/empleo/",
+              "publisher": "INEGI"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_mandatory_pension",
+          "value": 0.156,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Aportación obligatoria total al sistema de cuentas individuales (empleador + trabajador + Estado) tras la reforma.",
+          "sources": [
+            {
+              "source_id": "MX_IMSS_CONTRIB_2024",
+              "url": "https://www.imss.gob.mx/tramites/afiliacion/cuotas",
+              "publisher": "IMSS"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.28,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema contributivo).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_MX_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.045,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_MX_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "NL",
+        "name": "Países Bajos"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 3500000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben la pensión pública básica AOW (Algemene Ouderdomswet).",
+          "sources": [
+            {
+              "source_id": "NL_SVB_AOW_2023",
+              "url": "https://www.svb.nl/en/the-aow-pension/statistics",
+              "publisher": "Sociale Verzekeringsbank (SVB)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 9600000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cotizantes al sistema (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "NL_CBS_EMPLOYMENT_2023",
+              "url": "https://www.cbs.nl/en-gb/dossier/dutch-economy/employment",
+              "publisher": "Statistics Netherlands (CBS)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_public",
+          "value": 0.179,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo de cotización al AOW (financiación vía cotizaciones e impuestos sobre la renta).",
+          "sources": [
+            {
+              "source_id": "NL_BELASTING_AOW_2024",
+              "url": "https://www.belastingdienst.nl/wps/wcm/connect/en/individuals/individuals",
+              "publisher": "Belastingdienst (Dutch Tax Administration)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.82,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria (AOW + planes ocupacionales cuasi-universales).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_NL_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.071,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_NL_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "NO",
+        "name": "Noruega"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 1050000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez del sistema nacional (Alderspensjon).",
+          "sources": [
+            {
+              "source_id": "NO_NAV_PENSIONERS_2023",
+              "url": "https://www.nav.no/en/home/about-nav/statistics",
+              "publisher": "NAV – Norwegian Labour and Welfare Administration"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 2950000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cotizantes a la seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "NO_SSB_EMPLOYMENT_2023",
+              "url": "https://www.ssb.no/en/arbeid-og-lonn",
+              "publisher": "Statistics Norway (SSB)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.181,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo efectivo de financiación del sistema público de pensiones (cotizaciones + impuestos sobre salarios).",
+          "sources": [
+            {
+              "source_id": "NO_TAX_PENSION_2024",
+              "url": "https://www.skatteetaten.no/en/rates/national-insurance/",
+              "publisher": "Norwegian Tax Administration"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.54,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + ocupacional) para trabajador medio.",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_NO_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.086,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_NO_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "NZ",
+        "name": "Nueva Zelanda"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 890000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas que reciben la pensión pública New Zealand Superannuation.",
+          "sources": [
+            {
+              "source_id": "NZ_MSD_SUPER_2023",
+              "url": "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/nz-super.html",
+              "publisher": "Ministry of Social Development (MSD)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 2900000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas en la economía (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "NZ_STATS_EMPLOYMENT_2023",
+              "url": "https://www.stats.govt.nz/indicators/employment-rate",
+              "publisher": "Stats NZ"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_public",
+          "value": 0.0,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "La pensión pública se financia íntegramente con impuestos generales; no existe cotización específica.",
+          "sources": [
+            {
+              "source_id": "NZ_TREASURY_PENSION_FIN",
+              "url": "https://www.treasury.govt.nz/information-and-services/state-sector-leadership/investment-management/social-investment",
+              "publisher": "The Treasury of New Zealand"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.4,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + KiwiSaver) para trabajador medio.",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_NZ_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.051,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_NZ_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "PL",
+        "name": "Polonia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 9300000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia (ZUS y KRUS).",
+          "sources": [
+            {
+              "source_id": "PL_ZUS_PENSIONERS_2023",
+              "url": "https://www.zus.pl/baza-wiedzy/statystyka",
+              "publisher": "Zakład Ubezpieczeń Społecznych (ZUS)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 17000000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por la seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "PL_STAT_EMPLOYMENT_2023",
+              "url": "https://stat.gov.pl/en/topics/labour-market/",
+              "publisher": "Statistics Poland (GUS)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.195,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al seguro público de pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "PL_ZUS_CONTRIB_2024",
+              "url": "https://www.zus.pl/en/social-insurance-contributions",
+              "publisher": "ZUS"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.45,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_PL_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.113,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_PL_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "PT",
+        "name": "Portugal"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 3600000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia del sistema de Seguridad Social.",
+          "sources": [
+            {
+              "source_id": "PT_SEG_SOC_PENSIONERS_2023",
+              "url": "https://www.seg-social.pt/estatisticas",
+              "publisher": "Segurança Social – Ministério do Trabalho, Solidariedade e Segurança Social"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 5100000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cotizantes a la seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "PT_INE_EMPLOYMENT_2023",
+              "url": "https://www.ine.pt/xportal/xmain?xpid=INE&xpgid=ine_indicadores",
+              "publisher": "Instituto Nacional de Estatística (INE)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.3475,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización a la Seguridad Social para pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "PT_SOCSEC_CONTRIB_2024",
+              "url": "https://www.seg-social.pt/taxas-contributivas",
+              "publisher": "Segurança Social"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.88,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_PT_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.15,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_PT_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "SE",
+        "name": "Suecia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 2300000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez (sistema de pensiones de ingresos y garantía).",
+          "sources": [
+            {
+              "source_id": "SE_PENSIONS_AGENCY_PENSIONERS_2023",
+              "url": "https://www.pensionsmyndigheten.se/statistik",
+              "publisher": "Swedish Pensions Agency (Pensionsmyndigheten)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 5200000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cotizantes al sistema de seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "SE_SCB_EMPLOYMENT_2023",
+              "url": "https://www.scb.se/en/finding-statistics/statistics-by-subject-area/labour-market/",
+              "publisher": "Statistics Sweden (SCB)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.185,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Cotización total obligatoria al sistema público de pensiones basado en cuentas nocionales.",
+          "sources": [
+            {
+              "source_id": "SE_GOV_PENSION_CONTRIB_2024",
+              "url": "https://www.government.se/government-policy/pensions/",
+              "publisher": "Government of Sweden"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.55,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pensión pública + ocupacional).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_SE_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.096,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_SE_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "SI",
+        "name": "Eslovenia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 640000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia.",
+          "sources": [
+            {
+              "source_id": "SI_ZPIZ_PENSIONERS_2023",
+              "url": "https://www.zpiz.si/cms/content2019/statistics",
+              "publisher": "Pension and Disability Insurance Institute of Slovenia (ZPIZ)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 1010000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "SI_STAT_EMPLOYMENT_2023",
+              "url": "https://www.stat.si/StatWeb/en/Field/Index/15",
+              "publisher": "Statistical Office of the Republic of Slovenia (SURS)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.2485,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al sistema público de pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "SI_SOCSEC_CONTRIB_2024",
+              "url": "https://www.gov.si/en/policies/labour-market-and-employment/social-security-contributions/",
+              "publisher": "Government of the Republic of Slovenia"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.58,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_SI_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.113,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_SI_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "SK",
+        "name": "Eslovaquia"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 1150000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia.",
+          "sources": [
+            {
+              "source_id": "SK_SOC_INS_PENSIONERS_2023",
+              "url": "https://www.socpoist.sk/statistics",
+              "publisher": "Social Insurance Agency of the Slovak Republic"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 2500000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "SK_STAT_EMPLOYMENT_2023",
+              "url": "https://slovak.statistics.sk/wps/portal/ext/themes/labour-market",
+              "publisher": "Statistical Office of the Slovak Republic"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.28,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al sistema público de pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "SK_SOC_INS_CONTRIB_2024",
+              "url": "https://www.socpoist.sk/social-insurance-contributions",
+              "publisher": "Social Insurance Agency"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.55,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pilares I + II).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_SK_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.089,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_SK_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "TR",
+        "name": "Turquía"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 16000000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de pensiones públicas del sistema SGK (vejez, invalidez y supervivencia).",
+          "sources": [
+            {
+              "source_id": "TR_SGK_PENSIONERS_2023",
+              "url": "https://www.sgk.gov.tr/Content/Post/2e0b1d9f-5f64-4d3f-9e6b-2e0a7b1b6f6a/Istatistikler",
+              "publisher": "Sosyal Güvenlik Kurumu (SGK)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 32000000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas cubiertas por la seguridad social (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "TR_TURKSTAT_EMPLOYMENT_2023",
+              "url": "https://data.tuik.gov.tr/Bulten/Index?p=Labour-Force-Statistics-2023",
+              "publisher": "Turkish Statistical Institute (TurkStat)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.2,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización al sistema público de pensiones (empleador + trabajador).",
+          "sources": [
+            {
+              "source_id": "TR_SGK_CONTRIB_2024",
+              "url": "https://www.sgk.gov.tr/Content/Post/9f7a7e0d-0f8e-4a2c-bc9a-1b5f5e5c8f2a/Prim-Oranlari",
+              "publisher": "Sosyal Güvenlik Kurumu (SGK)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.72,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_TR_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.086,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB.",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_TR_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "country": {
+        "iso2": "US",
+        "name": "Estados Unidos"
+      },
+      "observations": [
+        {
+          "metric": "pensioners_people",
+          "value": 67000000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Beneficiarios de prestaciones de jubilación y supervivencia del sistema Social Security (OASDI).",
+          "sources": [
+            {
+              "source_id": "US_SSA_BENEFICIARIES_2023",
+              "url": "https://www.ssa.gov/oact/STATS/dibStat.html",
+              "publisher": "Social Security Administration (SSA)"
+            }
+          ]
+        },
+        {
+          "metric": "contributors_employed_people",
+          "value": 161000000,
+          "unit": "people",
+          "period": {
+            "date": "2023-12-31",
+            "granularity": "year"
+          },
+          "notes": "Personas empleadas y cotizando al sistema de Social Security (proxy de cotizantes).",
+          "sources": [
+            {
+              "source_id": "US_BLS_EMPLOYMENT_2023",
+              "url": "https://www.bls.gov/cps/",
+              "publisher": "Bureau of Labor Statistics (BLS)"
+            }
+          ]
+        },
+        {
+          "metric": "contribution_rate_pension_total",
+          "value": 0.124,
+          "unit": "ratio",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "notes": "Tipo total de cotización a Social Security (OASDI), empleador + trabajador.",
+          "sources": [
+            {
+              "source_id": "US_SSA_TAX_RATE_2024",
+              "url": "https://www.ssa.gov/oact/cola/cbb.html",
+              "publisher": "Social Security Administration (SSA)"
+            }
+          ]
+        },
+        {
+          "metric": "replacement_rate_gross_full_career",
+          "value": 0.41,
+          "unit": "ratio",
+          "period": {
+            "date": "2023-11-01",
+            "granularity": "publication_date"
+          },
+          "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (Social Security + planes privados típicos).",
+          "sources": [
+            {
+              "source_id": "OECD_PAG_2023_US_REPLACEMENT",
+              "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+              "publisher": "OECD"
+            }
+          ]
+        },
+        {
+          "metric": "pension_expenditure_gdp_public",
+          "value": 0.065,
+          "unit": "ratio",
+          "period": {
+            "date": "2022-12-31",
+            "granularity": "year"
+          },
+          "notes": "Gasto público en pensiones como porcentaje del PIB (Social Security).",
+          "sources": [
+            {
+              "source_id": "OECD_SOCX_US_2022",
+              "url": "https://www.oecd.org/social/expenditure.htm",
+              "publisher": "OECD"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

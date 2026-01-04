@@ -1,0 +1,304 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Hungría",
+    "iso2": "HU"
+  },
+  "inputs": {
+    "rho": 0.82,
+    "tau": 0.18,
+    "k": 0.21951219512195122,
+    "C_people": 4700000.0,
+    "P_people": 2000000.0,
+    "C_m": 4.7,
+    "P_m": 2.0,
+    "u": 0.04475,
+    "pop_growth": -0.0031451,
+    "aging_pp": 0.0017412,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 4700000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "HU_KSH_EMPLOYMENT_2023",
+          "url": "https://www.ksh.hu/stadat_files/mun/en/mun0016.html",
+          "publisher": "Hungarian Central Statistical Office (KSH)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 2000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez y supervivencia del sistema estatal.",
+      "sources": [
+        {
+          "source_id": "HU_KSH_PENSIONERS_2023",
+          "url": "https://www.ksh.hu/stadat_files/szo/en/szo0037.html",
+          "publisher": "Hungarian Central Statistical Office (KSH)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.82,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_HU_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.18,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total efectivo de financiación de pensiones vía cotizaciones e impuestos sobre salarios.",
+        "sources": [
+          {
+            "source_id": "HU_NAV_SOC_TAX_2024",
+            "url": "https://nav.gov.hu/en/taxation/social-contribution-tax",
+            "publisher": "National Tax and Customs Administration (NAV)"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total_15_74",
+      "value": 0.04475,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Tasa de desempleo (15–74) anual media. Fuente en % (4.475%) convertida a fracción.",
+      "sources": [
+        {
+          "source_id": "FRED_LRUN74TTHUA156N_2024",
+          "url": "https://fred.stlouisfed.org/series/LRUN74TTHUA156N",
+          "publisher": "OECD via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": -0.0031451,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento de población anual. Fuente en % (-0.31451%) convertida a fracción.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWHUN_2024",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWHUN",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "population_65plus_share_change",
+      "value": 0.0017412,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Δ share 65+ (2024−2023): 20.9932% − 20.81908% = 0.17412 pp, convertido a fracción.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSHUN_2024_2023",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSHUN",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 2000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez y supervivencia del sistema estatal.",
+      "sources": [
+        {
+          "source_id": "HU_KSH_PENSIONERS_2023",
+          "url": "https://www.ksh.hu/stadat_files/szo/en/szo0037.html",
+          "publisher": "Hungarian Central Statistical Office (KSH)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 4700000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "HU_KSH_EMPLOYMENT_2023",
+          "url": "https://www.ksh.hu/stadat_files/mun/en/mun0016.html",
+          "publisher": "Hungarian Central Statistical Office (KSH)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.18,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total efectivo de financiación de pensiones vía cotizaciones e impuestos sobre salarios.",
+      "sources": [
+        {
+          "source_id": "HU_NAV_SOC_TAX_2024",
+          "url": "https://nav.gov.hu/en/taxation/social-contribution-tax",
+          "publisher": "National Tax and Customs Administration (NAV)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.82,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_HU_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.081,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_HU_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "unemployment_rate_total_15_74",
+      "value": 0.04475,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Tasa de desempleo anual media (15–74). 4.475% → 0.04475.",
+      "sources": [
+        {
+          "source_id": "FRED_LRUN74TTHUA156N_2024",
+          "url": "https://fred.stlouisfed.org/series/LRUN74TTHUA156N",
+          "publisher": "OECD via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    {
+      "metric": "population_growth_annual",
+      "value": -0.0031451,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población. -0.31451% → -0.0031451.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWHUN_2024",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWHUN",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    {
+      "metric": "population_65plus_share",
+      "value": 0.209932,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Share 65+ del total. 20.9932% → 0.209932.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSHUN_2024_2023",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSHUN",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    {
+      "metric": "population_65plus_share",
+      "value": 0.2081908,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Share 65+ del total. 20.81908% → 0.2081908.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSHUN_2024_2023",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSHUN",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [],
+  "filled_at": "2026-01-03T21:44:49Z"
+}

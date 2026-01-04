@@ -1,0 +1,184 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Austria",
+    "iso2": "AT"
+  },
+  "inputs": {
+    "rho": 0.78,
+    "tau": 0.228,
+    "k": 0.2923076923076923,
+    "C_people": 4040000.0,
+    "P_people": 2360000.0,
+    "C_m": 4.04,
+    "P_m": 2.36,
+    "u": 0.051,
+    "pop_growth": 0.0098946,
+    "aging_pp": 0.0037427,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 4040000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el seguro público de pensiones (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "AT_STAT_EMPLOYMENT_2023",
+          "url": "https://www.statistik.at/en/statistics/labour-market/employment",
+          "publisher": "Statistik Austria"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 2360000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Número total de beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "AT_PVA_PENSIONERS_2023",
+          "url": "https://www.pv.at/cdscontent/?contentid=10007.816993",
+          "publisher": "Pensionsversicherungsanstalt (PVA)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.78,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_AT_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.228,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización al seguro público de pensiones (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "AT_SOC_SEC_CONTRIB_2024",
+            "url": "https://www.usp.gv.at/en/employing-staff/social-security-contributions.html",
+            "publisher": "USP / Austrian Federal Economic Chamber"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 2360000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Número total de beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "AT_PVA_PENSIONERS_2023",
+          "url": "https://www.pv.at/cdscontent/?contentid=10007.816993",
+          "publisher": "Pensionsversicherungsanstalt (PVA)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 4040000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el seguro público de pensiones (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "AT_STAT_EMPLOYMENT_2023",
+          "url": "https://www.statistik.at/en/statistics/labour-market/employment",
+          "publisher": "Statistik Austria"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.228,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización al seguro público de pensiones (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "AT_SOC_SEC_CONTRIB_2024",
+          "url": "https://www.usp.gv.at/en/employing-staff/social-security-contributions.html",
+          "publisher": "USP / Austrian Federal Economic Chamber"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.78,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_AT_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.147,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB (uno de los más altos de la OCDE).",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_AT_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

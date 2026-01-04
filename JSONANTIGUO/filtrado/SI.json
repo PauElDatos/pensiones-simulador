@@ -1,0 +1,235 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Eslovenia",
+    "iso2": "SI"
+  },
+  "inputs": {
+    "rho": 0.58,
+    "tau": 0.2485,
+    "k": 0.428448275862069,
+    "C_people": 1010000.0,
+    "P_people": 640000.0,
+    "C_m": 1.01,
+    "P_m": 0.64,
+    "u": 0.037083,
+    "pop_growth": 0.003267,
+    "aging_pp": 0.0044,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 1010000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "SI_STAT_EMPLOYMENT_2023",
+          "url": "https://www.stat.si/StatWeb/en/Field/Index/15",
+          "publisher": "Statistical Office of the Republic of Slovenia (SURS)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 640000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia.",
+      "sources": [
+        {
+          "source_id": "SI_ZPIZ_PENSIONERS_2023",
+          "url": "https://www.zpiz.si/cms/content2019/statistics",
+          "publisher": "Pension and Disability Insurance Institute of Slovenia (ZPIZ)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.58,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_SI_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.2485,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización al sistema público de pensiones (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "SI_SOCSEC_CONTRIB_2024",
+            "url": "https://www.gov.si/en/policies/labour-market-and-employment/social-security-contributions/",
+            "publisher": "Government of the Republic of Slovenia"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total_15plus",
+      "value": 3.70833,
+      "unit": "percent",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Unemployment Rate Total: 15 Years or over (OECD), anual (SA). En el simulador se usa como fracción (u=value/100).",
+      "sources": [
+        {
+          "source_id": "FRED_LRHUTTTTSIA156S",
+          "url": "https://fred.stlouisfed.org/series/LRHUTTTTSIA156S",
+          "publisher": "OECD via FRED (Federal Reserve Bank of St. Louis)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual_percent",
+      "value": 0.32671,
+      "unit": "percent",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Population growth (annual %). En el simulador se usa como fracción anual (g=value/100).",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWSVN",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWSVN",
+          "publisher": "World Bank via FRED (Federal Reserve Bank of St. Louis)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "change_in_population_share_65plus_pp",
+      "value": 0.44001,
+      "unit": "percentage_points",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Δ anual del % de población 65+ (2024−2023), en pp. En el simulador se usa como fracción: pp/100.",
+      "sources": [
+        {
+          "source_id": "ALFRED_SPPOP65UPTOZSSVN",
+          "url": "https://alfred.stlouisfed.org/series?seid=SPPOP65UPTOZSSVN",
+          "publisher": "World Bank via ALFRED/FRED (Federal Reserve Bank of St. Louis)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 640000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia.",
+      "sources": [
+        {
+          "source_id": "SI_ZPIZ_PENSIONERS_2023",
+          "url": "https://www.zpiz.si/cms/content2019/statistics",
+          "publisher": "Pension and Disability Insurance Institute of Slovenia (ZPIZ)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 1010000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "SI_STAT_EMPLOYMENT_2023",
+          "url": "https://www.stat.si/StatWeb/en/Field/Index/15",
+          "publisher": "Statistical Office of the Republic of Slovenia (SURS)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.2485,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización al sistema público de pensiones (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "SI_SOCSEC_CONTRIB_2024",
+          "url": "https://www.gov.si/en/policies/labour-market-and-employment/social-security-contributions/",
+          "publisher": "Government of the Republic of Slovenia"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.58,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_SI_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.113,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_SI_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

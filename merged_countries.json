@@ -5392,15 +5392,12 @@
         "C_people": 1400000.0,
         "P_m": 0.61,
         "P_people": 610000.0,
-        "aging_pp": null,
-        "aging_rate_pp": 0.0031031,
+        "aging_pp": 0.0031031,
         "k": 0.4930232558139535,
-        "pop_growth": null,
-        "population_growth": 0.0057963,
+        "pop_growth": 0.0057963,
         "rho": 0.43,
         "tau": 0.212,
-        "u": null,
-        "unemployment_rate": 0.065,
+        "u": 0.065,
         "years": 80
       },
       "latest_observations_used": {
@@ -5438,28 +5435,39 @@
           "unit": "people",
           "value": 610000
         },
-        "aging_rate_pp": {
-          "definition": "Δ anual del share 65+ (aprox.) usando los dos últimos años disponibles del indicador World Bank WDI SP.POP.65UP.TO.ZS.",
-          "delta_fraction_points": 0.0031031,
-          "delta_percentage_points": 0.31031,
-          "series": "SPPOP65UPTOZSLTU",
-          "share_65_plus_percent": {
-            "2023": 19.85618,
-            "2024": 20.16649
+        "aging_pp": {
+          "metric": "aging_pp",
+          "notes": "Derivado de Δ share 65+ (2024-2023) usando FRED/WDI.",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
           },
-          "source": "World Bank WDI via FRED (Federal Reserve Bank of St. Louis)",
-          "years_used": [
-            2023,
-            2024
-          ]
+          "sources": [
+            {
+              "publisher": "FRED / World Bank",
+              "source_id": "FRED_SPPOP65UPTOZSLTU",
+              "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSLTU"
+            }
+          ],
+          "unit": "ratio",
+          "value": 0.0031031
         },
-        "population_growth": {
-          "definition": "Crecimiento anual de población (World Bank WDI indicador SP.POP.GROW).",
-          "series": "SPPOPGROWLTU",
-          "source": "World Bank WDI via FRED (Federal Reserve Bank of St. Louis)",
-          "value_fraction": 0.0057963,
-          "value_percent": 0.57963,
-          "year": 2024
+        "pop_growth": {
+          "metric": "population_growth",
+          "notes": "Último dato anual disponible (2024) en FRED/WDI.",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "sources": [
+            {
+              "publisher": "FRED / World Bank",
+              "source_id": "FRED_SPPOPGROWLTU",
+              "url": "https://fred.stlouisfed.org/series/SPPOPGROWLTU"
+            }
+          ],
+          "unit": "ratio",
+          "value": 0.0057963
         },
         "rho": {
           "metric": "replacement_rate_gross_full_career",
@@ -5497,28 +5505,33 @@
             "value": 0.212
           }
         ],
-        "unemployment_rate": {
-          "definition": "Tasa de paro (proxy): OECD harmonised unemployment rate (15–74), último dato disponible.",
-          "period": "2024-Q4",
-          "series": "LTULRUN74TTSTQ",
-          "source": "OECD via FRED (Federal Reserve Bank of St. Louis)",
-          "value_fraction": 0.065,
-          "value_percent": 6.5
+        "u": {
+          "metric": "unemployment_rate",
+          "notes": "Último dato disponible (Q4 2024) en FRED/OECD.",
+          "period": {
+            "date": "2024-10-01",
+            "granularity": "quarter"
+          },
+          "sources": [
+            {
+              "publisher": "FRED / OECD",
+              "source_id": "FRED_LTULRUN74TTSTQ",
+              "url": "https://fred.stlouisfed.org/series/LTULRUN74TTSTQ"
+            }
+          ],
+          "unit": "ratio",
+          "value": 0.065
         }
       },
       "meta": {
         "filled_fields": [
-          "unemployment_rate",
-          "population_growth",
-          "aging_rate_pp"
+          "u",
+          "pop_growth",
+          "aging_pp"
         ],
-        "filled_on_utc": "2026-01-03T22:12:51.525084+00:00"
+        "filled_on_utc": "2026-01-04T11:31:20.527882+00:00"
       },
-      "missing_fields": [
-        "u",
-        "pop_growth",
-        "aging_pp"
-      ],
+      "missing_fields": [],
       "observations": [
         {
           "metric": "pensioners_people",
@@ -5604,6 +5617,57 @@
           ],
           "unit": "ratio",
           "value": 0.078
+        },
+        {
+          "metric": "unemployment_rate",
+          "notes": "Tasa de paro (OECD) para Lituania. Usada como u (% 18–64 que NO cotiza) en el simulador, aproximación.",
+          "period": {
+            "date": "2024-10-01",
+            "granularity": "quarter"
+          },
+          "sources": [
+            {
+              "publisher": "Federal Reserve Bank of St. Louis (FRED) / OECD",
+              "source_id": "FRED_LTULRUN74TTSTQ",
+              "url": "https://fred.stlouisfed.org/series/LTULRUN74TTSTQ"
+            }
+          ],
+          "unit": "ratio",
+          "value": 0.065
+        },
+        {
+          "metric": "population_growth",
+          "notes": "Crecimiento anual de población (World Bank WDI vía FRED).",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "sources": [
+            {
+              "publisher": "Federal Reserve Bank of St. Louis (FRED) / World Bank",
+              "source_id": "FRED_SPPOPGROWLTU",
+              "url": "https://fred.stlouisfed.org/series/SPPOPGROWLTU"
+            }
+          ],
+          "unit": "ratio",
+          "value": 0.0057963
+        },
+        {
+          "metric": "aging_pp",
+          "notes": "Envejecimiento anual aproximado como Δ (share 65+) interanual: (2024 - 2023) en puntos porcentuales, expresado como fracción (pp/100). Derivado de la serie World Bank (vía FRED) 'Population ages 65 and above (% of total)'.",
+          "period": {
+            "date": "2024-01-01",
+            "granularity": "year"
+          },
+          "sources": [
+            {
+              "publisher": "Federal Reserve Bank of St. Louis (FRED) / World Bank",
+              "source_id": "FRED_SPPOP65UPTOZSLTU",
+              "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSLTU"
+            }
+          ],
+          "unit": "ratio",
+          "value": 0.0031031
         }
       ],
       "schema_version": "country_sim_inputs_v1",
@@ -8853,12 +8917,12 @@
       }
     }
   },
-  "generated_at_utc": "2026-01-03T23:25:30.653872+00:00",
+  "generated_at_utc": "2026-01-04T11:37:25.334878+00:00",
   "mode": "map",
   "schema_version": "country_sim_inputs_bundle_v1",
   "stats": {
     "files_merged": 38,
-    "input_dir": "/Users/paulmuseck/Desktop/pensiones-simulador/filtrado",
+    "input_dir": "/Users/paulmuseck/Desktop/pensiones-simulador/JSONANTIGUO/filtrado",
     "overwrite": false,
     "recursive": false,
     "unique_countries": 38

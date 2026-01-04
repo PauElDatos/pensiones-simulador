@@ -1,0 +1,286 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Chequia",
+    "iso2": "CZ"
+  },
+  "inputs": {
+    "rho": 0.5,
+    "tau": 0.28,
+    "k": 0.56,
+    "C_people": 5200000.0,
+    "P_people": 2850000.0,
+    "C_m": 5.2,
+    "P_m": 2.85,
+    "u": 0.025,
+    "pop_growth": 0.0037655,
+    "aging_pp": 0.0029948,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 5200000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "CZ_CSU_EMPLOYMENT_2023",
+          "url": "https://www.czso.cz/csu/czso/employment-unemployment",
+          "publisher": "Czech Statistical Office (ČSÚ)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 2850000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "CZ_CSSZ_PENSIONERS_2023",
+          "url": "https://www.cssz.cz/web/en/statistics",
+          "publisher": "Czech Social Security Administration (ČSSZ)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.5,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CZ_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.28,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización al seguro público de pensiones (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "CZ_MOLSA_CONTRIB_2024",
+            "url": "https://www.mpsv.cz/web/en/social-insurance",
+            "publisher": "Ministry of Labour and Social Affairs (MPSV)"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total",
+      "value": 0.025,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Proxy de u: tasa de desempleo total (% de la fuerza laboral) convertida a fracción.",
+      "sources": [
+        {
+          "source_id": "WB_WDI_SL.UEM.TOTL.ZS_CZ_2024",
+          "url": "https://data.worldbank.org/indicator/SL.UEM.TOTL.ZS?locations=CZ",
+          "publisher": "World Bank (World Development Indicators)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": 0.0037655,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de la población (World Bank WDI) convertido a fracción.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWCZE_2024",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWCZE",
+          "publisher": "FRED (Federal Reserve Bank of St. Louis) / World Bank WDI"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "aging_pp",
+      "value": 0.0029948,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Δ anual del share 65+ (en puntos porcentuales) convertido a fracción: (share65_2024 - share65_2023)/100.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSCZE_2024_2023",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSCZE",
+          "publisher": "FRED (Federal Reserve Bank of St. Louis) / World Bank WDI"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 2850000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "CZ_CSSZ_PENSIONERS_2023",
+          "url": "https://www.cssz.cz/web/en/statistics",
+          "publisher": "Czech Social Security Administration (ČSSZ)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 5200000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "CZ_CSU_EMPLOYMENT_2023",
+          "url": "https://www.czso.cz/csu/czso/employment-unemployment",
+          "publisher": "Czech Statistical Office (ČSÚ)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.28,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización al seguro público de pensiones (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "CZ_MOLSA_CONTRIB_2024",
+          "url": "https://www.mpsv.cz/web/en/social-insurance",
+          "publisher": "Ministry of Labour and Social Affairs (MPSV)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.5,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CZ_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.083,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_CZ_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "unemployment_rate_total",
+      "value": 0.025,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Proxy de u: tasa de desempleo total (% de la fuerza laboral) convertida a fracción.",
+      "sources": [
+        {
+          "source_id": "WB_WDI_SL.UEM.TOTL.ZS_CZ_2024",
+          "url": "https://data.worldbank.org/indicator/SL.UEM.TOTL.ZS?locations=CZ",
+          "publisher": "World Bank (World Development Indicators)"
+        }
+      ]
+    },
+    {
+      "metric": "population_growth_annual",
+      "value": 0.0037655,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de la población (World Bank WDI) convertido a fracción.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWCZE_2024",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWCZE",
+          "publisher": "FRED (Federal Reserve Bank of St. Louis) / World Bank WDI"
+        }
+      ]
+    },
+    {
+      "metric": "aging_pp",
+      "value": 0.0029948,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Δ anual del share 65+ (en puntos porcentuales) convertido a fracción: (share65_2024 - share65_2023)/100.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSCZE_2024_2023",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSCZE",
+          "publisher": "FRED (Federal Reserve Bank of St. Louis) / World Bank WDI"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

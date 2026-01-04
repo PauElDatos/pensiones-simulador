@@ -1,0 +1,275 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "España",
+    "iso2": "ES"
+  },
+  "inputs": {
+    "rho": 0.8,
+    "tau": 0.291,
+    "k": 0.36374999999999996,
+    "C_people": 21839592.0,
+    "P_people": 9300000.0,
+    "C_m": 21.839592,
+    "P_m": 9.3,
+    "u": 0.1135,
+    "pop_growth": 0.0102121,
+    "aging_pp": 0.0049173,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_affiliates_people",
+      "value": 21839592,
+      "unit": "people",
+      "period": {
+        "date": "2025-10-01",
+        "granularity": "month"
+      },
+      "notes": "Afiliación media (octubre 2025).",
+      "sources": [
+        {
+          "source_id": "ES_SS_REVISTA_2025-11-04",
+          "url": "https://revista.seg-social.es/-/la-afiliaci%C3%B3n-a-la-seguridad-social-supera-los-21-8-millones-de-afiliados-medios-en-el-segundo-mejor-octubre-de-la-serie",
+          "publisher": "Revista Seguridad Social (Ministerio de Inclusión, Seguridad Social y Migraciones)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 9300000,
+      "unit": "people",
+      "period": {
+        "date": "2025-01-01",
+        "granularity": "month"
+      },
+      "notes": "Personas pensionistas (nómina de enero 2025).",
+      "sources": [
+        {
+          "source_id": "ES_SS_REVISTA_2025-01-28",
+          "url": "https://revista.seg-social.es/-/la-seguridad-social-abona-10-3-millones-de-pensiones-a-9-3-millones-de-pensionistas-en-enero",
+          "publisher": "Revista Seguridad Social (Ministerio de Inclusión, Seguridad Social y Migraciones)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.8,
+      "unit": "ratio",
+      "period": {
+        "date": "2025-11-27",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta (trabajador varón con carrera completa) — referencia OCDE (Pensions at a Glance 2025).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2025_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/2025/11/pensions-at-a-glance-2025_76510fe4/full-report/gross-pension-replacement-rates_95e3eed6.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_contingencias_comunes",
+        "value": 0.283,
+        "unit": "ratio",
+        "period": {
+          "date": "2025-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo de cotización por contingencias comunes (total; empresa+trabajador).",
+        "sources": [
+          {
+            "source_id": "ES_SS_TIPOS_2025",
+            "url": "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/CotizacionRecaudacionTrabajadores/36537",
+            "publisher": "Seguridad Social (seg-social.es)"
+          }
+        ]
+      },
+      {
+        "metric": "contribution_rate_mei",
+        "value": 0.008,
+        "unit": "ratio",
+        "period": {
+          "date": "2025-01-01",
+          "granularity": "year"
+        },
+        "notes": "Mecanismo de Equidad Intergeneracional (MEI) 2025 (tipo adicional total).",
+        "sources": [
+          {
+            "source_id": "ES_SS_TIPOS_2025_MEI",
+            "url": "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/CotizacionRecaudacionTrabajadores/36537",
+            "publisher": "Seguridad Social (seg-social.es)"
+          },
+          {
+            "source_id": "ES_BOE_PJC178_2025",
+            "url": "https://www.boe.es/buscar/doc.php?id=BOE-A-2025-3780",
+            "publisher": "Boletín Oficial del Estado (BOE)"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 9300000,
+      "unit": "people",
+      "period": {
+        "date": "2025-01-01",
+        "granularity": "month"
+      },
+      "notes": "Personas pensionistas (nómina de enero 2025).",
+      "sources": [
+        {
+          "source_id": "ES_SS_REVISTA_2025-01-28",
+          "url": "https://revista.seg-social.es/-/la-seguridad-social-abona-10-3-millones-de-pensiones-a-9-3-millones-de-pensionistas-en-enero",
+          "publisher": "Revista Seguridad Social (Ministerio de Inclusión, Seguridad Social y Migraciones)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_affiliates_people",
+      "value": 21344487,
+      "unit": "people",
+      "period": {
+        "date": "2024-12-01",
+        "granularity": "month"
+      },
+      "notes": "Afiliación (serie desestacionalizada y con efecto calendario) en diciembre 2024.",
+      "sources": [
+        {
+          "source_id": "ES_SS_REVISTA_2024-12",
+          "url": "https://revista.seg-social.es/-/la-seguridad-social-supera-un-a%C3%B1o-m%C3%A1s-los-500.000-nuevos-afiliados-en-2024-y-se-consolida-por-encima-de-los-21-3-millones",
+          "publisher": "Revista Seguridad Social (Ministerio de Inclusión, Seguridad Social y Migraciones)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_affiliates_people",
+      "value": 21839592,
+      "unit": "people",
+      "period": {
+        "date": "2025-10-01",
+        "granularity": "month"
+      },
+      "notes": "Afiliación media (octubre 2025).",
+      "sources": [
+        {
+          "source_id": "ES_SS_REVISTA_2025-11-04",
+          "url": "https://revista.seg-social.es/-/la-afiliaci%C3%B3n-a-la-seguridad-social-supera-los-21-8-millones-de-afiliados-medios-en-el-segundo-mejor-octubre-de-la-serie",
+          "publisher": "Revista Seguridad Social (Ministerio de Inclusión, Seguridad Social y Migraciones)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_contingencias_comunes",
+      "value": 0.283,
+      "unit": "ratio",
+      "period": {
+        "date": "2025-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo de cotización por contingencias comunes (total; empresa+trabajador).",
+      "sources": [
+        {
+          "source_id": "ES_SS_TIPOS_2025",
+          "url": "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/CotizacionRecaudacionTrabajadores/36537",
+          "publisher": "Seguridad Social (seg-social.es)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_mei",
+      "value": 0.008,
+      "unit": "ratio",
+      "period": {
+        "date": "2025-01-01",
+        "granularity": "year"
+      },
+      "notes": "Mecanismo de Equidad Intergeneracional (MEI) 2025 (tipo adicional total).",
+      "sources": [
+        {
+          "source_id": "ES_SS_TIPOS_2025_MEI",
+          "url": "https://www.seg-social.es/wps/portal/wss/internet/Trabajadores/CotizacionRecaudacionTrabajadores/36537",
+          "publisher": "Seguridad Social (seg-social.es)"
+        },
+        {
+          "source_id": "ES_BOE_PJC178_2025",
+          "url": "https://www.boe.es/buscar/doc.php?id=BOE-A-2025-3780",
+          "publisher": "Boletín Oficial del Estado (BOE)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.8,
+      "unit": "ratio",
+      "period": {
+        "date": "2025-11-27",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta (trabajador varón con carrera completa) — referencia OCDE (Pensions at a Glance 2025).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2025_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/2025/11/pensions-at-a-glance-2025_76510fe4/full-report/gross-pension-replacement-rates_95e3eed6.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_net",
+      "value": 0.133,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-03-31",
+        "granularity": "quarter"
+      },
+      "notes": "Nivel de gasto en pensiones públicas neto de medidas de ingresos (referencia marco regla de gasto).",
+      "sources": [
+        {
+          "source_id": "ES_AIREf_REGLA_GASTO_2025",
+          "url": "https://www.airef.es/wp-content/uploads/2025/03/Informe_regla_de_gasto_de_pensiones/Informe.pdf",
+          "publisher": "AIReF"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [],
+  "inputs_sources": {
+    "u": {
+      "series": "LRUN74TTESA156N",
+      "label": "OECD/FRED Unemployment Rate Total (15–74) for Spain, annual",
+      "year": 2024,
+      "value_percent": 11.35,
+      "url": "https://fred.stlouisfed.org/series/LRUN74TTESA156N"
+    },
+    "pop_growth": {
+      "series": "SPPOPGROWESP",
+      "label": "World Bank/FRED Population Growth (annual %) for Spain",
+      "year": 2024,
+      "value_percent": 1.02121,
+      "url": "https://fred.stlouisfed.org/series/SPPOPGROWESP"
+    },
+    "aging_pp": {
+      "series": "SPPOP65UPTOZSESP",
+      "label": "World Bank/FRED Population ages 65+ (% of total) for Spain",
+      "years": [
+        2023,
+        2024
+      ],
+      "values_percent": {
+        "2023": 20.65371,
+        "2024": 21.14544
+      },
+      "computed_pp_change": 0.49173,
+      "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSESP"
+    }
+  }
+}

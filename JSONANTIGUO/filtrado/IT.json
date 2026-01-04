@@ -1,0 +1,239 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Italia",
+    "iso2": "IT"
+  },
+  "inputs": {
+    "rho": 0.79,
+    "tau": 0.33,
+    "k": 0.4177215189873418,
+    "C_people": 23500000.0,
+    "P_people": 16300000.0,
+    "C_m": 23.5,
+    "P_m": 16.3,
+    "u": 0.06525,
+    "pop_growth": -0.001,
+    "aging_pp": 0.00406,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 23500000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por la seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "IT_ISTAT_EMPLOYMENT_2023",
+          "url": "https://www.istat.it/it/archivio/occupati",
+          "publisher": "ISTAT"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 16300000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia) del sistema INPS.",
+      "sources": [
+        {
+          "source_id": "IT_INPS_PENSIONERS_2023",
+          "url": "https://www.inps.it/it/it/dati-e-bilanci/osservatori-statistici.html",
+          "publisher": "INPS – Istituto Nazionale della Previdenza Sociale"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.79,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_IT_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.33,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total medio de cotización al sistema público de pensiones (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "IT_INPS_CONTRIB_2024",
+            "url": "https://www.inps.it/it/it/previdenza-e-pensioni/aliquote-contributive.html",
+            "publisher": "INPS"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_15_74_all_persons",
+      "value": 6.525,
+      "unit": "percent",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tasa de paro (15–74, total). Se convierte a fracción dividiendo entre 100 para el simulador.",
+      "sources": [
+        {
+          "source_id": "FRED_LRUN74TTITA156N",
+          "url": "https://fred.stlouisfed.org/series/LRUN74TTITA156N",
+          "publisher": "FRED/OECD"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual_percent",
+      "value": -0.1,
+      "unit": "percent",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población (%). Se convierte a fracción dividiendo entre 100 para el simulador. En la página de World Bank aparece redondeado a 1 decimal.",
+      "sources": [
+        {
+          "source_id": "WB_SP.POP.GROW_ITA",
+          "url": "https://data.worldbank.org/indicator/SP.POP.GROW?locations=IT",
+          "publisher": "World Bank"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "delta_share_population_65plus_percentage_points",
+      "value": 0.406,
+      "unit": "percentage_points",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Δ anual de la población 65+ en puntos porcentuales: (2024 − 2023). Se convierte a fracción dividiendo entre 100 para el simulador.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSITA",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSITA",
+          "publisher": "FRED/World Bank"
+        }
+      ],
+      "components": {
+        "share_65plus_2024_percent": 24.62478,
+        "share_65plus_2023_percent": 24.21878
+      }
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 16300000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia) del sistema INPS.",
+      "sources": [
+        {
+          "source_id": "IT_INPS_PENSIONERS_2023",
+          "url": "https://www.inps.it/it/it/dati-e-bilanci/osservatori-statistici.html",
+          "publisher": "INPS – Istituto Nazionale della Previdenza Sociale"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 23500000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por la seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "IT_ISTAT_EMPLOYMENT_2023",
+          "url": "https://www.istat.it/it/archivio/occupati",
+          "publisher": "ISTAT"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.33,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total medio de cotización al sistema público de pensiones (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "IT_INPS_CONTRIB_2024",
+          "url": "https://www.inps.it/it/it/previdenza-e-pensioni/aliquote-contributive.html",
+          "publisher": "INPS"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.79,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_IT_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.156,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB (entre los más altos de la OCDE).",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_IT_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

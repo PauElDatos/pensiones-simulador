@@ -1,0 +1,235 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Irlanda",
+    "iso2": "IE"
+  },
+  "inputs": {
+    "rho": 0.35,
+    "tau": 0.148,
+    "k": 0.4228571428571429,
+    "C_people": 2600000.0,
+    "P_people": 720000.0,
+    "C_m": 2.6,
+    "P_m": 0.72,
+    "u": 0.043,
+    "pop_growth": 0.0157376,
+    "aging_pp": 0.0035037,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 2600000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes al sistema PRSI).",
+      "sources": [
+        {
+          "source_id": "IE_CSO_EMPLOYMENT_2023",
+          "url": "https://www.cso.ie/en/statistics/labourmarket/",
+          "publisher": "Central Statistics Office (CSO)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 720000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la pensión estatal contributiva y no contributiva.",
+      "sources": [
+        {
+          "source_id": "IE_DEASP_PENSIONERS_2023",
+          "url": "https://www.gov.ie/en/collection/2fd22-statistical-information-on-social-welfare-services/",
+          "publisher": "Department of Social Protection (DEASP)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.35,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pensión estatal).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_IE_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.148,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo combinado efectivo de contribución PRSI destinado a pensiones (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "IE_REVENUE_PRSI_2024",
+            "url": "https://www.revenue.ie/en/employing-people/becoming-an-employer-and-ongoing-obligations/employer-prsi.aspx",
+            "publisher": "Irish Revenue"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total_15_74",
+      "value": 4.3,
+      "unit": "percent",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Unemployment rate total (15–74) de OECD (vía FRED). En el simulador se usa como proxy de u (% de población en edad laboral que no cotiza); se convierte a fracción (u=0.043).",
+      "sources": [
+        {
+          "source_id": "OECD_LRUN74TTIEA156S_FRED",
+          "url": "https://fred.stlouisfed.org/series/LRUN74TTIEA156S",
+          "publisher": "OECD via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": 1.57376,
+      "unit": "percent",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población (%) del World Bank WDI (SP.POP.GROW) vía FRED. En el simulador se convierte a fracción (pop_growth=0.0157376).",
+      "sources": [
+        {
+          "source_id": "WB_SPPOPGROWIRL_FRED",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWIRL",
+          "publisher": "World Bank WDI via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "population_65_plus_share_change",
+      "value": 0.35037,
+      "unit": "percentage_points",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Variación anual aproximada del share 65+ (pp): 2024−2023 usando World Bank WDI (SP.POP.65UP.TO.ZS) vía FRED. En el simulador se convierte a fracción (aging_pp=(pp/100)=0.0035037).",
+      "sources": [
+        {
+          "source_id": "WB_SPPOP65UPTOZSIRL_FRED",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSIRL",
+          "publisher": "World Bank WDI via FRED (St. Louis Fed)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 720000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la pensión estatal contributiva y no contributiva.",
+      "sources": [
+        {
+          "source_id": "IE_DEASP_PENSIONERS_2023",
+          "url": "https://www.gov.ie/en/collection/2fd22-statistical-information-on-social-welfare-services/",
+          "publisher": "Department of Social Protection (DEASP)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 2600000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes al sistema PRSI).",
+      "sources": [
+        {
+          "source_id": "IE_CSO_EMPLOYMENT_2023",
+          "url": "https://www.cso.ie/en/statistics/labourmarket/",
+          "publisher": "Central Statistics Office (CSO)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.148,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo combinado efectivo de contribución PRSI destinado a pensiones (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "IE_REVENUE_PRSI_2024",
+          "url": "https://www.revenue.ie/en/employing-people/becoming-an-employer-and-ongoing-obligations/employer-prsi.aspx",
+          "publisher": "Irish Revenue"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.35,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pensión estatal).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_IE_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.046,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_IE_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

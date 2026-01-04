@@ -1,0 +1,232 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Chile",
+    "iso2": "CL"
+  },
+  "inputs": {
+    "rho": 0.34,
+    "tau": 0.1,
+    "k": 0.29411764705882354,
+    "C_people": 10300000.0,
+    "P_people": 2700000.0,
+    "C_m": 10.3,
+    "P_m": 2.7,
+    "u": 0.091,
+    "pop_growth": 0.005,
+    "aging_pp": 0.0040000000000000036,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_affiliated_people",
+      "value": 10300000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Afiliados al sistema de pensiones (cotizantes efectivos y no efectivos).",
+      "sources": [
+        {
+          "source_id": "CL_SP_AFFILIATES_2023",
+          "url": "https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-10054.html",
+          "publisher": "Superintendencia de Pensiones"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 2700000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensiones contributivas (AFP) y/o solidarias (PGU).",
+      "sources": [
+        {
+          "source_id": "CL_SP_PENSIONERS_2023",
+          "url": "https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-10053.html",
+          "publisher": "Superintendencia de Pensiones"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.34,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema contributivo).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CL_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_mandatory_afp",
+        "value": 0.1,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Cotización obligatoria del trabajador a cuentas individuales (no incluye comisiones).",
+        "sources": [
+          {
+            "source_id": "CL_SP_CONTRIB_RATE_2024",
+            "url": "https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-10044.html",
+            "publisher": "Superintendencia de Pensiones"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total",
+      "notes": "Tasa de desempleo total (% de la fuerza laboral). Se usa como proxy de u en el simulador.",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "sources": [
+        {
+          "source_id": "WB_WDI_SL.UEM.TOTL.ZS",
+          "url": "https://databank.worldbank.org/source/world-development-indicators/Series/SL.UEM.TOTL.ZS"
+        }
+      ],
+      "unit": "percent",
+      "value": 9.1
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "notes": "Crecimiento anual de población (variación % anual).",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "sources": [
+        {
+          "source_id": "WB_WDI_SP.POP.GROW",
+          "url": "https://databank.worldbank.org/source/world-development-indicators/Series/SP.POP.GROW"
+        }
+      ],
+      "unit": "percent",
+      "value": 0.5
+    },
+    "aging_pp": {
+      "metric": "delta_share_population_65plus",
+      "notes": "Cambio anual de la cuota de población 65+ (2024 vs 2023). Para el modelo se convierte a fracción (pp/100).",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "sources": [
+        {
+          "source_id": "WB_WDI_SP.POP.65UP.TO.ZS",
+          "url": "https://databank.worldbank.org/source/world-development-indicators/Series/SP.POP.65UP.TO.ZS"
+        }
+      ],
+      "unit": "percentage_points",
+      "value": 0.40000000000000036
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 2700000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensiones contributivas (AFP) y/o solidarias (PGU).",
+      "sources": [
+        {
+          "source_id": "CL_SP_PENSIONERS_2023",
+          "url": "https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-10053.html",
+          "publisher": "Superintendencia de Pensiones"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_affiliated_people",
+      "value": 10300000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Afiliados al sistema de pensiones (cotizantes efectivos y no efectivos).",
+      "sources": [
+        {
+          "source_id": "CL_SP_AFFILIATES_2023",
+          "url": "https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-10054.html",
+          "publisher": "Superintendencia de Pensiones"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_mandatory_afp",
+      "value": 0.1,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Cotización obligatoria del trabajador a cuentas individuales (no incluye comisiones).",
+      "sources": [
+        {
+          "source_id": "CL_SP_CONTRIB_RATE_2024",
+          "url": "https://www.spensiones.cl/portal/institucional/594/w3-propertyvalue-10044.html",
+          "publisher": "Superintendencia de Pensiones"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.34,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema contributivo).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CL_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.053,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones (incluyendo pilar solidario) como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_CL_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

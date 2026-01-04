@@ -1,0 +1,269 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Estados Unidos",
+    "iso2": "US"
+  },
+  "inputs": {
+    "rho": 0.41,
+    "tau": 0.124,
+    "k": 0.3024390243902439,
+    "C_people": 161000000.0,
+    "P_people": 67000000.0,
+    "C_m": 161.0,
+    "P_m": 67.0,
+    "u": 0.0401667,
+    "pop_growth": 0.0097642,
+    "aging_pp": 0.0049691,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 161000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas y cotizando al sistema de Social Security (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "US_BLS_EMPLOYMENT_2023",
+          "url": "https://www.bls.gov/cps/",
+          "publisher": "Bureau of Labor Statistics (BLS)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 67000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de prestaciones de jubilación y supervivencia del sistema Social Security (OASDI).",
+      "sources": [
+        {
+          "source_id": "US_SSA_BENEFICIARIES_2023",
+          "url": "https://www.ssa.gov/oact/STATS/dibStat.html",
+          "publisher": "Social Security Administration (SSA)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.41,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (Social Security + planes privados típicos).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_US_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.124,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización a Social Security (OASDI), empleador + trabajador.",
+        "sources": [
+          {
+            "source_id": "US_SSA_TAX_RATE_2024",
+            "url": "https://www.ssa.gov/oact/cola/cbb.html",
+            "publisher": "Social Security Administration (SSA)"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total_15plus",
+      "value": 4.01667,
+      "unit": "percent",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Tasa de paro (15+), anual (SA). Entrada del simulador u = valor_en_% / 100.",
+      "sources": [
+        {
+          "source_id": "FRED_LRUNTTTTUSA156S",
+          "url": "https://fred.stlouisfed.org/series/LRUNTTTTUSA156S",
+          "publisher": "FRED (OECD Infra-Annual Labor Statistics)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth",
+      "value": 0.97642,
+      "unit": "percent",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población (WDI). Entrada del simulador pop_growth = valor_en_% / 100.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWUSA",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWUSA",
+          "publisher": "FRED (World Bank WDI)"
+        }
+      ]
+    },
+    "share65_2024": {
+      "metric": "population_65plus_share",
+      "value": 17.92873,
+      "unit": "percent_of_total",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Share de población 65+ (WDI). Se usa para aproximar envejecimiento anual.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSUSA",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSUSA",
+          "publisher": "FRED (World Bank WDI)"
+        }
+      ]
+    },
+    "share65_2023": {
+      "metric": "population_65plus_share",
+      "value": 17.43182,
+      "unit": "percent_of_total",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Share de población 65+ (año previo) para calcular Δ share 65+.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSUSA",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSUSA",
+          "publisher": "FRED (World Bank WDI)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "delta_share_65plus",
+      "value": 0.49691,
+      "unit": "percentage_points",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Δ share 65+ (pp) = share65(2024) − share65(2023). Entrada del simulador aging_pp = Δpp / 100.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSUSA",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSUSA",
+          "publisher": "FRED (World Bank WDI)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 67000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de prestaciones de jubilación y supervivencia del sistema Social Security (OASDI).",
+      "sources": [
+        {
+          "source_id": "US_SSA_BENEFICIARIES_2023",
+          "url": "https://www.ssa.gov/oact/STATS/dibStat.html",
+          "publisher": "Social Security Administration (SSA)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 161000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas y cotizando al sistema de Social Security (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "US_BLS_EMPLOYMENT_2023",
+          "url": "https://www.bls.gov/cps/",
+          "publisher": "Bureau of Labor Statistics (BLS)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.124,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización a Social Security (OASDI), empleador + trabajador.",
+      "sources": [
+        {
+          "source_id": "US_SSA_TAX_RATE_2024",
+          "url": "https://www.ssa.gov/oact/cola/cbb.html",
+          "publisher": "Social Security Administration (SSA)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.41,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (Social Security + planes privados típicos).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_US_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.065,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB (Social Security).",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_US_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

@@ -1,0 +1,188 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Chequia",
+    "iso2": "CZ"
+  },
+  "inputs": {
+    "rho": 0.5,
+    "tau": 0.28,
+    "k": 0.56,
+    "C_people": 5200000.0,
+    "P_people": 2850000.0,
+    "C_m": 5.2,
+    "P_m": 2.85,
+    "u": null,
+    "pop_growth": null,
+    "aging_pp": null,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 5200000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "CZ_CSU_EMPLOYMENT_2023",
+          "url": "https://www.czso.cz/csu/czso/employment-unemployment",
+          "publisher": "Czech Statistical Office (ČSÚ)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 2850000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "CZ_CSSZ_PENSIONERS_2023",
+          "url": "https://www.cssz.cz/web/en/statistics",
+          "publisher": "Czech Social Security Administration (ČSSZ)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.5,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CZ_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.28,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización al seguro público de pensiones (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "CZ_MOLSA_CONTRIB_2024",
+            "url": "https://www.mpsv.cz/web/en/social-insurance",
+            "publisher": "Ministry of Labour and Social Affairs (MPSV)"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 2850000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "CZ_CSSZ_PENSIONERS_2023",
+          "url": "https://www.cssz.cz/web/en/statistics",
+          "publisher": "Czech Social Security Administration (ČSSZ)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 5200000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "CZ_CSU_EMPLOYMENT_2023",
+          "url": "https://www.czso.cz/csu/czso/employment-unemployment",
+          "publisher": "Czech Statistical Office (ČSÚ)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.28,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización al seguro público de pensiones (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "CZ_MOLSA_CONTRIB_2024",
+          "url": "https://www.mpsv.cz/web/en/social-insurance",
+          "publisher": "Ministry of Labour and Social Affairs (MPSV)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.5,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CZ_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.083,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_CZ_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [
+    "u",
+    "pop_growth",
+    "aging_pp"
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Nueva Zelanda",
+    "iso2": "NZ"
+  },
+  "inputs": {
+    "rho": 0.4,
+    "tau": 0.0,
+    "k": 0.0,
+    "C_people": 2900000.0,
+    "P_people": 890000.0,
+    "C_m": 2.9,
+    "P_m": 0.89,
+    "u": 0.0475,
+    "pop_growth": 0.0166869,
+    "aging_pp": 0.0039717,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 2900000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "NZ_STATS_EMPLOYMENT_2023",
+          "url": "https://www.stats.govt.nz/indicators/employment-rate",
+          "publisher": "Stats NZ"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 890000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la pensión pública New Zealand Superannuation.",
+      "sources": [
+        {
+          "source_id": "NZ_MSD_SUPER_2023",
+          "url": "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/nz-super.html",
+          "publisher": "Ministry of Social Development (MSD)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.4,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + KiwiSaver) para trabajador medio.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_NZ_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_public",
+        "value": 0.0,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "La pensión pública se financia íntegramente con impuestos generales; no existe cotización específica.",
+        "sources": [
+          {
+            "source_id": "NZ_TREASURY_PENSION_FIN",
+            "url": "https://www.treasury.govt.nz/information-and-services/state-sector-leadership/investment-management/social-investment",
+            "publisher": "The Treasury of New Zealand"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total_15plus",
+      "value": 0.0475,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Tasa de paro anual (15+; ajustada estacionalmente). Fuente: OECD (MEI) vía FRED (St. Louis Fed).",
+      "sources": [
+        {
+          "source_id": "OECD_MEI_UNEMP_NZ_2024",
+          "url": "https://fred.stlouisfed.org/series/LRUNTTTTNZA156S",
+          "publisher": "OECD via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": 0.0166869,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población (World Bank SP.POP.GROW) vía FRED (St. Louis Fed).",
+      "sources": [
+        {
+          "source_id": "WB_POP_GROW_NZ_2024",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWNZL",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "delta_population_share_65plus",
+      "value": 0.0039717,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Δ share 65+ = (17.19575% en 2024) − (16.79858% en 2023), serie World Bank SP.POP.65UP.TO.ZS vía FRED.",
+      "sources": [
+        {
+          "source_id": "WB_65UP_SHARE_NZ_2024",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSNZL",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 890000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la pensión pública New Zealand Superannuation.",
+      "sources": [
+        {
+          "source_id": "NZ_MSD_SUPER_2023",
+          "url": "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/nz-super.html",
+          "publisher": "Ministry of Social Development (MSD)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 2900000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "NZ_STATS_EMPLOYMENT_2023",
+          "url": "https://www.stats.govt.nz/indicators/employment-rate",
+          "publisher": "Stats NZ"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_public",
+      "value": 0.0,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "La pensión pública se financia íntegramente con impuestos generales; no existe cotización específica.",
+      "sources": [
+        {
+          "source_id": "NZ_TREASURY_PENSION_FIN",
+          "url": "https://www.treasury.govt.nz/information-and-services/state-sector-leadership/investment-management/social-investment",
+          "publisher": "The Treasury of New Zealand"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.4,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + KiwiSaver) para trabajador medio.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_NZ_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.051,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_NZ_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

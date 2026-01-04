@@ -1,0 +1,184 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Canadá",
+    "iso2": "CA"
+  },
+  "inputs": {
+    "rho": 0.39,
+    "tau": 0.119,
+    "k": 0.3051282051282051,
+    "C_people": 20600000.0,
+    "P_people": 7200000.0,
+    "C_m": 20.6,
+    "P_m": 7.2,
+    "u": 0.054,
+    "pop_growth": 0.029,
+    "aging_pp": 0.005,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 20600000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas (proxy de cotizantes al sistema CPP/QPP).",
+      "sources": [
+        {
+          "source_id": "CA_STATCAN_EMPLOYMENT_2023",
+          "url": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410002301",
+          "publisher": "Statistics Canada"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 7200000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben prestaciones públicas de jubilación (CPP/QPP y Old Age Security).",
+      "sources": [
+        {
+          "source_id": "CA_STATCAN_PENSIONERS_2023",
+          "url": "https://www150.statcan.gc.ca/n1/daily-quotidien/240327/dq240327a-eng.htm",
+          "publisher": "Statistics Canada"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.39,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CA_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_cpp_total",
+        "value": 0.119,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización al Canada Pension Plan (empleador + trabajador, incluyendo mejora CPP).",
+        "sources": [
+          {
+            "source_id": "CA_CRA_CPP_RATE_2024",
+            "url": "https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html",
+            "publisher": "Canada Revenue Agency"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 7200000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben prestaciones públicas de jubilación (CPP/QPP y Old Age Security).",
+      "sources": [
+        {
+          "source_id": "CA_STATCAN_PENSIONERS_2023",
+          "url": "https://www150.statcan.gc.ca/n1/daily-quotidien/240327/dq240327a-eng.htm",
+          "publisher": "Statistics Canada"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 20600000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas (proxy de cotizantes al sistema CPP/QPP).",
+      "sources": [
+        {
+          "source_id": "CA_STATCAN_EMPLOYMENT_2023",
+          "url": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410002301",
+          "publisher": "Statistics Canada"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_cpp_total",
+      "value": 0.119,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización al Canada Pension Plan (empleador + trabajador, incluyendo mejora CPP).",
+      "sources": [
+        {
+          "source_id": "CA_CRA_CPP_RATE_2024",
+          "url": "https://www.canada.ca/en/services/benefits/publicpensions/cpp/contributions.html",
+          "publisher": "Canada Revenue Agency"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.39,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CA_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.061,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_CA_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

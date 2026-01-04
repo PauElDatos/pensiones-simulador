@@ -1,0 +1,235 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "México",
+    "iso2": "MX"
+  },
+  "inputs": {
+    "rho": 0.28,
+    "tau": 0.156,
+    "k": 0.557142857142857,
+    "C_people": 58500000.0,
+    "P_people": 7200000.0,
+    "C_m": 58.5,
+    "P_m": 7.2,
+    "u": 0.026956,
+    "pop_growth": 0.0086052,
+    "aging_pp": 0.002619200000000008,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 58500000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas ocupadas en la economía (proxy amplia de cotizantes potenciales).",
+      "sources": [
+        {
+          "source_id": "MX_INEGI_EMPLOYMENT_2023",
+          "url": "https://www.inegi.org.mx/temas/empleo/",
+          "publisher": "INEGI"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 7200000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensiones contributivas (IMSS/ISSSTE) y no contributivas (Pensión para el Bienestar).",
+      "sources": [
+        {
+          "source_id": "MX_GOB_PENSIONERS_2023",
+          "url": "https://www.gob.mx/bienestar/prensa/pension-para-el-bienestar-de-las-personas-adultas-mayores",
+          "publisher": "Gobierno de México"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.28,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema contributivo).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_MX_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_mandatory_pension",
+        "value": 0.156,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Aportación obligatoria total al sistema de cuentas individuales (empleador + trabajador + Estado) tras la reforma.",
+        "sources": [
+          {
+            "source_id": "MX_IMSS_CONTRIB_2024",
+            "url": "https://www.imss.gob.mx/tramites/afiliacion/cuotas",
+            "publisher": "IMSS"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total_15plus",
+      "value": 0.026956,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tasa de desempleo (% de la fuerza laboral), total (15+). Convertido de % a fracción.",
+      "sources": [
+        {
+          "source_id": "FRED_OECD_LRUNTTTTMXA156S",
+          "url": "https://fred.stlouisfed.org/series/LRUNTTTTMXA156S",
+          "publisher": "OECD via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": 0.0086052,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población. Convertido de % a fracción.",
+      "sources": [
+        {
+          "source_id": "FRED_WB_SPPOPGROWMEX",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWMEX",
+          "publisher": "World Bank (WDI) via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "delta_share_65plus_pp",
+      "value": 0.002619200000000008,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-2024",
+        "granularity": "year_over_year"
+      },
+      "notes": "Envejecimiento anual aproximado como Δ(share 65+) en puntos porcentuales entre 2023 y 2024, (8.24857% - 7.98665%) = 0.26192 pp, convertido a fracción (pp/100).",
+      "sources": [
+        {
+          "source_id": "FRED_WB_SPPOP65UPTOZSMEX",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSMEX",
+          "publisher": "World Bank (WDI) via FRED (St. Louis Fed)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 7200000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensiones contributivas (IMSS/ISSSTE) y no contributivas (Pensión para el Bienestar).",
+      "sources": [
+        {
+          "source_id": "MX_GOB_PENSIONERS_2023",
+          "url": "https://www.gob.mx/bienestar/prensa/pension-para-el-bienestar-de-las-personas-adultas-mayores",
+          "publisher": "Gobierno de México"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 58500000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas ocupadas en la economía (proxy amplia de cotizantes potenciales).",
+      "sources": [
+        {
+          "source_id": "MX_INEGI_EMPLOYMENT_2023",
+          "url": "https://www.inegi.org.mx/temas/empleo/",
+          "publisher": "INEGI"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_mandatory_pension",
+      "value": 0.156,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Aportación obligatoria total al sistema de cuentas individuales (empleador + trabajador + Estado) tras la reforma.",
+      "sources": [
+        {
+          "source_id": "MX_IMSS_CONTRIB_2024",
+          "url": "https://www.imss.gob.mx/tramites/afiliacion/cuotas",
+          "publisher": "IMSS"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.28,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema contributivo).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_MX_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.045,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_MX_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

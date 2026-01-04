@@ -1,0 +1,188 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Suecia",
+    "iso2": "SE"
+  },
+  "inputs": {
+    "rho": 0.55,
+    "tau": 0.185,
+    "k": 0.3363636363636363,
+    "C_people": 5200000.0,
+    "P_people": 2300000.0,
+    "C_m": 5.2,
+    "P_m": 2.3,
+    "u": null,
+    "pop_growth": null,
+    "aging_pp": null,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 5200000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cotizantes al sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "SE_SCB_EMPLOYMENT_2023",
+          "url": "https://www.scb.se/en/finding-statistics/statistics-by-subject-area/labour-market/",
+          "publisher": "Statistics Sweden (SCB)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 2300000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez (sistema de pensiones de ingresos y garantía).",
+      "sources": [
+        {
+          "source_id": "SE_PENSIONS_AGENCY_PENSIONERS_2023",
+          "url": "https://www.pensionsmyndigheten.se/statistik",
+          "publisher": "Swedish Pensions Agency (Pensionsmyndigheten)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.55,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pensión pública + ocupacional).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_SE_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.185,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Cotización total obligatoria al sistema público de pensiones basado en cuentas nocionales.",
+        "sources": [
+          {
+            "source_id": "SE_GOV_PENSION_CONTRIB_2024",
+            "url": "https://www.government.se/government-policy/pensions/",
+            "publisher": "Government of Sweden"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 2300000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez (sistema de pensiones de ingresos y garantía).",
+      "sources": [
+        {
+          "source_id": "SE_PENSIONS_AGENCY_PENSIONERS_2023",
+          "url": "https://www.pensionsmyndigheten.se/statistik",
+          "publisher": "Swedish Pensions Agency (Pensionsmyndigheten)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 5200000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cotizantes al sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "SE_SCB_EMPLOYMENT_2023",
+          "url": "https://www.scb.se/en/finding-statistics/statistics-by-subject-area/labour-market/",
+          "publisher": "Statistics Sweden (SCB)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.185,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Cotización total obligatoria al sistema público de pensiones basado en cuentas nocionales.",
+      "sources": [
+        {
+          "source_id": "SE_GOV_PENSION_CONTRIB_2024",
+          "url": "https://www.government.se/government-policy/pensions/",
+          "publisher": "Government of Sweden"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.55,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pensión pública + ocupacional).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_SE_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.096,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_SE_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [
+    "u",
+    "pop_growth",
+    "aging_pp"
+  ]
+}

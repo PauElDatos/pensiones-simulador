@@ -1,0 +1,184 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Estonia",
+    "iso2": "EE"
+  },
+  "inputs": {
+    "rho": 0.4,
+    "tau": 0.2,
+    "k": 0.5,
+    "C_people": 705000.0,
+    "P_people": 425000.0,
+    "C_m": 0.705,
+    "P_m": 0.425,
+    "u": 0.0755,
+    "pop_growth": 0.0014986,
+    "aging_pp": 0.0038325,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 705000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "EE_STAT_EMPLOYMENT_2023",
+          "url": "https://www.stat.ee/en/find-statistics/statistics-theme/work-life/employment",
+          "publisher": "Statistics Estonia"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 425000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "EE_SSA_PENSIONERS_2023",
+          "url": "https://www.sotsiaalkindlustusamet.ee/en/statistics",
+          "publisher": "Estonian Social Insurance Board"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.4,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pilares I + II).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_EE_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.2,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización al seguro público de pensiones (pilar I).",
+        "sources": [
+          {
+            "source_id": "EE_SOC_TAX_PENSION",
+            "url": "https://www.emta.ee/en/business-client/taxes-and-payment/social-tax",
+            "publisher": "Estonian Tax and Customs Board"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 425000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (vejez, invalidez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "EE_SSA_PENSIONERS_2023",
+          "url": "https://www.sotsiaalkindlustusamet.ee/en/statistics",
+          "publisher": "Estonian Social Insurance Board"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 705000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "EE_STAT_EMPLOYMENT_2023",
+          "url": "https://www.stat.ee/en/find-statistics/statistics-theme/work-life/employment",
+          "publisher": "Statistics Estonia"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.2,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización al seguro público de pensiones (pilar I).",
+      "sources": [
+        {
+          "source_id": "EE_SOC_TAX_PENSION",
+          "url": "https://www.emta.ee/en/business-client/taxes-and-payment/social-tax",
+          "publisher": "Estonian Tax and Customs Board"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.4,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pilares I + II).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_EE_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.079,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_EE_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

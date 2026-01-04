@@ -1,0 +1,235 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Reino Unido",
+    "iso2": "GB"
+  },
+  "inputs": {
+    "rho": 0.29,
+    "tau": 0.122,
+    "k": 0.4206896551724138,
+    "C_people": 33600000.0,
+    "P_people": 12500000.0,
+    "C_m": 33.6,
+    "P_m": 12.5,
+    "u": 0.043,
+    "pop_growth": 0.0106596,
+    "aging_pp": 0.0026164,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 33600000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes al National Insurance).",
+      "sources": [
+        {
+          "source_id": "UK_ONS_EMPLOYMENT_2023",
+          "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes",
+          "publisher": "Office for National Statistics (ONS)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 12500000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la State Pension (básica y nueva State Pension).",
+      "sources": [
+        {
+          "source_id": "UK_DWP_STATE_PENSIONERS_2023",
+          "url": "https://www.gov.uk/government/statistics/state-pension-statistics",
+          "publisher": "Department for Work and Pensions (DWP)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.29,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (State Pension + auto-enrolment).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_GB_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_public",
+        "value": 0.122,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo efectivo aproximado de cotización a National Insurance destinado a pensiones públicas.",
+        "sources": [
+          {
+            "source_id": "UK_HMRC_NI_RATES_2024",
+            "url": "https://www.gov.uk/national-insurance-rates-letters",
+            "publisher": "HM Revenue & Customs (HMRC)"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total_15_74",
+      "value": 0.043,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Tasa de paro total (15–74) anual 2024 (OECD vía FRED), convertida a fracción (p.ej. 4.30% -> 0.0430).",
+      "sources": [
+        {
+          "source_id": "FRED_LRUN74TTGBA156N_2024",
+          "url": "https://fred.stlouisfed.org/series/LRUN74TTGBA156N",
+          "publisher": "OECD (vía FRED)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": 0.0106596,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población 2024 (World Bank WDI vía FRED), convertido a fracción (p.ej. 1.066% -> 0.01066).",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWGBR_2024",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWGBR",
+          "publisher": "World Bank (vía FRED)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "delta_share_population_65plus",
+      "value": 0.0026164,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Δ share 65+ (2024 vs 2023) a partir de WDI (World Bank vía FRED), expresado como fracción (p.ej. +0.262 pp -> 0.00262).",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSGBR_2024_2023",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSGBR",
+          "publisher": "World Bank (vía FRED)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 12500000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la State Pension (básica y nueva State Pension).",
+      "sources": [
+        {
+          "source_id": "UK_DWP_STATE_PENSIONERS_2023",
+          "url": "https://www.gov.uk/government/statistics/state-pension-statistics",
+          "publisher": "Department for Work and Pensions (DWP)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 33600000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes al National Insurance).",
+      "sources": [
+        {
+          "source_id": "UK_ONS_EMPLOYMENT_2023",
+          "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes",
+          "publisher": "Office for National Statistics (ONS)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_public",
+      "value": 0.122,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo efectivo aproximado de cotización a National Insurance destinado a pensiones públicas.",
+      "sources": [
+        {
+          "source_id": "UK_HMRC_NI_RATES_2024",
+          "url": "https://www.gov.uk/national-insurance-rates-letters",
+          "publisher": "HM Revenue & Customs (HMRC)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.29,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (State Pension + auto-enrolment).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_GB_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.104,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_GB_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

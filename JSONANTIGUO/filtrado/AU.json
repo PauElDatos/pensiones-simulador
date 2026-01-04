@@ -1,0 +1,232 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Australia",
+    "iso2": "AU"
+  },
+  "inputs": {
+    "rho": 0.41,
+    "tau": 0.115,
+    "k": 0.2804878048780488,
+    "C_people": 14300000.0,
+    "P_people": 4100000.0,
+    "C_m": 14.3,
+    "P_m": 4.1,
+    "u": 0.037764400000000004,
+    "pop_growth": 0.024345099999999998,
+    "aging_pp": 0.0030898999999999788,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 14300000,
+      "unit": "people",
+      "period": {
+        "date": "2024-06-30",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas (proxy de cotizantes al sistema).",
+      "sources": [
+        {
+          "source_id": "AU_ABS_LABOUR_2024",
+          "url": "https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia",
+          "publisher": "Australian Bureau of Statistics (ABS)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 4100000,
+      "unit": "people",
+      "period": {
+        "date": "2024-06-30",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la Age Pension (pensión pública contributiva/asistencial).",
+      "sources": [
+        {
+          "source_id": "AU_SERVICES_AU_AGE_PENSION_2024",
+          "url": "https://www.servicesaustralia.gov.au/age-pension-statistics",
+          "publisher": "Services Australia"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.41,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + superannuation) para trabajador medio con carrera completa.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_AU_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_superannuation",
+        "value": 0.115,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-07-01",
+          "granularity": "year"
+        },
+        "notes": "Superannuation Guarantee: aportación obligatoria del empleador al sistema de capitalización.",
+        "sources": [
+          {
+            "source_id": "AU_ATO_SUPER_RATE_2024",
+            "url": "https://www.ato.gov.au/business/super-for-employers/superannuation-guarantee",
+            "publisher": "Australian Taxation Office (ATO)"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_15_64",
+      "value": 3.77644,
+      "unit": "percent",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Se usa como proxy de 'u' (porcentaje de población en edad laboral que no cotiza). Tasa anual de desempleo para 15–64 años.",
+      "sources": [
+        {
+          "source_id": "FRED_LRUN64TT_AU_A_2023",
+          "url": "https://fred.stlouisfed.org/series/LRUN64TTAUA156N"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": 2.43451,
+      "unit": "percent",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población (variación % anual).",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGRO_AU_2023",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROAUS"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "delta_share_population_65plus",
+      "value": 0.30899,
+      "unit": "percentage_points",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Cambio anual de la cuota de población 65+ (2023 vs 2022). Para el modelo se convierte a fracción (pp/100).",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UP_AU_2022_2023",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSAUS"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 4100000,
+      "unit": "people",
+      "period": {
+        "date": "2024-06-30",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la Age Pension (pensión pública contributiva/asistencial).",
+      "sources": [
+        {
+          "source_id": "AU_SERVICES_AU_AGE_PENSION_2024",
+          "url": "https://www.servicesaustralia.gov.au/age-pension-statistics",
+          "publisher": "Services Australia"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 14300000,
+      "unit": "people",
+      "period": {
+        "date": "2024-06-30",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas (proxy de cotizantes al sistema).",
+      "sources": [
+        {
+          "source_id": "AU_ABS_LABOUR_2024",
+          "url": "https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia",
+          "publisher": "Australian Bureau of Statistics (ABS)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_superannuation",
+      "value": 0.115,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-07-01",
+        "granularity": "year"
+      },
+      "notes": "Superannuation Guarantee: aportación obligatoria del empleador al sistema de capitalización.",
+      "sources": [
+        {
+          "source_id": "AU_ATO_SUPER_RATE_2024",
+          "url": "https://www.ato.gov.au/business/super-for-employers/superannuation-guarantee",
+          "publisher": "Australian Taxation Office (ATO)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.41,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + superannuation) para trabajador medio con carrera completa.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_AU_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.045,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB (uno de los más bajos de la OCDE).",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_AU_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

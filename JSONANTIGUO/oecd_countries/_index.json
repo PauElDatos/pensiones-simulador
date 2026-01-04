@@ -1,0 +1,234 @@
+{
+  "input_file": "/Users/paulmuseck/Desktop/pensiones-simulador/JSONANTIGUO/oecd_pensions_merged.json",
+  "output_dir": "/Users/paulmuseck/Desktop/pensiones-simulador/JSONANTIGUO/oecd_countries",
+  "countries": [
+    {
+      "name": "Alemania",
+      "iso2": "DE",
+      "file": "DE.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Australia",
+      "iso2": "AU",
+      "file": "AU.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Austria",
+      "iso2": "AT",
+      "file": "AT.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Bélgica",
+      "iso2": "BE",
+      "file": "BE.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Canadá",
+      "iso2": "CA",
+      "file": "CA.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Chequia",
+      "iso2": "CZ",
+      "file": "CZ.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Chile",
+      "iso2": "CL",
+      "file": "CL.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Colombia",
+      "iso2": "CO",
+      "file": "CO.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Corea del Sur",
+      "iso2": "KR",
+      "file": "KR.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Costa Rica",
+      "iso2": "CR",
+      "file": "CR.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Dinamarca",
+      "iso2": "DK",
+      "file": "DK.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Eslovaquia",
+      "iso2": "SK",
+      "file": "SK.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Eslovenia",
+      "iso2": "SI",
+      "file": "SI.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "España",
+      "iso2": "ES",
+      "file": "ES.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Estados Unidos",
+      "iso2": "US",
+      "file": "US.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Estonia",
+      "iso2": "EE",
+      "file": "EE.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Finlandia",
+      "iso2": "FI",
+      "file": "FI.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Francia",
+      "iso2": "FR",
+      "file": "FR.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Grecia",
+      "iso2": "GR",
+      "file": "GR.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Hungría",
+      "iso2": "HU",
+      "file": "HU.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Irlanda",
+      "iso2": "IE",
+      "file": "IE.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Islandia",
+      "iso2": "IS",
+      "file": "IS.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Israel",
+      "iso2": "IL",
+      "file": "IL.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Italia",
+      "iso2": "IT",
+      "file": "IT.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Japón",
+      "iso2": "JP",
+      "file": "JP.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Letonia",
+      "iso2": "LV",
+      "file": "LV.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Lituania",
+      "iso2": "LT",
+      "file": "LT.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Luxemburgo",
+      "iso2": "LU",
+      "file": "LU.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "México",
+      "iso2": "MX",
+      "file": "MX.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Noruega",
+      "iso2": "NO",
+      "file": "NO.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Nueva Zelanda",
+      "iso2": "NZ",
+      "file": "NZ.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Países Bajos",
+      "iso2": "NL",
+      "file": "NL.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Polonia",
+      "iso2": "PL",
+      "file": "PL.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Portugal",
+      "iso2": "PT",
+      "file": "PT.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Reino Unido",
+      "iso2": "GB",
+      "file": "GB.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Suecia",
+      "iso2": "SE",
+      "file": "SE.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Suiza",
+      "iso2": "CH",
+      "file": "CH.json",
+      "has_core_pension_inputs": true
+    },
+    {
+      "name": "Turquía",
+      "iso2": "TR",
+      "file": "TR.json",
+      "has_core_pension_inputs": true
+    }
+  ]
+}

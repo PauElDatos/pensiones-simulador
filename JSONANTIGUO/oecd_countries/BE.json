@@ -1,0 +1,188 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Bélgica",
+    "iso2": "BE"
+  },
+  "inputs": {
+    "rho": 0.63,
+    "tau": 0.249,
+    "k": 0.3952380952380952,
+    "C_people": 5050000.0,
+    "P_people": 3100000.0,
+    "C_m": 5.05,
+    "P_m": 3.1,
+    "u": null,
+    "pop_growth": null,
+    "aging_pp": null,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 5050000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "BE_STATBEL_EMPLOYMENT_2023",
+          "url": "https://statbel.fgov.be/fr/themes/emploi-formation/marche-du-travail",
+          "publisher": "Statbel (Office belge de statistique)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 3100000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas legales (vejez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "BE_SFP_PENSIONERS_2023",
+          "url": "https://www.sfpd.fgov.be/fr/statistiques",
+          "publisher": "Service fédéral des Pensions (SFP)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.63,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (pensión pública legal).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_BE_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.249,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización a la seguridad social para pensiones (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "BE_SOCSEC_CONTRIB_2024",
+            "url": "https://www.socialsecurity.belgium.be/fr/employeurs/cotisations",
+            "publisher": "Sécurité sociale belge"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 3100000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas legales (vejez y supervivencia).",
+      "sources": [
+        {
+          "source_id": "BE_SFP_PENSIONERS_2023",
+          "url": "https://www.sfpd.fgov.be/fr/statistiques",
+          "publisher": "Service fédéral des Pensions (SFP)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 5050000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "BE_STATBEL_EMPLOYMENT_2023",
+          "url": "https://statbel.fgov.be/fr/themes/emploi-formation/marche-du-travail",
+          "publisher": "Statbel (Office belge de statistique)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.249,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización a la seguridad social para pensiones (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "BE_SOCSEC_CONTRIB_2024",
+          "url": "https://www.socialsecurity.belgium.be/fr/employeurs/cotisations",
+          "publisher": "Sécurité sociale belge"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.63,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta para trabajador medio con carrera completa (pensión pública legal).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_BE_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.122,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_BE_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [
+    "u",
+    "pop_growth",
+    "aging_pp"
+  ]
+}

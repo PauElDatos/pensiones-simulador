@@ -1,0 +1,188 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Francia",
+    "iso2": "FR"
+  },
+  "inputs": {
+    "rho": 0.74,
+    "tau": 0.283,
+    "k": 0.3824324324324324,
+    "C_people": 30400000.0,
+    "P_people": 17100000.0,
+    "C_m": 30.4,
+    "P_m": 17.1,
+    "u": null,
+    "pop_growth": null,
+    "aging_pp": null,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 30400000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas ocupadas cotizando a algún régimen de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "FR_INSEE_EMPLOYMENT_2023",
+          "url": "https://www.insee.fr/fr/statistiques/emploi",
+          "publisher": "INSEE"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 17100000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (todos los regímenes: general, especiales y complementarios obligatorios).",
+      "sources": [
+        {
+          "source_id": "FR_DREES_PENSIONERS_2023",
+          "url": "https://drees.solidarites-sante.gouv.fr/statistiques/pensions-de-retraite",
+          "publisher": "DREES – Ministère des Solidarités et de la Santé"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.74,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (regímenes público y complementarios).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_FR_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.283,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización a pensiones (regímenes básicos + complementarios obligatorios, promedio agregado).",
+        "sources": [
+          {
+            "source_id": "FR_CLEISS_CONTRIB_2024",
+            "url": "https://www.cleiss.fr/employeurs/cotisations/france.html",
+            "publisher": "CLEISS"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 17100000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (todos los regímenes: general, especiales y complementarios obligatorios).",
+      "sources": [
+        {
+          "source_id": "FR_DREES_PENSIONERS_2023",
+          "url": "https://drees.solidarites-sante.gouv.fr/statistiques/pensions-de-retraite",
+          "publisher": "DREES – Ministère des Solidarités et de la Santé"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 30400000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas ocupadas cotizando a algún régimen de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "FR_INSEE_EMPLOYMENT_2023",
+          "url": "https://www.insee.fr/fr/statistiques/emploi",
+          "publisher": "INSEE"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.283,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización a pensiones (regímenes básicos + complementarios obligatorios, promedio agregado).",
+      "sources": [
+        {
+          "source_id": "FR_CLEISS_CONTRIB_2024",
+          "url": "https://www.cleiss.fr/employeurs/cotisations/france.html",
+          "publisher": "CLEISS"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.74,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (regímenes público y complementarios).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_FR_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.143,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB (uno de los más elevados de la OCDE).",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_FR_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [
+    "u",
+    "pop_growth",
+    "aging_pp"
+  ]
+}

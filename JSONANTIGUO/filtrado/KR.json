@@ -1,0 +1,235 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Corea del Sur",
+    "iso2": "KR"
+  },
+  "inputs": {
+    "rho": 0.4,
+    "tau": 0.09,
+    "k": 0.22499999999999998,
+    "C_people": 28800000.0,
+    "P_people": 6000000.0,
+    "C_m": 28.8,
+    "P_m": 6.0,
+    "u": 0.027999999999999997,
+    "pop_growth": 0.0007432,
+    "aging_pp": 0.0093849,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 28800000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el National Pension Scheme (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "KR_KOSIS_EMPLOYMENT_2023",
+          "url": "https://kosis.kr/eng/statisticsList/statisticsListIndex.do?menuId=M_01_01",
+          "publisher": "KOSIS – Statistics Korea"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 6000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (National Pension Scheme y Basic Pension).",
+      "sources": [
+        {
+          "source_id": "KR_MOHW_PENSIONERS_2023",
+          "url": "https://www.mohw.go.kr/eng/pl/pl0101.jsp",
+          "publisher": "Ministry of Health and Welfare (MOHW)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.4,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_KR_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.09,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización al National Pension Scheme (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "KR_NPS_CONTRIB_2024",
+            "url": "https://www.nps.or.kr/jsppage/english/scheme/scheme_01.jsp",
+            "publisher": "National Pension Service (NPS)"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total_15_plus",
+      "value": 2.8,
+      "unit": "percent",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Unemployment rate total (15+), OECD via FRED. En el simulador se usa como proxy de u (% de población en edad laboral que no cotiza); se convierte a fracción (u=0.02800).",
+      "sources": [
+        {
+          "source_id": "OECD_LRUNTTTTKRA156N_FRED",
+          "url": "https://fred.stlouisfed.org/series/LRUNTTTTKRA156N",
+          "publisher": "OECD via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": 0.07432,
+      "unit": "percent",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población (%) del World Bank WDI (SP.POP.GROW) vía FRED. En el simulador se convierte a fracción (pop_growth=0.0007432).",
+      "sources": [
+        {
+          "source_id": "WB_SPPOPGROWKOR_FRED",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWKOR",
+          "publisher": "World Bank WDI via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "population_65_plus_share_change",
+      "value": 0.93849,
+      "unit": "percentage_points",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Variación anual aproximada del share 65+ (pp): 2024−2023 usando World Bank WDI (SP.POP.65UP.TO.ZS) vía FRED. Valores: 2024=19.27351%, 2023=18.33502%, Δ=0.93849 pp. En el simulador se convierte a fracción (aging_pp=Δ/100=0.0093849).",
+      "sources": [
+        {
+          "source_id": "WB_SPPOP65UPTOZSKOR_FRED",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSKOR",
+          "publisher": "World Bank WDI via FRED (St. Louis Fed)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 6000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (National Pension Scheme y Basic Pension).",
+      "sources": [
+        {
+          "source_id": "KR_MOHW_PENSIONERS_2023",
+          "url": "https://www.mohw.go.kr/eng/pl/pl0101.jsp",
+          "publisher": "Ministry of Health and Welfare (MOHW)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 28800000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el National Pension Scheme (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "KR_KOSIS_EMPLOYMENT_2023",
+          "url": "https://kosis.kr/eng/statisticsList/statisticsListIndex.do?menuId=M_01_01",
+          "publisher": "KOSIS – Statistics Korea"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.09,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización al National Pension Scheme (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "KR_NPS_CONTRIB_2024",
+          "url": "https://www.nps.or.kr/jsppage/english/scheme/scheme_01.jsp",
+          "publisher": "National Pension Service (NPS)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.4,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_KR_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.038,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_KR_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

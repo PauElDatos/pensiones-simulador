@@ -1,0 +1,202 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Colombia",
+    "iso2": "CO"
+  },
+  "inputs": {
+    "rho": 0.65,
+    "tau": 0.16,
+    "k": 0.24615384615384614,
+    "C_people": 22400000.0,
+    "P_people": 1700000.0,
+    "C_m": 22.4,
+    "P_m": 1.7,
+    "u": 0.096,
+    "pop_growth": 0.011,
+    "aging_pp": 0.004,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 22400000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas ocupadas en la economía (proxy amplia de cotizantes potenciales).",
+      "sources": [
+        {
+          "source_id": "CO_DANE_EMPLOYMENT_2023",
+          "url": "https://www.dane.gov.co/index.php/estadisticas-por-tema/mercado-laboral",
+          "publisher": "DANE (Departamento Administrativo Nacional de Estadística)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 1700000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensión en los regímenes contributivo público (Colpensiones) y privado.",
+      "sources": [
+        {
+          "source_id": "CO_COLPENSIONES_PENSIONERS_2023",
+          "url": "https://www.colpensiones.gov.co/publicaciones/estadisticas",
+          "publisher": "Colpensiones"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.65,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta teórica para trabajador medio con carrera completa en el régimen público.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CO_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.16,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Cotización obligatoria al sistema pensional: 16% del salario (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "CO_MINTRABAJO_CONTRIB_2024",
+            "url": "https://www.mintrabajo.gov.co/web/guest/pensiones",
+            "publisher": "Ministerio del Trabajo de Colombia"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "value_percent": 9.6,
+      "year": 2023,
+      "series": "World Bank WDI (SL.UEM.TOTL.ZS) via DataBank",
+      "definition": "Unemployment, total (% of total labor force) (modeled ILO estimate)"
+    },
+    "pop_growth": {
+      "value_percent": 1.1,
+      "year": 2024,
+      "series": "World Bank WDI (SP.POP.GROW) via DataBank",
+      "definition": "Population growth (annual %)"
+    },
+    "aging_pp": {
+      "value_pp": 0.40000000000000036,
+      "years": "2023→2024",
+      "series": "World Bank WDI (SP.POP.65UP.TO.ZS) via DataBank",
+      "definition": "Change in population ages 65+ share (percentage points) using latest two years."
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 1700000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensión en los regímenes contributivo público (Colpensiones) y privado.",
+      "sources": [
+        {
+          "source_id": "CO_COLPENSIONES_PENSIONERS_2023",
+          "url": "https://www.colpensiones.gov.co/publicaciones/estadisticas",
+          "publisher": "Colpensiones"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 22400000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas ocupadas en la economía (proxy amplia de cotizantes potenciales).",
+      "sources": [
+        {
+          "source_id": "CO_DANE_EMPLOYMENT_2023",
+          "url": "https://www.dane.gov.co/index.php/estadisticas-por-tema/mercado-laboral",
+          "publisher": "DANE (Departamento Administrativo Nacional de Estadística)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.16,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Cotización obligatoria al sistema pensional: 16% del salario (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "CO_MINTRABAJO_CONTRIB_2024",
+          "url": "https://www.mintrabajo.gov.co/web/guest/pensiones",
+          "publisher": "Ministerio del Trabajo de Colombia"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.65,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta teórica para trabajador medio con carrera completa en el régimen público.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_CO_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.041,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_CO_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

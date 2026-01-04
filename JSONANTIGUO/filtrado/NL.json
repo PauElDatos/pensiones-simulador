@@ -1,0 +1,235 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Países Bajos",
+    "iso2": "NL"
+  },
+  "inputs": {
+    "rho": 0.82,
+    "tau": 0.179,
+    "k": 0.21829268292682927,
+    "C_people": 9600000.0,
+    "P_people": 3500000.0,
+    "C_m": 9.6,
+    "P_m": 3.5,
+    "u": 0.0363948,
+    "pop_growth": 0.0064881999999999995,
+    "aging_pp": 0.0033932000000000072,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 9600000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cotizantes al sistema (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "NL_CBS_EMPLOYMENT_2023",
+          "url": "https://www.cbs.nl/en-gb/dossier/dutch-economy/employment",
+          "publisher": "Statistics Netherlands (CBS)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 3500000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la pensión pública básica AOW (Algemene Ouderdomswet).",
+      "sources": [
+        {
+          "source_id": "NL_SVB_AOW_2023",
+          "url": "https://www.svb.nl/en/the-aow-pension/statistics",
+          "publisher": "Sociale Verzekeringsbank (SVB)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.82,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria (AOW + planes ocupacionales cuasi-universales).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_NL_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_public",
+        "value": 0.179,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo de cotización al AOW (financiación vía cotizaciones e impuestos sobre la renta).",
+        "sources": [
+          {
+            "source_id": "NL_BELASTING_AOW_2024",
+            "url": "https://www.belastingdienst.nl/wps/wcm/connect/en/individuals/individuals",
+            "publisher": "Belastingdienst (Dutch Tax Administration)"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total_15plus",
+      "value": 0.0363948,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tasa de desempleo anual (% de la fuerza laboral, 15+). Convertido de % a fracción. Se usa como proxy de u (% de 18–64 que NO cotiza).",
+      "sources": [
+        {
+          "source_id": "FRED_OECD_LRUNTTTTNLA156S",
+          "url": "https://fred.stlouisfed.org/series/LRUNTTTTNLA156S",
+          "publisher": "OECD via FRED (Federal Reserve Bank of St. Louis)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": 0.0064881999999999995,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población (World Bank WDI SP.POP.GROW). Convertido de % a fracción.",
+      "sources": [
+        {
+          "source_id": "FRED_WB_SPPOPGROWNLD",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWNLD",
+          "publisher": "World Bank (WDI) via FRED (Federal Reserve Bank of St. Louis)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "delta_share_65plus_pp",
+      "value": 0.0033932000000000072,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-2024",
+        "granularity": "year_over_year"
+      },
+      "notes": "Envejecimiento anual aproximado como Δ(share 65+) entre 2023 y 2024: 20.49608% - 20.15676% = 0.33932 pp, convertido a fracción (pp/100).",
+      "sources": [
+        {
+          "source_id": "FRED_WB_SPPOP65UPTOZSNLD",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSNLD",
+          "publisher": "World Bank (WDI) via FRED (Federal Reserve Bank of St. Louis)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 3500000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben la pensión pública básica AOW (Algemene Ouderdomswet).",
+      "sources": [
+        {
+          "source_id": "NL_SVB_AOW_2023",
+          "url": "https://www.svb.nl/en/the-aow-pension/statistics",
+          "publisher": "Sociale Verzekeringsbank (SVB)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 9600000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cotizantes al sistema (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "NL_CBS_EMPLOYMENT_2023",
+          "url": "https://www.cbs.nl/en-gb/dossier/dutch-economy/employment",
+          "publisher": "Statistics Netherlands (CBS)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_public",
+      "value": 0.179,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo de cotización al AOW (financiación vía cotizaciones e impuestos sobre la renta).",
+      "sources": [
+        {
+          "source_id": "NL_BELASTING_AOW_2024",
+          "url": "https://www.belastingdienst.nl/wps/wcm/connect/en/individuals/individuals",
+          "publisher": "Belastingdienst (Dutch Tax Administration)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.82,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria (AOW + planes ocupacionales cuasi-universales).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_NL_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.071,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_NL_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

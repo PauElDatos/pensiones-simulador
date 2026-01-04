@@ -1,0 +1,188 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Japón",
+    "iso2": "JP"
+  },
+  "inputs": {
+    "rho": 0.61,
+    "tau": 0.183,
+    "k": 0.3,
+    "C_people": 67000000.0,
+    "P_people": 36000000.0,
+    "C_m": 67.0,
+    "P_m": 36.0,
+    "u": null,
+    "pop_growth": null,
+    "aging_pp": null,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 67000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-03-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por los sistemas obligatorios de pensiones (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "JP_STAT_EMPLOYMENT_2023",
+          "url": "https://www.stat.go.jp/english/data/roudou/index.html",
+          "publisher": "Statistics Bureau of Japan"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 36000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-03-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (National Pension + Employees’ Pension Insurance).",
+      "sources": [
+        {
+          "source_id": "JP_MHLW_PENSIONERS_2023",
+          "url": "https://www.mhlw.go.jp/english/database/db-hss/dl/pension_2023.pdf",
+          "publisher": "Ministry of Health, Labour and Welfare (MHLW)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.61,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_JP_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.183,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización al Employees’ Pension Insurance (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "JP_MHLW_CONTRIB_2024",
+            "url": "https://www.nenkin.go.jp/international/japanese-system/employeespension.html",
+            "publisher": "Japan Pension Service / MHLW"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 36000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-03-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas (National Pension + Employees’ Pension Insurance).",
+      "sources": [
+        {
+          "source_id": "JP_MHLW_PENSIONERS_2023",
+          "url": "https://www.mhlw.go.jp/english/database/db-hss/dl/pension_2023.pdf",
+          "publisher": "Ministry of Health, Labour and Welfare (MHLW)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 67000000,
+      "unit": "people",
+      "period": {
+        "date": "2023-03-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por los sistemas obligatorios de pensiones (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "JP_STAT_EMPLOYMENT_2023",
+          "url": "https://www.stat.go.jp/english/data/roudou/index.html",
+          "publisher": "Statistics Bureau of Japan"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.183,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización al Employees’ Pension Insurance (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "JP_MHLW_CONTRIB_2024",
+          "url": "https://www.nenkin.go.jp/international/japanese-system/employeespension.html",
+          "publisher": "Japan Pension Service / MHLW"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.61,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_JP_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.108,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_JP_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [
+    "u",
+    "pop_growth",
+    "aging_pp"
+  ]
+}

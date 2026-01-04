@@ -1,0 +1,235 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Letonia",
+    "iso2": "LV"
+  },
+  "inputs": {
+    "rho": 0.45,
+    "tau": 0.2,
+    "k": 0.4444444444444445,
+    "C_people": 895000.0,
+    "P_people": 470000.0,
+    "C_m": 0.895,
+    "P_m": 0.47,
+    "u": 0.069,
+    "pop_growth": -0.0093797,
+    "aging_pp": 0.0040375,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 895000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "LV_CSB_EMPLOYMENT_2023",
+          "url": "https://stat.gov.lv/en/statistics-themes/labour-market",
+          "publisher": "Central Statistical Bureau of Latvia (CSB)"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 470000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia.",
+      "sources": [
+        {
+          "source_id": "LV_SSIA_PENSIONERS_2023",
+          "url": "https://www.vsaa.gov.lv/en/statistics",
+          "publisher": "State Social Insurance Agency (VSAA)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.45,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pilares I + II).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_LV_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.2,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Parte del impuesto social destinada al pilar público de pensiones (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "LV_SOC_TAX_PENSION_2024",
+            "url": "https://www.vid.gov.lv/en/social-security-contributions",
+            "publisher": "State Revenue Service of Latvia (VID)"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_15_74",
+      "value": 0.069,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Tasa de desempleo anual (15–74), 2024 = 6.9%. Se usa como proxy del % de 18–64 que no cotiza (u).",
+      "sources": [
+        {
+          "source_id": "LV_CSB_UNEMP_2024",
+          "url": "https://stat.gov.lv/en/statistics-themes/labour-market/unemployment/press-releases/22336-unemployment-4th-quarter-2024-and",
+          "publisher": "Central Statistical Bureau of Latvia (CSB)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": -0.0093797,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población 2024 = -0.93797% (World Bank SP.POP.GROW). Guardado como fracción (÷100).",
+      "sources": [
+        {
+          "source_id": "WB_SP.POP.GROW_LV_2024_FRED",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWLVA",
+          "publisher": "World Bank via FRED (Federal Reserve Bank of St. Louis)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "delta_share_65plus",
+      "value": 0.0040375,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Δ cuota 65+ (2024 vs 2023): 21.73584% - 21.33209% = +0.40375 pp => 0.0040375 (pp/100).",
+      "sources": [
+        {
+          "source_id": "WB_SP.POP.65UP.TO.ZS_LV_FRED",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSLVA",
+          "publisher": "World Bank via FRED (Federal Reserve Bank of St. Louis)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 470000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia.",
+      "sources": [
+        {
+          "source_id": "LV_SSIA_PENSIONERS_2023",
+          "url": "https://www.vsaa.gov.lv/en/statistics",
+          "publisher": "State Social Insurance Agency (VSAA)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 895000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "LV_CSB_EMPLOYMENT_2023",
+          "url": "https://stat.gov.lv/en/statistics-themes/labour-market",
+          "publisher": "Central Statistical Bureau of Latvia (CSB)"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.2,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Parte del impuesto social destinada al pilar público de pensiones (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "LV_SOC_TAX_PENSION_2024",
+          "url": "https://www.vid.gov.lv/en/social-security-contributions",
+          "publisher": "State Revenue Service of Latvia (VID)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.45,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pilares I + II).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_LV_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.082,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_LV_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}

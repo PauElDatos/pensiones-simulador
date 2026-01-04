@@ -1,0 +1,294 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Lituania",
+    "iso2": "LT"
+  },
+  "inputs": {
+    "rho": 0.43,
+    "tau": 0.212,
+    "k": 0.4930232558139535,
+    "C_people": 1400000.0,
+    "P_people": 610000.0,
+    "C_m": 1.4,
+    "P_m": 0.61,
+    "u": 0.065,
+    "pop_growth": 0.0057963,
+    "aging_pp": 0.0031031,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 1400000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "LT_STAT_EMPLOYMENT_2023",
+          "url": "https://osp.stat.gov.lt/en/statistical-themes/labour-market",
+          "publisher": "Statistics Lithuania"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 610000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia.",
+      "sources": [
+        {
+          "source_id": "LT_SODRA_PENSIONERS_2023",
+          "url": "https://www.sodra.lt/en/statistics",
+          "publisher": "State Social Insurance Fund Board (SODRA)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.43,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pilares I + II).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_LT_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.212,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Parte del impuesto social destinada al pilar público de pensiones (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "LT_SOC_TAX_PENSION_2024",
+            "url": "https://www.sodra.lt/en/contributions",
+            "publisher": "SODRA"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate",
+      "value": 0.065,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-10-01",
+        "granularity": "quarter"
+      },
+      "notes": "Último dato disponible (Q4 2024) en FRED/OECD.",
+      "sources": [
+        {
+          "source_id": "FRED_LTULRUN74TTSTQ",
+          "url": "https://fred.stlouisfed.org/series/LTULRUN74TTSTQ",
+          "publisher": "FRED / OECD"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth",
+      "value": 0.0057963,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Último dato anual disponible (2024) en FRED/WDI.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWLTU",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWLTU",
+          "publisher": "FRED / World Bank"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "aging_pp",
+      "value": 0.0031031,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Derivado de Δ share 65+ (2024-2023) usando FRED/WDI.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSLTU",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSLTU",
+          "publisher": "FRED / World Bank"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 610000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia.",
+      "sources": [
+        {
+          "source_id": "LT_SODRA_PENSIONERS_2023",
+          "url": "https://www.sodra.lt/en/statistics",
+          "publisher": "State Social Insurance Fund Board (SODRA)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 1400000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cubiertas por el sistema de seguridad social (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "LT_STAT_EMPLOYMENT_2023",
+          "url": "https://osp.stat.gov.lt/en/statistical-themes/labour-market",
+          "publisher": "Statistics Lithuania"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.212,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Parte del impuesto social destinada al pilar público de pensiones (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "LT_SOC_TAX_PENSION_2024",
+          "url": "https://www.sodra.lt/en/contributions",
+          "publisher": "SODRA"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.43,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (pilares I + II).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_LT_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.078,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_LT_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "unemployment_rate",
+      "value": 0.065,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-10-01",
+        "granularity": "quarter"
+      },
+      "notes": "Tasa de paro (OECD) para Lituania. Usada como u (% 18–64 que NO cotiza) en el simulador, aproximación.",
+      "sources": [
+        {
+          "source_id": "FRED_LTULRUN74TTSTQ",
+          "url": "https://fred.stlouisfed.org/series/LTULRUN74TTSTQ",
+          "publisher": "Federal Reserve Bank of St. Louis (FRED) / OECD"
+        }
+      ]
+    },
+    {
+      "metric": "population_growth",
+      "value": 0.0057963,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población (World Bank WDI vía FRED).",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWLTU",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWLTU",
+          "publisher": "Federal Reserve Bank of St. Louis (FRED) / World Bank"
+        }
+      ]
+    },
+    {
+      "metric": "aging_pp",
+      "value": 0.0031031,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Envejecimiento anual aproximado como Δ (share 65+) interanual: (2024 - 2023) en puntos porcentuales, expresado como fracción (pp/100). Derivado de la serie World Bank (vía FRED) 'Population ages 65 and above (% of total)'.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSLTU",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSLTU",
+          "publisher": "Federal Reserve Bank of St. Louis (FRED) / World Bank"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [],
+  "meta": {
+    "filled_fields": [
+      "u",
+      "pop_growth",
+      "aging_pp"
+    ],
+    "filled_on_utc": "2026-01-04T11:31:20.527882+00:00"
+  }
+}

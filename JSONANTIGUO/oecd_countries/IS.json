@@ -1,0 +1,188 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Islandia",
+    "iso2": "IS"
+  },
+  "inputs": {
+    "rho": 0.56,
+    "tau": 0.156,
+    "k": 0.2785714285714285,
+    "C_people": 215000.0,
+    "P_people": 78000.0,
+    "C_m": 0.215,
+    "P_m": 0.078,
+    "u": null,
+    "pop_growth": null,
+    "aging_pp": null,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 215000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "IS_STAT_EMPLOYMENT_2023",
+          "url": "https://www.statice.is/statistics/society/labour-market/",
+          "publisher": "Statistics Iceland"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 78000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensiones públicas de vejez y prestaciones relacionadas.",
+      "sources": [
+        {
+          "source_id": "IS_STAT_PENSIONERS_2023",
+          "url": "https://www.statice.is/statistics/society/pensions/",
+          "publisher": "Statistics Iceland"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.56,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + ocupacional) para trabajador medio.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_IS_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.156,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Aportación total obligatoria a planes de pensiones ocupacionales (empleador + trabajador).",
+        "sources": [
+          {
+            "source_id": "IS_MINFIN_PENSION_CONTRIB_2024",
+            "url": "https://www.government.is/topics/labour-and-employment/occupational-pensions/",
+            "publisher": "Government of Iceland"
+          }
+        ]
+      }
+    ]
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 78000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas que reciben pensiones públicas de vejez y prestaciones relacionadas.",
+      "sources": [
+        {
+          "source_id": "IS_STAT_PENSIONERS_2023",
+          "url": "https://www.statice.is/statistics/society/pensions/",
+          "publisher": "Statistics Iceland"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 215000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas en la economía (proxy de cotizantes).",
+      "sources": [
+        {
+          "source_id": "IS_STAT_EMPLOYMENT_2023",
+          "url": "https://www.statice.is/statistics/society/labour-market/",
+          "publisher": "Statistics Iceland"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.156,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Aportación total obligatoria a planes de pensiones ocupacionales (empleador + trabajador).",
+      "sources": [
+        {
+          "source_id": "IS_MINFIN_PENSION_CONTRIB_2024",
+          "url": "https://www.government.is/topics/labour-and-employment/occupational-pensions/",
+          "publisher": "Government of Iceland"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.56,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria (pensión pública + ocupacional) para trabajador medio.",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_IS_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.067,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_IS_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": [
+    "u",
+    "pop_growth",
+    "aging_pp"
+  ]
+}

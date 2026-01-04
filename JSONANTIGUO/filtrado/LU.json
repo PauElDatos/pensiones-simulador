@@ -1,0 +1,303 @@
+{
+  "schema_version": "country_sim_inputs_v1",
+  "country": {
+    "name": "Luxemburgo",
+    "iso2": "LU"
+  },
+  "inputs": {
+    "rho": 0.9,
+    "tau": 0.24,
+    "k": 0.26666666666666666,
+    "C_people": 515000.0,
+    "P_people": 215000.0,
+    "C_m": 0.515,
+    "P_m": 0.215,
+    "u": 0.068,
+    "pop_growth": 0.0157539,
+    "aging_pp": 0.0037017,
+    "years": 80
+  },
+  "latest_observations_used": {
+    "C": {
+      "metric": "contributors_employed_people",
+      "value": 515000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cotizantes a la seguridad social (incluye trabajadores transfronterizos).",
+      "sources": [
+        {
+          "source_id": "LU_STATEC_EMPLOYMENT_2023",
+          "url": "https://statistiques.public.lu/en/themes/emploi.html",
+          "publisher": "STATEC Luxembourg"
+        }
+      ]
+    },
+    "P": {
+      "metric": "pensioners_people",
+      "value": 215000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia del sistema general.",
+      "sources": [
+        {
+          "source_id": "LU_IGSS_PENSIONERS_2023",
+          "url": "https://igss.gouvernement.lu/en/statistiques.html",
+          "publisher": "Inspection Générale de la Sécurité Sociale (IGSS)"
+        }
+      ]
+    },
+    "rho": {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.9,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_LU_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    "tau_components": [
+      {
+        "metric": "contribution_rate_pension_total",
+        "value": 0.24,
+        "unit": "ratio",
+        "period": {
+          "date": "2024-01-01",
+          "granularity": "year"
+        },
+        "notes": "Tipo total de cotización al régimen general de pensiones (empleador + trabajador + Estado).",
+        "sources": [
+          {
+            "source_id": "LU_SOCSEC_CONTRIB_2024",
+            "url": "https://ccss.public.lu/en/employeurs/cotisations.html",
+            "publisher": "Centre Commun de la Sécurité Sociale (CCSS)"
+          }
+        ]
+      }
+    ],
+    "u": {
+      "metric": "unemployment_rate_total_15_74",
+      "value": 6.8,
+      "unit": "percent",
+      "period": {
+        "date": "2024-Q4",
+        "granularity": "quarter"
+      },
+      "notes": "Tasa de desempleo total (15–74), dato trimestral.",
+      "sources": [
+        {
+          "source_id": "FRED_LRUN74TTLUQ156N",
+          "url": "https://fred.stlouisfed.org/series/LRUN74TTLUQ156N",
+          "publisher": "OECD via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "pop_growth": {
+      "metric": "population_growth_annual",
+      "value": 1.57539,
+      "unit": "percent",
+      "period": {
+        "date": "2024",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población (variación % anual).",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWLUX",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWLUX",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    "aging_pp": {
+      "metric": "population_share_65plus_yoy_change",
+      "value": 0.37017,
+      "unit": "pp",
+      "period": {
+        "date": "2024",
+        "granularity": "year"
+      },
+      "notes": "Cambio interanual de la proporción 65+ (2024 15.47636% - 2023 15.10619%).",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSLUX",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSLUX",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "metric": "pensioners_people",
+      "value": 215000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Beneficiarios de pensiones públicas de vejez, invalidez y supervivencia del sistema general.",
+      "sources": [
+        {
+          "source_id": "LU_IGSS_PENSIONERS_2023",
+          "url": "https://igss.gouvernement.lu/en/statistiques.html",
+          "publisher": "Inspection Générale de la Sécurité Sociale (IGSS)"
+        }
+      ]
+    },
+    {
+      "metric": "contributors_employed_people",
+      "value": 515000,
+      "unit": "people",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Personas empleadas cotizantes a la seguridad social (incluye trabajadores transfronterizos).",
+      "sources": [
+        {
+          "source_id": "LU_STATEC_EMPLOYMENT_2023",
+          "url": "https://statistiques.public.lu/en/themes/emploi.html",
+          "publisher": "STATEC Luxembourg"
+        }
+      ]
+    },
+    {
+      "metric": "contribution_rate_pension_total",
+      "value": 0.24,
+      "unit": "ratio",
+      "period": {
+        "date": "2024-01-01",
+        "granularity": "year"
+      },
+      "notes": "Tipo total de cotización al régimen general de pensiones (empleador + trabajador + Estado).",
+      "sources": [
+        {
+          "source_id": "LU_SOCSEC_CONTRIB_2024",
+          "url": "https://ccss.public.lu/en/employeurs/cotisations.html",
+          "publisher": "Centre Commun de la Sécurité Sociale (CCSS)"
+        }
+      ]
+    },
+    {
+      "metric": "replacement_rate_gross_full_career",
+      "value": 0.9,
+      "unit": "ratio",
+      "period": {
+        "date": "2023-11-01",
+        "granularity": "publication_date"
+      },
+      "notes": "Tasa de reemplazo bruta obligatoria para trabajador medio con carrera completa (sistema público).",
+      "sources": [
+        {
+          "source_id": "OECD_PAG_2023_LU_REPLACEMENT",
+          "url": "https://www.oecd.org/en/publications/pensions-at-a-glance-2023_678055dd-en.html",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "pension_expenditure_gdp_public",
+      "value": 0.093,
+      "unit": "ratio",
+      "period": {
+        "date": "2022-12-31",
+        "granularity": "year"
+      },
+      "notes": "Gasto público en pensiones como porcentaje del PIB.",
+      "sources": [
+        {
+          "source_id": "OECD_SOCX_LU_2022",
+          "url": "https://www.oecd.org/social/expenditure.htm",
+          "publisher": "OECD"
+        }
+      ]
+    },
+    {
+      "metric": "unemployment_rate_total_15_74",
+      "value": 6.8,
+      "unit": "percent",
+      "period": {
+        "date": "2024-Q4",
+        "granularity": "quarter"
+      },
+      "notes": "Tasa de desempleo total (15–74), trimestral.",
+      "sources": [
+        {
+          "source_id": "FRED_LRUN74TTLUQ156N",
+          "url": "https://fred.stlouisfed.org/series/LRUN74TTLUQ156N",
+          "publisher": "OECD via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    {
+      "metric": "population_growth_annual",
+      "value": 1.57539,
+      "unit": "percent",
+      "period": {
+        "date": "2024",
+        "granularity": "year"
+      },
+      "notes": "Crecimiento anual de población (%).",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOPGROWLUX",
+          "url": "https://fred.stlouisfed.org/series/SPPOPGROWLUX",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    {
+      "metric": "population_share_65plus_percent",
+      "value": 15.47636,
+      "unit": "percent",
+      "period": {
+        "date": "2024-12-31",
+        "granularity": "year"
+      },
+      "notes": "Población 65+ como porcentaje del total.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSLUX",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSLUX",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    },
+    {
+      "metric": "population_share_65plus_percent",
+      "value": 15.10619,
+      "unit": "percent",
+      "period": {
+        "date": "2023-12-31",
+        "granularity": "year"
+      },
+      "notes": "Población 65+ como porcentaje del total.",
+      "sources": [
+        {
+          "source_id": "FRED_SPPOP65UPTOZSLUX",
+          "url": "https://fred.stlouisfed.org/series/SPPOP65UPTOZSLUX",
+          "publisher": "World Bank via FRED (St. Louis Fed)"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "merged_schema_version": "1.0",
+    "generated_from": "merge_country_jsons.py"
+  },
+  "missing_fields": []
+}
