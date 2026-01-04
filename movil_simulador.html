@@ -968,8 +968,10 @@
             </div>
 
             <div class="note">
-              La pirámide define shares iniciales: menores (&lt;18), edad laboral (18–64) y jubilados (65+).
-              Con densidad jóvenes y densidad mayores controlas de forma independiente la “forma” del bulto inferior y superior.
+              La pirámide define shares por edad: menores (&lt;18), edad laboral (18–64) y mayores (65+).
+              Si activas datos OCDE y el bundle trae <span class="mono">P_people</span>, el simulador calibra
+              <span class="mono">P(t)=α·P65+(t)</span> para que en <span class="mono">t0</span> “Pensionistas (P)” coincida con el dato.
+              Si <span class="mono">α</span> sale fuera de rango plausible, se hace fallback a <span class="mono">P≈65+</span>.
             </div>
           </div>
         </div>
@@ -1118,7 +1120,10 @@
       byIso3: new Map(),
       pyramidsLoaded: false,
       pyramidsByIso3: new Map(),
-      popYear: null
+      popYear: null,
+
+      pensionerFactor: 1.0,
+      pensionerFactorMeta: null
     },
     oecdUse: false,
     oecdCountry: "Alemania",
@@ -1415,6 +1420,67 @@
       if (k in obj) return obj[k];
     }
     return undefined;
+  }
+
+  function normalizePeopleCountSmart(v, pop0, expectedShare){
+    const n = asNumber(v);
+    if (!isFinite(n) || n <= 0) return { people: NaN, kind: null };
+
+    const candidates = [
+      { people: n, kind: "people" },
+      { people: n * 1_000_000, kind: "million" },
+      { people: n * pop0, kind: "share" }
+    ];
+
+    const valid = candidates.filter(c =>
+      isFinite(c.people) && c.people > 0 && c.people < pop0 * 0.98
+    );
+    if (!valid.length) return { people: n, kind: "people" };
+
+    const target = (isFinite(expectedShare) && expectedShare > 0) ? (pop0 * expectedShare) : null;
+    if (target){
+      valid.forEach(c => { c.score = Math.abs(Math.log((c.people + 1e-9) / (target + 1e-9))); });
+      valid.sort((a,b)=>a.score-b.score);
+      return { people: valid[0].people, kind: valid[0].kind };
+    }
+
+    const million = valid.find(c => c.kind === "million");
+    if (million && million.people > 50_000 && million.people < pop0 * 0.90) return million;
+    return { people: valid[0].people, kind: valid[0].kind };
+  }
+
+  function calibratePensionerFactor(metrics, pop0, sRet65){
+    const rawP = pickFirst(metrics, [
+      "P_people","pensionistas","pensioners","pensioners_people","pensioners_total",
+      "retired_people","P","pensionersCount"
+    ]);
+
+    const P0 = normalizePeopleCountSmart(rawP, pop0, sRet65).people;
+
+    if (!isFinite(P0) || P0 <= 0 || !isFinite(sRet65) || sRet65 <= 0){
+      return { alpha: 1.0, rawAlpha: NaN, used: false, P0: NaN, P65: NaN, note: "Sin P_people o sin base 65+" };
+    }
+
+    const P65 = pop0 * sRet65;
+    if (!isFinite(P65) || P65 <= 0){
+      return { alpha: 1.0, rawAlpha: NaN, used: false, P0, P65: NaN, note: "Base 65+ inválida" };
+    }
+
+    const rawAlpha = P0 / P65;
+
+    let alpha = rawAlpha;
+    let used = true;
+    let note = "";
+
+    if (!isFinite(alpha) || alpha <= 0){
+      alpha = 1.0; used = false; note = "α inválido → fallback a 65+";
+    } else if (alpha < 0.60 || alpha > 1.60){
+      alpha = 1.0; used = false; note = `α outlier (${rawAlpha.toFixed(2)}) → fallback a 65+`;
+    } else {
+      note = `α OK (${alpha.toFixed(2)})`;
+    }
+
+    return { alpha, rawAlpha, used, P0, P65, note };
   }
 
   function normalizeCountryEntry(raw){
@@ -1723,15 +1789,27 @@
         state.popTotalM = clamp(pyr.popTotalM, 5, 350);
       }
 
-      // Calibración opcional de u para que C(t0) cuadre si el dataset trae "cotizantes" (C) y hay shares
-      const C0 = asNumber(pickFirst(m, ["C","cotizantes","contributors","contribuyentes","workers_contrib","cot"]));
-      if (isFinite(C0) && state.pyramidOverride){
-        const { sWork } = sharesFromAge5(state.pyramidOverride);
+      if (state.pyramidOverride){
         const pop0 = state.popTotalM * 1_000_000;
-        const denom = pop0 * sWork * clamp(state.participation,0,1);
-        if (denom > 0){
-          const uCal = 1 - (C0 / denom);
-          if (isFinite(uCal)) state.u = clamp(uCal, 0, 0.35);
+        const baseShares = sharesFromAge5(state.pyramidOverride);
+
+        const calib = calibratePensionerFactor(m, pop0, baseShares.sRet);
+        state.oecd.pensionerFactor = calib.alpha;
+        state.oecd.pensionerFactorMeta = calib;
+
+        const rawC = pickFirst(m, ["C_people","C","cotizantes","contributors","contribuyentes","workers_contrib","cot"]);
+        const C0 = normalizePeopleCountSmart(rawC, pop0, baseShares.sWork).people;
+
+        if (isFinite(C0) && C0 > 0){
+          const minWorkFloor = 0.05;
+          const sP = clamp(calib.alpha * baseShares.sRet, 0.01, 1 - baseShares.sMin - minWorkFloor);
+          const sWorkEff = Math.max(minWorkFloor, 1 - baseShares.sMin - sP);
+
+          const denom = pop0 * sWorkEff * clamp(state.participation,0,1);
+          if (denom > 0){
+            const uCal = 1 - (C0 / denom);
+            if (isFinite(uCal)) state.u = clamp(uCal, 0, 0.35);
+          }
         }
       }
     } else {
@@ -1996,10 +2074,18 @@
     let n0 = sMin + sWork + sRet;
     sMin /= n0; sWork /= n0; sRet /= n0;
 
+    const alphaP = (state.oecdUse && isFinite(state.oecd.pensionerFactor) && state.oecd.pensionerFactor > 0)
+      ? state.oecd.pensionerFactor
+      : 1.0;
+
     for (let t=0; t<=T; t++){
+      const minWorkFloor = 0.05;
+      const sP = clamp(alphaP * sRet, 0.01, 1 - sMin - minWorkFloor);
+      const sWorkEff = Math.max(minWorkFloor, 1 - sMin - sP);
+
       const minors = total * sMin;
-      const workingAge = total * sWork;
-      const retired = total * sRet;
+      const workingAge = total * sWorkEff;
+      const retired = total * sP;
 
       const labour = workingAge * clamp(state.participation,0,1);
       const unemployed = labour * clamp(state.u,0,1);
@@ -2045,12 +2131,12 @@
       { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
       { label: "Trabajadores", fill: COLORS.workers, op: "0.50" },
       { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
-      { label: "Jubilados", fill: COLORS.retired, op: "0.50" }
+      { label: "Pensionistas", fill: COLORS.retired, op: "0.50" }
     ] : [
       { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
       { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
       { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
-      { label: "Jubilados (65+)", fill: COLORS.retired, op: "0.50" }
+      { label: "Pensionistas (P)", fill: COLORS.retired, op: "0.50" }
     ];
   }
 
