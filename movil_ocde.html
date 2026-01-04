@@ -10,8 +10,10 @@
       /* Ajuste general para móvil: bajar escala para evitar solapes */
       --uiScale: 1.05;
 
-      /* Labels de ejes (mantener compactos en móvil) */
+      /* MODIFICACIÓN: distancia (offset) COMÚN de los labels descriptivos de ejes (X e Y) respecto a sus ejes */
       --cpAxisLabelOffset: 70;
+
+      /* MODIFICACIÓN: SOLO EN MÓVIL (layout apilado), escala de fuente de los labels descriptivos de ejes */
       --cpAxisLabelFontScaleMobile: 2.20;
 
       --bg:#252525;
@@ -410,7 +412,7 @@
     .badge.warn .dot2{ background:var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.14); }
     .badge.ok .dot2{ background:var(--workers); box-shadow:0 0 0 3px rgba(54,195,255,.14); }
 
-    /* Fondo amarillo para el badge de resultado */
+    /* MODIFICACIÓN: fondo amarillo para el badge de resultado */
     #resultBadge{
       background: var(--primary);
       color: #111;
@@ -592,7 +594,9 @@
 (() => {
   /* MODIFICACIÓN: nuevo JSON */
   const DATA_URL = "merged_countries.json";
-  const POP_CSV_URL = "OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,1.0+.POP.PS._T..H.csv";
+
+  /* MODIFICACIÓN: el archivo de pirámide ahora se llama así */
+  const POP_CSV_URL = "OECD_piramide.csv";
 
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const COLORS = {
@@ -605,7 +609,10 @@
 
   const UI_SCALE = Number(getComputedStyle(document.documentElement).getPropertyValue('--uiScale')) || 1;
 
+  /* MODIFICACIÓN: offset COMÚN para labels descriptivos (X e Y) */
   const CP_AXIS_LABEL_OFFSET = Number(getComputedStyle(document.documentElement).getPropertyValue('--cpAxisLabelOffset')) || 50;
+
+  /* MODIFICACIÓN: SOLO EN MÓVIL, escala de fuente para labels descriptivos */
   const CP_AXIS_LABEL_FONT_SCALE_MOBILE = Number(getComputedStyle(document.documentElement).getPropertyValue('--cpAxisLabelFontScaleMobile')) || 1;
 
   const NAME_TO_ISO3 = {
@@ -1021,8 +1028,8 @@
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
 
     els.pyrNote.textContent = pyr.fromTotal
-      ? `OECD POP (HIST), año ${pyr.year}. El CSV no trae M/F (solo Total), se dibuja simétrico (Total/2 a cada lado).`
-      : `OECD POP (HIST), año ${pyr.year}. Se dibuja Hombre (izq) y Mujer (der) con datos del CSV.`;
+      ? `OECD POP, año ${pyr.year}. El CSV no trae M/F (solo Total), se dibuja simétrico (Total/2 a cada lado).`
+      : `OECD POP, año ${pyr.year}. Se dibuja Hombre (izq) y Mujer (der) con datos del CSV.`;
   }
 
   function setExplainPanel(metrics){
@@ -1135,6 +1142,7 @@
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
+    /* (móvil) ya estás en layout apilado; aun así mantenemos el switch por consistencia */
     const isMobileStacked = window.matchMedia && window.matchMedia("(max-width: 1100px)").matches;
     const axisLabelScale = isMobileStacked ? CP_AXIS_LABEL_FONT_SCALE_MOBILE : 1;
 
@@ -1174,6 +1182,8 @@
     const fTick  = 20 * UI_SCALE;
     const fAxis  = 14 * UI_SCALE;
     const fPoint = 14 * UI_SCALE;
+
+    /* MODIFICACIÓN: fuente SOLO para labels descriptivos de ejes */
     const fAxisLabel = fAxis * axisLabelScale;
 
     yTicks.forEach(v => {
@@ -1220,12 +1230,12 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const axisOffsetPxX = CP_AXIS_LABEL_OFFSET * UI_SCALE;
-    const axisOffsetPxY = (CP_AXIS_LABEL_OFFSET * UI_SCALE) * 0.55;
+    /* MODIFICACIÓN: offset COMÚN para ambos labels descriptivos */
+    const axisOffsetPx = CP_AXIS_LABEL_OFFSET * UI_SCALE;
 
     const xLabelY = Math.min(
       H - Math.round(6 * UI_SCALE),
-      (pad.t + innerH + axisOffsetPxX)
+      (pad.t + innerH + axisOffsetPx)
     );
     const xl = svgEl('text',{
       x: pad.l + innerW/2, y: xLabelY,
@@ -1239,7 +1249,7 @@
 
     const yLabelX = Math.max(
       Math.round(18 * UI_SCALE),
-      (pad.l - axisOffsetPxY)
+      (pad.l - axisOffsetPx)
     );
     const yLabelY = pad.t + innerH/2;
     const yl = svgEl('text',{
