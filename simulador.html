@@ -109,9 +109,6 @@
     }
     .sub{ font-size: calc(12px * var(--fontScale)); opacity:.85; text-align:right; max-width:62ch; }
 
-    /* =========================
-       barra OCDE (select + botones)
-       ========================= */
     .oecdbar{
       padding:10px 12px;
       border-bottom:1px solid var(--stroke);
@@ -406,11 +403,7 @@
       -webkit-appearance: none;
       appearance: none;
     }
-    input[type="range"]::-webkit-slider-runnable-track{
-      height: 4px;
-      background: transparent;
-      border-radius:999px;
-    }
+    input[type="range"]::-webkit-slider-runnable-track{ height: 4px; background: transparent; border-radius:999px; }
     input[type="range"]::-webkit-slider-thumb{
       -webkit-appearance: none;
       appearance: none;
@@ -422,15 +415,9 @@
       margin-top: -5px;
       box-shadow: 0 2px 10px rgba(0,0,0,.35);
     }
-    input[type="range"]::-moz-range-track{
-      height:4px;
-      background: transparent;
-      border-radius:999px;
-    }
+    input[type="range"]::-moz-range-track{ height:4px; background: transparent; border-radius:999px; }
     input[type="range"]::-moz-range-thumb{
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
+      width: 14px; height: 14px; border-radius: 50%;
       background: var(--primary);
       border: 1px solid rgba(0,0,0,.35);
       box-shadow: 0 2px 10px rgba(0,0,0,.35);
@@ -476,10 +463,7 @@
       background: var(--workers);
       box-shadow:0 0 0 3px rgba(54,195,255,.12);
     }
-    .mini-dot.bad{
-      background: var(--retired);
-      box-shadow:0 0 0 3px rgba(255,106,0,.12);
-    }
+    .mini-dot.bad{ background: var(--retired); box-shadow:0 0 0 3px rgba(255,106,0,.12); }
 
     .cp-below{
       display:grid;
@@ -578,17 +562,13 @@
     .cp-kv .k{ opacity:.85; }
     .cp-kv .v{ color:#fff; font-variant-numeric: tabular-nums; }
 
-    /* Botones Reproducir / Pausar / Reset en amarillo */
     #playBtn, #pauseBtn, #resetBtn{
       background: var(--primary) !important;
       color: #111 !important;
       border-color: rgba(0,0,0,.35) !important;
     }
-    #playBtn:hover, #pauseBtn:hover, #resetBtn:hover{
-      filter: brightness(0.95);
-    }
+    #playBtn:hover, #pauseBtn:hover, #resetBtn:hover{ filter: brightness(0.95); }
 
-    /* Deshabilitado */
     .disabled-block{
       opacity: .55;
       filter: saturate(0.85);
@@ -635,7 +615,7 @@
         </select>
       </div>
 
-      <button class="oecd-btn primary" id="oecdLoadBtn" type="button" disabled title="Carga τ, ρ y demografía (proyección) del país seleccionado">
+      <button class="oecd-btn primary" id="oecdLoadBtn" type="button" disabled title="Carga τ, ρ, C, P y demografía del país seleccionado">
         Cargar país
       </button>
 
@@ -643,17 +623,20 @@
         Volver a hipotético
       </button>
 
-      <label class="oecd-toggle" title="Activa/desactiva el uso de la demografía real/proyectada del país">
+      <label class="oecd-toggle" title="Activa/desactiva el uso de demografía OCDE (proyección) y calibración C/P">
         <input type="checkbox" id="oecdModeToggle" disabled />
         <span>Usar datos OCDE</span>
       </label>
 
       <div class="oecd-info mono" id="oecdInfo">Cargando datasets OCDE…</div>
     </div>
+
     <div class="oecd-hint">
-      En <span class="mono">modo OCDE</span>, el simulador inicializa <span class="mono">τ</span> (cotización) y <span class="mono">ρ</span> (tasa de reemplazo) desde el bundle de pensiones, por lo que la pendiente es <span class="mono">k=τ/ρ</span>.
-      La demografía (población total y estructura por edad/sexo) se toma año a año desde <span class="mono">OECD_demografia.csv</span> (proyecciones).
-      En este modo se ignoran los sliders de <span class="mono">crecimiento</span> y <span class="mono">envejecimiento</span> porque la evolución viene dada por la OCDE.
+      En <span class="mono">modo OCDE</span>:
+      <br>1) <span class="mono">τ</span> y <span class="mono">ρ</span> se inicializan con valores del dataset (pendiente <span class="mono">k=τ/ρ</span>).
+      <br>2) La <span class="mono">demografía</span> se lee de <span class="mono">OECD_demografia.csv</span> (proyección por edades), y sustituye a los sliders de <span class="mono">crec. población</span> y <span class="mono">envejecimiento</span>.
+      <br>3) <span class="mono">C(t)</span> se calibra en <span class="mono">t0</span> para cuadrar <span class="mono">C_people</span> ajustando participación/<span class="mono">u</span> y se proyecta con la demografía.
+      <br>4) <span class="mono">P(t)</span> usa Opción B: <span class="mono">P(t)=α·(65+)(t)</span> con <span class="mono">α</span> calibrado en <span class="mono">t0</span> para que <span class="mono">P(t0)=P_people</span> (con checks de plausibilidad y fallback a <span class="mono">α=1</span>).
     </div>
 
     <div class="chart-area">
@@ -695,7 +678,6 @@
                     <span class="val mono" id="uVal">10%</span>
                   </label>
                   <input id="uSlider" type="range" min="0" max="35" step="1" value="10" />
-                  <small></small>
                 </div>
 
                 <div class="ctl">
@@ -744,8 +726,8 @@
             </div>
 
             <div class="caption">
-              La dinámica se apoya en la regla de equilibrio <span class="mono">P = k·C</span> con <span class="mono">k=τ/ρ</span>.
-              En modo OCDE, la evolución demográfica (población total y estructura por edad) viene dada por la OCDE (proyección anual).
+              En modo OCDE con <span class="mono">OECD_demografia.csv</span>, la trayectoria de población y estructura por edad se toma del dataset (no de los sliders de crecimiento/envejecimiento).
+              La sostenibilidad usa <span class="mono">P ≤ k·C</span> con <span class="mono">k=τ/ρ</span>.
             </div>
           </div>
         </div>
@@ -784,8 +766,7 @@
                   </div>
                 </div>
 
-                <div class="right" aria-label="Trabajadores que sostienen a 1 jubilado" id="heroWorkersIcons">
-                </div>
+                <div class="right" aria-label="Trabajadores que sostienen a 1 jubilado" id="heroWorkersIcons"></div>
               </div>
 
               <div class="cp-kv" aria-label="Métricas del sistema (t actual)">
@@ -819,7 +800,8 @@
             </div>
 
             <div class="caption">
-              Punto (C,P) del país simulado en cada t. Línea amarilla: equilibrio <span class="mono">P = k·C</span>, con <span class="mono">k=τ/ρ</span>.
+              Punto (C,P) del país en cada t. Línea amarilla: equilibrio <span class="mono">P = k·C</span>.
+              En modo OCDE, <span class="mono">P(t)=α·(65+)(t)</span> y <span class="mono">C(t)</span> se proyecta con demografía y parámetros <span class="mono">participación</span>/<span class="mono">u</span>.
             </div>
           </div>
         </div>
@@ -876,8 +858,7 @@
               </div>
 
               <div class="note" id="pyrNote">
-                La pirámide define shares iniciales: menores (&lt;18), edad laboral (18–64) y pensionistas (aprox. 65+).
-                En modo OCDE, estos controles se bloquean y se usa la pirámide proyectada del país (año a año).
+                En modo OCDE, la pirámide se toma de <span class="mono">OECD_demografia.csv</span> para el año calendario correspondiente a <span class="mono">t</span>, y estos controles quedan bloqueados.
               </div>
             </div>
           </div>
@@ -890,13 +871,13 @@
 
 <script>
 (() => {
-  // ======================
-  // Datasets OCDE
-  // ======================
-  // IMPORTANTE:
-  // - merged_countries.json: tu bundle de pensiones (τ, ρ, C, P, etc.)
-  // - OECD_demografia.csv: el CSV que descargaste (proyección) con columnas REF_AREA/SEX/AGE/TIME_PERIOD/OBS_VALUE (+ TIME_HORIZ)
+  // ==========================================================
+  // FUENTES
+  // ==========================================================
   const OECD_PENSIONS_JSON = "merged_countries.json";
+
+  // MOD CLAVE: este CSV es el que me pediste usar (proyección por edad/sexo/año)
+  // Debe estar en el mismo directorio que este HTML y servirse vía HTTP (GitHub Pages, etc.).
   const OECD_DEMOG_CSV = "OECD_demografia.csv";
 
   const NAME_TO_ISO3 = {
@@ -908,7 +889,7 @@
     "República Checa":"CZE","Suecia":"SWE","Suiza":"CHE","Turquía":"TUR"
   };
 
-  // 18 bins OCDE (0-4 ... 80-84 ... 85+)
+  // 18 bins OCDE típicos: 0-4..80-84 y 85+
   const PYR_AGE_ORDER_OECD = [
     "Y_LE4","Y5T9","Y10T14","Y15T19","Y20T24","Y25T29","Y30T34","Y35T39","Y40T44","Y45T49",
     "Y50T54","Y55T59","Y60T64","Y65T69","Y70T74","Y75T79","Y80T84","Y_GE85"
@@ -919,7 +900,7 @@
     "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95-99","100+"
   ];
 
-  // Split 85+ -> 85-89, 90-94, 95-99, 100+
+  // Split 85+ -> 85-89, 90-94, 95-99, 100+ (aprox)
   const SPLIT_85P = [0.56, 0.26, 0.12, 0.06];
 
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -958,6 +939,9 @@
     "figuras/noun-nun-5116487.svg"
   ];
 
+  // ==========================================================
+  // STATE
+  // ==========================================================
   const state = {
     // Pirámide (modo hipotético)
     popTotalM: 47.0,
@@ -970,13 +954,11 @@
     rho: 0.80,
     tau: 0.29,
     u: 0.10,
-
-    // En modo OCDE estos dos NO se usan (la OCDE define la evolución). Se mantienen para modo hipotético.
     popGrowth: 0.003,
     agingPP: 0.002,
-
     years: 80,
-    participation: 1.00,
+
+    participation: 1.00, // “participación” laboral (0..1), calibrada en OCDE
 
     t: 0,
     playing: false,
@@ -986,39 +968,45 @@
     timeLayout: null,
     draggingTime: false,
 
-    // OCDE
+    // ===== OCDE =====
     oecd: {
       ready: false,
       countriesByName: new Map(),
       oecdNames: [],
 
-      // Demografía (proyección): iso3 -> year -> sex -> age -> value
-      demoByIso3: new Map(),
-      demoYearsByIso3: new Map(),
+      // DEMOG: iso3 -> year -> sex(_M/_F/_T) -> age -> value
+      demogByIso3: new Map(),
+      demogYearsByIso3: new Map(), // iso3 -> sorted numeric years
 
       selectedName: null,
       mode: false,
 
-      // rango de años (para el país cargado)
-      demoIso3: null,
-      demoYears: null,      // array ordenado ["2024","2025",...]
-      demoStartYear: null,  // string
-      demoEndYear: null,    // string
+      // Calendario
+      baseYear: null,      // año calendario de t=0
+      maxT: null,          // horizonte máximo disponible (lastYear-baseYear)
+      usesDemog: false,    // si hay demografía cargada para el país
 
-      // pirámide render cache
+      // Calibración Opción B
+      pensionerFactor: 1.0,   // α
+      pensionerFactorNote: "",
+
+      // Targets desde el bundle de pensiones
+      targets: null,    // {C_people,P_people,tauDate,rhoDate,cDate,pDate}
+
+      // Cache para pirámide del año actual
       pyrYear: null,
-      pyrM: null,
-      pyrF: null,
-      pyrFromTotal: false,
-
-      // targets pensiones (bundle)
-      targets: null,    // {C_people, P_people, tauDate, rhoDate, cDate, pDate}
+      pyrM21: null,
+      pyrF21: null,
+      pyrFromTotal: false
     },
 
     // backup del estado hipotético
     hypoBackup: null,
   };
 
+  // ==========================================================
+  // ELEMENTS
+  // ==========================================================
   const els = {
     timeSvg: document.getElementById('timeSvg'),
     tReadout: document.getElementById('tReadout'),
@@ -1082,6 +1070,7 @@
     kVal2: document.getElementById('kVal2'),
     PStar2: document.getElementById('PStar2'),
 
+    // OCDE UI
     oecdCountrySelect: document.getElementById('oecdCountrySelect'),
     oecdLoadBtn: document.getElementById('oecdLoadBtn'),
     oecdClearBtn: document.getElementById('oecdClearBtn'),
@@ -1089,23 +1078,59 @@
     oecdInfo: document.getElementById('oecdInfo'),
   };
 
+  // ==========================================================
+  // HELPERS
+  // ==========================================================
   const svgEl = (name, attrs={}) => {
     const el = document.createElementNS("http://www.w3.org/2000/svg", name);
     for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
     return el;
   };
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
+
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const toM = (x) => x / 1_000_000;
+
   const fs = (px) => (px * getFontScale()).toFixed(2);
   const fsTick = (px) => (px * getFontScale()).toFixed(2);
   const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale()).toFixed(2);
 
-  // ======================
-  // Utilidades
-  // ======================
   const safeNum = (x) => (typeof x === "number" && isFinite(x)) ? x : null;
 
+  function parseCSV(text){
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
+
+    for (let i=0;i<text.length;i++){
+      const ch = text[i];
+      const next = text[i+1];
+
+      if (ch === '"'){
+        if (inQuotes && next === '"'){ cur += '"'; i++; }
+        else { inQuotes = !inQuotes; }
+      } else if (ch === ',' && !inQuotes){
+        row.push(cur); cur = "";
+      } else if ((ch === '\n' || ch === '\r') && !inQuotes){
+        if (ch === '\r' && next === '\n') i++;
+        row.push(cur); cur = "";
+        if (row.length > 1 || (row.length === 1 && row[0].trim() !== "")) rows.push(row);
+        row = [];
+      } else {
+        cur += ch;
+      }
+    }
+    row.push(cur);
+    if (row.length > 1 || (row.length === 1 && row[0].trim() !== "")) rows.push(row);
+
+    if (!rows.length) return { header: [], data: [] };
+    return { header: rows[0].map(h => h.trim()), data: rows.slice(1) };
+  }
+
+  // ==========================================================
+  // BUNDLE PENSIONES (merged_countries.json)
+  // ==========================================================
   function pickLatestObservation(observations, predicate){
     const arr = observations.filter(o => predicate(o));
     if (!arr.length) return null;
@@ -1142,10 +1167,10 @@
     return { tau: sum, date: maxDate };
   }
 
-  // Soporta merged_countries.json (inputs/latest_observations_used) y esquema antiguo observations
   function resolveCountryMetrics(countryEntry){
     if (!countryEntry) return null;
 
+    // Preferencia: inputs del bundle
     const inputs = countryEntry?.inputs;
     if (inputs && typeof inputs === "object"){
       const C_people = safeNum(inputs.C_people);
@@ -1177,6 +1202,7 @@
       };
     }
 
+    // Fallback: esquema antiguo
     if (!Array.isArray(countryEntry.observations)) return null;
     const obs = countryEntry.observations;
 
@@ -1210,37 +1236,6 @@
     };
   }
 
-  function parseCSV(text){
-    const rows = [];
-    let row = [];
-    let cur = "";
-    let inQuotes = false;
-
-    for (let i=0;i<text.length;i++){
-      const ch = text[i];
-      const next = text[i+1];
-
-      if (ch === '"'){
-        if (inQuotes && next === '"'){ cur += '"'; i++; }
-        else { inQuotes = !inQuotes; }
-      } else if (ch === ',' && !inQuotes){
-        row.push(cur); cur = "";
-      } else if ((ch === '\n' || ch === '\r') && !inQuotes){
-        if (ch === '\r' && next === '\n') i++;
-        row.push(cur); cur = "";
-        if (row.length > 1 || (row.length === 1 && row[0].trim() !== "")) rows.push(row);
-        row = [];
-      } else {
-        cur += ch;
-      }
-    }
-    row.push(cur);
-    if (row.length > 1 || (row.length === 1 && row[0].trim() !== "")) rows.push(row);
-
-    if (!rows.length) return { header: [], data: [] };
-    return { header: rows[0].map(h => h.trim()), data: rows.slice(1) };
-  }
-
   async function loadPensionsJSON(){
     const res = await fetch(OECD_PENSIONS_JSON, { cache: "no-store" });
     if (!res.ok) throw new Error(`JSON pensiones: HTTP ${res.status}`);
@@ -1267,98 +1262,68 @@
     state.oecd.oecdNames.sort((a,b)=>a.localeCompare(b, "es"));
   }
 
-  // ======================
-  // NUEVO: cargar OECD_demografia.csv (proyección)
-  // ======================
-  async function loadDemographyCSV(){
+  // ==========================================================
+  // DEMOGRAFÍA (OECD_demografia.csv)
+  // ==========================================================
+  async function loadDemografiaCSV(){
     const res = await fetch(OECD_DEMOG_CSV, { cache: "no-store" });
     if (!res.ok) throw new Error(`CSV demografía: HTTP ${res.status}`);
     const text = await res.text();
     const { header, data } = parseCSV(text);
 
     const idx = (name) => header.indexOf(name);
-
-    const iRef  = idx("REF_AREA");     // ISO3
-    const iSex  = idx("SEX");          // M/F/T
-    const iAge  = idx("AGE");          // Y_LE4, ... Y_GE85 (y agregados como Y15T64)
-    const iYear = idx("TIME_PERIOD");  // yyyy
-    const iVal  = idx("OBS_VALUE");    // valor
-    const iHoriz = idx("TIME_HORIZ");  // P/H (en tu CSV aparece P)
-
-    // opcionales para filtrar (si existen)
-    const iMeasure = idx("MEASURE");
-    const iUnit = idx("UNIT_MEASURE");
+    const iRef  = idx("REF_AREA");
+    const iSex  = idx("SEX");
+    const iAge  = idx("AGE");
+    const iYear = idx("TIME_PERIOD");
+    const iVal  = idx("OBS_VALUE");
 
     if ([iRef,iSex,iAge,iYear,iVal].some(i => i < 0)){
       throw new Error("CSV demografía: faltan columnas REF_AREA, SEX, AGE, TIME_PERIOD, OBS_VALUE.");
     }
 
-    state.oecd.demoByIso3.clear();
-    state.oecd.demoYearsByIso3.clear();
-
-    const ensure = (iso3, year, sex) => {
-      if (!state.oecd.demoByIso3.has(iso3)) state.oecd.demoByIso3.set(iso3, new Map());
-      const byYear = state.oecd.demoByIso3.get(iso3);
-      if (!byYear.has(year)) byYear.set(year, new Map());
-      const bySex = byYear.get(year);
-      if (!bySex.has(sex)) bySex.set(sex, new Map());
-      return bySex.get(sex);
-    };
-
-    const yearsSetByIso3 = new Map();
+    state.oecd.demogByIso3.clear();
+    state.oecd.demogYearsByIso3.clear();
 
     for (const r of data){
-      const ref = (r[iRef] || "").trim();
-      let sex = (r[iSex] || "").trim();
-      const age = (r[iAge] || "").trim();
-      const year = (r[iYear] || "").trim();
+      const ref = (r[iRef] || "").trim();     // ISO3
+      let sex   = (r[iSex] || "").trim();     // M/F/T
+      const age = (r[iAge] || "").trim();     // Y_LE4...
+      const year = (r[iYear] || "").trim();   // yyyy
       const val = Number((r[iVal] || "").trim());
 
-      if (!ref || !year || !age || !isFinite(val)) continue;
+      if (!ref || !year || !isFinite(val)) continue;
 
-      if (iHoriz >= 0){
-        const horiz = (r[iHoriz] || "").trim();
-        // Nos quedamos con proyección (P). Si tu CSV incluyera H, lo ignoramos.
-        if (horiz && horiz !== "P") continue;
-      }
-
-      if (iMeasure >= 0){
-        const meas = (r[iMeasure] || "").trim();
-        if (meas && meas !== "POP") continue;
-      }
-      if (iUnit >= 0){
-        const unit = (r[iUnit] || "").trim();
-        if (unit && unit !== "PS") continue;
-      }
+      // Nos quedamos con bins quinquenales + 85+ (para pirámide y cálculos 65+/18-64)
+      if (!PYR_AGE_ORDER_OECD.includes(age)) continue;
 
       if (sex === "M") sex = "_M";
       if (sex === "F") sex = "_F";
       if (sex === "T") sex = "_T";
       if (!["_T","_M","_F"].includes(sex)) continue;
 
-      // guardamos TODO AGE (incluye agregados); para pirámide usaremos los 18 bins si están
-      const mapAge = ensure(ref, year, sex);
-      mapAge.set(age, val);
+      if (!state.oecd.demogByIso3.has(ref)) state.oecd.demogByIso3.set(ref, new Map());
+      const byYear = state.oecd.demogByIso3.get(ref);
 
-      if (!yearsSetByIso3.has(ref)) yearsSetByIso3.set(ref, new Set());
-      yearsSetByIso3.get(ref).add(year);
+      if (!byYear.has(year)) byYear.set(year, new Map());
+      const bySex = byYear.get(year);
+
+      if (!bySex.has(sex)) bySex.set(sex, new Map());
+      bySex.get(sex).set(age, val);
     }
 
-    // construir year arrays
-    for (const [iso3, setYears] of yearsSetByIso3.entries()){
-      const years = [...setYears].map(y => Number(y)).filter(n => isFinite(n)).sort((a,b)=>a-b).map(n => String(n));
-      state.oecd.demoYearsByIso3.set(iso3, years);
+    // Construye años disponibles por país (rápido de consultar)
+    for (const [iso3, byYear] of state.oecd.demogByIso3.entries()){
+      const years = [...byYear.keys()]
+        .map(y => Number(y))
+        .filter(n => isFinite(n))
+        .sort((a,b)=>a-b);
+      state.oecd.demogYearsByIso3.set(iso3, years);
     }
   }
 
-  // ======================
-  // Pirámide a 21 bins desde maps (M/F o Total)
-  // ======================
   function buildPyramid21BinsFromOECDMaps(mMap, fMap, tMap){
-    const get = (map, code) => {
-      const v = map?.get(code);
-      return (typeof v === "number" && isFinite(v)) ? v : null;
-    };
+    const get = (map, code) => safeNum(map?.get(code));
 
     const mRaw18 = PYR_AGE_ORDER_OECD.map(code => get(mMap, code));
     const fRaw18 = PYR_AGE_ORDER_OECD.map(code => get(fMap, code));
@@ -1381,13 +1346,12 @@
     const mVals = new Array(21).fill(0);
     const fVals = new Array(21).fill(0);
 
-    const direct = [
+    const mapDirect = [
       "Y_LE4","Y5T9","Y10T14","Y15T19","Y20T24","Y25T29","Y30T34","Y35T39","Y40T44","Y45T49",
       "Y50T54","Y55T59","Y60T64","Y65T69","Y70T74","Y75T79","Y80T84"
     ];
-
-    for (let i=0;i<direct.length;i++){
-      const code = direct[i];
+    for (let i=0;i<mapDirect.length;i++){
+      const code = mapDirect[i];
       if (hasMF){
         mVals[i] = vM(code);
         fVals[i] = vF(code);
@@ -1418,38 +1382,75 @@
     return { mVals, fVals, totalVals, fromTotal };
   }
 
-  function getOECDPyramidForIso3Year(iso3, year){
-    const byYear = state.oecd.demoByIso3.get(iso3) || null;
+  function closestYear(years, target){
+    if (!years || !years.length) return null;
+    const t = Number(target);
+    if (!isFinite(t)) return years[0];
+    let lo=0, hi=years.length-1;
+    if (t <= years[0]) return years[0];
+    if (t >= years[hi]) return years[hi];
+    while (hi - lo > 1){
+      const mid = (lo + hi) >> 1;
+      if (years[mid] === t) return years[mid];
+      if (years[mid] < t) lo = mid; else hi = mid;
+    }
+    // decide nearest
+    return (Math.abs(years[lo]-t) <= Math.abs(years[hi]-t)) ? years[lo] : years[hi];
+  }
+
+  function getDemogMapsForIsoYear(iso3, year){
+    const byYear = state.oecd.demogByIso3.get(iso3) || null;
     if (!byYear) return null;
-    const bySex = byYear.get(year) || null;
+    const years = state.oecd.demogYearsByIso3.get(iso3) || [];
+    const y = closestYear(years, year);
+    if (y === null) return null;
+
+    const bySex = byYear.get(String(y)) || null;
     if (!bySex) return null;
 
     const mMap = bySex.get("_M") || null;
     const fMap = bySex.get("_F") || null;
     const tMap = bySex.get("_T") || null;
 
-    const built = buildPyramid21BinsFromOECDMaps(mMap, fMap, tMap);
-
-    // Heurística: si está prácticamente vacío, lo consideramos inválido
-    const sum = built.totalVals.reduce((a,b)=>a+(b||0),0);
-    if (!isFinite(sum) || sum <= 0) return null;
-
-    return { iso3, year, ...built };
+    return { year: y, mMap, fMap, tMap };
   }
 
-  function getOECDPyramidForCountryYear(countryName, year){
-    const iso3 = NAME_TO_ISO3[countryName] || null;
-    if (!iso3) return null;
-    return getOECDPyramidForIso3Year(iso3, year);
+  function sum18(mapOrNull){
+    if (!mapOrNull) return 0;
+    let s=0;
+    for (const code of PYR_AGE_ORDER_OECD){
+      const v = safeNum(mapOrNull.get(code));
+      if (v !== null) s += v;
+    }
+    return s;
   }
 
-  function computeMinorsFromBins(totalVals){
-    return (totalVals[0]||0) + (totalVals[1]||0) + (totalVals[2]||0) + 0.60*(totalVals[3]||0);
-  }
-  function computeRetired65PlusFromBins(totalVals){
-    let r = 0;
-    for (let i=13;i<totalVals.length;i++) r += (totalVals[i]||0);
-    return r;
+  function computeGroupsFrom18Bins(tMap, mMap, fMap){
+    // Devuelve grupos en personas (minors <18, working 18-64, retired65plus)
+    // Preferimos _T; si no, sumamos _M+_F.
+    const getT = (code) => safeNum(tMap?.get(code));
+    const getMF = (code) => {
+      const vm = safeNum(mMap?.get(code)) ?? 0;
+      const vf = safeNum(fMap?.get(code)) ?? 0;
+      return vm + vf;
+    };
+
+    const hasT = !!tMap;
+    const v = (code) => {
+      const vt = getT(code);
+      if (hasT && vt !== null) return vt;
+      return getMF(code);
+    };
+
+    // Indices: 0..17
+    const b = PYR_AGE_ORDER_OECD.map(code => v(code));
+
+    const minors = (b[0]||0) + (b[1]||0) + (b[2]||0) + 0.60*(b[3]||0);
+    const working = 0.40*(b[3]||0) + (b[4]||0)+(b[5]||0)+(b[6]||0)+(b[7]||0)+(b[8]||0)+(b[9]||0)+(b[10]||0)+(b[11]||0)+(b[12]||0);
+    const retired65 = (b[13]||0)+(b[14]||0)+(b[15]||0)+(b[16]||0)+(b[17]||0);
+
+    const total = b.reduce((a,x)=>a+(x||0),0) || 0;
+    return { minors, working, retired65, total };
   }
 
   function snapshotHypoState(){
@@ -1490,23 +1491,22 @@
 
     state.oecd.mode = false;
     state.oecd.selectedName = null;
-    state.oecd.demoIso3 = null;
-    state.oecd.demoYears = null;
-    state.oecd.demoStartYear = null;
-    state.oecd.demoEndYear = null;
-    state.oecd.pyrYear = null;
-    state.oecd.pyrM = null;
-    state.oecd.pyrF = null;
-    state.oecd.pyrFromTotal = false;
+    state.oecd.baseYear = null;
+    state.oecd.maxT = null;
+    state.oecd.usesDemog = false;
+    state.oecd.pensionerFactor = 1.0;
+    state.oecd.pensionerFactorNote = "";
     state.oecd.targets = null;
+    state.oecd.pyrYear = null;
+    state.oecd.pyrM21 = null;
+    state.oecd.pyrF21 = null;
+    state.oecd.pyrFromTotal = false;
 
     setOecdModeUI(false);
     syncUI();
     renderPyramid();
     renderTimeChart();
   }
-
-  const DEFAULT_YEARS_SLIDER_MAX = 140;
 
   function setOecdModeUI(enabled){
     state.oecd.mode = !!enabled;
@@ -1519,7 +1519,7 @@
       els.oecdClearBtn.disabled = !enabled;
     }
 
-    // Bloqueo pirámide "hipotética"
+    // Bloquea controles de pirámide + población cuando OCDE está ON
     if (els.pyrControlsBlock){
       els.pyrControlsBlock.classList.toggle("disabled-block", !!enabled);
     }
@@ -1527,25 +1527,12 @@
     if (els.sigmaSlider) els.sigmaSlider.disabled = !!enabled;
     if (els.densityYoungSlider) els.densityYoungSlider.disabled = !!enabled;
     if (els.densityOldSlider) els.densityOldSlider.disabled = !!enabled;
-
-    // En modo OCDE: deshabilitar growth/aging/popTotal (la OCDE define trayectoria)
-    if (els.popGrowthSlider) els.popGrowthSlider.disabled = !!enabled;
-    if (els.agingSlider) els.agingSlider.disabled = !!enabled;
     if (els.popSlider) els.popSlider.disabled = !!enabled;
 
-    // Ajustar horizonte de años si hay demografía
-    if (els.yearsSlider){
-      if (enabled && Array.isArray(state.oecd.demoYears) && state.oecd.demoYears.length >= 2){
-        els.yearsSlider.max = String(state.oecd.demoYears.length - 1);
-        els.yearsSlider.min = "5";
-        els.yearsSlider.step = "1";
-        if (state.years > (state.oecd.demoYears.length - 1)) state.years = state.oecd.demoYears.length - 1;
-      } else {
-        els.yearsSlider.max = String(DEFAULT_YEARS_SLIDER_MAX);
-        els.yearsSlider.min = "20";
-        els.yearsSlider.step = "5";
-      }
-    }
+    // MOD CLAVE: si usamos demografía, estos sliders dejan de aplicarse (pero se mantienen visibles)
+    const demogOn = !!enabled && !!state.oecd.usesDemog;
+    if (els.popGrowthSlider) els.popGrowthSlider.disabled = demogOn;
+    if (els.agingSlider) els.agingSlider.disabled = demogOn;
   }
 
   function clampToSlider(val, slider){
@@ -1556,9 +1543,60 @@
     return { v, clamped: Math.abs(v - val) > 1e-12 };
   }
 
-  // ======================
-  // Aplicar país OCDE: τ/ρ del bundle + demografía de OECD_demografia.csv
-  // ======================
+  function calibrateLabourParams({ C_target, workingAge, uFixed }){
+    // Devuelve {participation,u,note}
+    let participation = 1.0;
+    let u = state.u;
+    let note = "";
+
+    if (!isFinite(C_target) || !isFinite(workingAge) || workingAge <= 1) return { participation, u, note: "sin calibrar" };
+
+    if (uFixed !== null && isFinite(uFixed)){
+      u = clamp(uFixed, 0, 0.35);
+      participation = C_target / (workingAge * Math.max(1e-9, (1 - u)));
+
+      if (participation > 1){
+        participation = 1;
+        u = 1 - C_target / (workingAge * Math.max(1e-9, participation));
+        u = clamp(u, 0, 0.35);
+        note = "u fijo, participación cap=1";
+      } else {
+        note = "u fijo";
+      }
+      participation = clamp(participation, 0, 1);
+      return { participation, u, note };
+    }
+
+    // Intento 1: participation=1 -> u implícito
+    u = 1 - (C_target / (workingAge * Math.max(1e-9, participation)));
+
+    // Si u sale negativo, significa que C_target > workingAge (imposible), entonces u=0 y ajusto participation
+    if (u < 0){
+      u = 0;
+      participation = C_target / (workingAge * (1 - u));
+      participation = clamp(participation, 0, 1);
+      note = "u=0, participación ajustada";
+      return { participation, u, note };
+    }
+
+    // Si u excede el máximo plausible, lo capeo y ajusto participation
+    if (u > 0.35){
+      u = 0.35;
+      participation = C_target / (workingAge * (1 - u));
+      participation = clamp(participation, 0, 1);
+      // Recalcula u efectivo tras cap (por coherencia)
+      u = 1 - (C_target / (workingAge * Math.max(1e-9, participation)));
+      u = clamp(u, 0, 0.35);
+      note = "u cap=35%, participación ajustada";
+      return { participation, u, note };
+    }
+
+    u = clamp(u, 0, 0.35);
+    participation = clamp(participation, 0, 1);
+    note = "participación=1, u implícito";
+    return { participation, u, note };
+  }
+
   function applyOecdCountry(countryName){
     if (!state.oecd.ready) return;
 
@@ -1580,85 +1618,154 @@
       return;
     }
 
-    const years = state.oecd.demoYearsByIso3.get(iso3) || null;
-    if (!years || !years.length){
-      els.oecdInfo.textContent = `No hay demografía (proyección) en "${OECD_DEMOG_CSV}" para ${countryName} (${iso3}).`;
-      return;
-    }
-
-    const startYear = years[0];
-    const endYear = years[years.length - 1];
-
-    // snapshot hipotético si es la primera vez
+    // Snapshot hipotético si es la primera vez
     if (!state.oecd.mode) snapshotHypoState();
 
-    // τ y ρ desde bundle (clamp a sliders)
+    // τ y ρ desde dataset (clamp a sliders)
     const tauPack = clampToSlider(m.tau ?? NaN, els.tauSlider);
     const rhoPack = clampToSlider(m.rho ?? NaN, els.rhoSlider);
+
     if (isFinite(tauPack.v)) state.tau = tauPack.v;
     if (isFinite(rhoPack.v)) state.rho = rhoPack.v;
 
-    // guardar demografía del país
-    state.oecd.selectedName = countryName;
-    state.oecd.demoIso3 = iso3;
-    state.oecd.demoYears = years.slice();
-    state.oecd.demoStartYear = startYear;
-    state.oecd.demoEndYear = endYear;
+    // DEMOG: baseYear/horizonte y pirámide en t0
+    const yearsAvail = state.oecd.demogYearsByIso3.get(iso3) || [];
+    const hasDemog = yearsAvail.length > 0;
+    state.oecd.usesDemog = hasDemog;
 
-    // ajustar years slider a horizonte OCDE
-    setOecdModeUI(true);
-    state.years = Math.min(state.years, years.length - 1);
-    state.t = 0;
-    state.playing = false;
+    let baseYear = null;
+    let maxT = null;
+    let demoNote = "DEMOG:—";
 
-    // fijar popTotalM (solo para UI) con el primer año
-    const pyr0 = getOECDPyramidForIso3Year(iso3, startYear);
+    let groups0 = null;
+    let pyr0 = null;
+
+    if (hasDemog){
+      baseYear = yearsAvail[0];                // t=0 en el primer año disponible (típico: 2024)
+      const lastYear = yearsAvail[yearsAvail.length - 1];
+      maxT = lastYear - baseYear;
+
+      const maps0 = getDemogMapsForIsoYear(iso3, baseYear);
+      if (maps0){
+        groups0 = computeGroupsFrom18Bins(maps0.tMap, maps0.mMap, maps0.fMap);
+        const built0 = buildPyramid21BinsFromOECDMaps(maps0.mMap, maps0.fMap, maps0.tMap);
+        pyr0 = { year: maps0.year, ...built0 };
+      }
+
+      if (groups0 && groups0.total > 0){
+        state.popTotalM = clamp(toM(groups0.total), Number(els.popSlider.min||0.1), Number(els.popSlider.max||400));
+      }
+
+      demoNote = `DEMOG ${baseYear}→${baseYear+maxT} (t max=${maxT})`;
+    }
+
+    state.oecd.baseYear = baseYear;
+    state.oecd.maxT = maxT;
+
+    // Years: si hay demog, capea a horizonte; si no, deja como estaba
+    if (hasDemog && isFinite(maxT) && maxT >= 0){
+      state.years = Math.min(state.years, maxT);
+      if (els.yearsSlider){
+        // no cambiamos max del slider para no romper UI, pero sincronizamos valor
+        els.yearsSlider.value = state.years;
+      }
+    }
+
+    // Calibración Opción B: α = P_people / (65+)(t0), con checks y fallback
+    let alpha = 1.0;
+    let alphaNote = "";
+    if (hasDemog && groups0 && groups0.retired65 > 0 && m.P_people !== null){
+      const raw = m.P_people / groups0.retired65;
+      alpha = raw;
+
+      // checks de plausibilidad (ajustables)
+      // La idea es evitar outliers por mismatch de definiciones/datos.
+      if (!isFinite(alpha) || alpha <= 0){
+        alpha = 1.0;
+        alphaNote = "α inválido → 1";
+      } else if (alpha < 0.50 || alpha > 1.60){
+        alpha = 1.0;
+        alphaNote = `α outlier (${raw.toFixed(2)}) → 1`;
+      } else {
+        alphaNote = `α=${alpha.toFixed(2)} (calibrado en ${baseYear})`;
+      }
+    } else {
+      alpha = 1.0;
+      alphaNote = "α=1 (sin P_people o sin 65+)";
+    }
+    state.oecd.pensionerFactor = alpha;
+    state.oecd.pensionerFactorNote = alphaNote;
+
+    // Calibración C(t): participation/u en t0 para cuadrar C_people, y luego proyecta
+    // Si tu bundle ya trae inputs.u (fracción), lo respetamos como u fijo.
+    const inputs = (entry?.inputs && typeof entry.inputs === "object") ? entry.inputs : null;
+    const uFixed = (inputs && safeNum(inputs.u) !== null) ? clamp(safeNum(inputs.u), 0, 0.35) : null;
+
+    if (hasDemog && groups0 && groups0.working > 0 && m.C_people !== null){
+      const cal = calibrateLabourParams({
+        C_target: m.C_people,
+        workingAge: groups0.working,
+        uFixed: uFixed
+      });
+      state.participation = cal.participation;
+      state.u = cal.u;
+    } else {
+      // Si no hay demog o no hay C_target, mantenemos parámetros actuales.
+      state.participation = clamp(state.participation, 0, 1);
+      state.u = clamp(state.u, 0, 0.35);
+    }
+
+    // Cache pirámide t0 (se irá actualizando al moverte por t)
     if (pyr0){
-      const total0 = pyr0.totalVals.reduce((a,b)=>a+(b||0),0);
-      if (isFinite(total0) && total0 > 0){
-        state.popTotalM = clamp(toM(total0), Number(els.popSlider.min || 0.1), Number(els.popSlider.max || 400));
-      }
+      state.oecd.pyrYear = pyr0.year;
+      state.oecd.pyrM21 = pyr0.mVals.slice();
+      state.oecd.pyrF21 = pyr0.fVals.slice();
+      state.oecd.pyrFromTotal = !!pyr0.fromTotal;
+    } else {
+      state.oecd.pyrYear = null;
+      state.oecd.pyrM21 = null;
+      state.oecd.pyrF21 = null;
+      state.oecd.pyrFromTotal = false;
     }
 
-    // calibración simple de participation si hay C_people (bundle) y tenemos workingAge en startYear
-    // (u lo sigues controlando tú con el slider; si quieres fijarlo desde inputs, lo podemos añadir)
-    if (pyr0 && m.C_people !== null){
-      const total0 = pyr0.totalVals.reduce((a,b)=>a+(b||0),0) || 0;
-      const minors0 = computeMinorsFromBins(pyr0.totalVals);
-      const retired0 = computeRetired65PlusFromBins(pyr0.totalVals);
-      const workingAge0 = Math.max(0, total0 - minors0 - retired0);
-      if (workingAge0 > 1){
-        // target C = participation * (1-u) * workingAge
-        const participation = m.C_people / (workingAge0 * Math.max(1e-9, (1 - state.u)));
-        state.participation = clamp(participation, 0, 1);
-      }
-    }
-
+    state.oecd.selectedName = countryName;
     state.oecd.targets = { C_people: m.C_people, P_people: m.P_people, ...m.dates };
 
-    // info
+    // Activar modo OCDE si hay demog o al menos τ/ρ
+    setOecdModeUI(true);
+
+    // Reset tiempo
+    state.playing = false;
+    state.t = 0;
+
+    // Mensaje info
     const flags = [];
     if (tauPack.clamped) flags.push("τ clamped");
     if (rhoPack.clamped) flags.push("ρ clamped");
-    const flagStr = flags.length ? ` · ${flags.join(", ")}` : "";
 
     const tauTxt = (m.tau !== null) ? `τ≈${(m.tau).toFixed(3)}${m.dates.tauDate ? " ("+m.dates.tauDate+")" : ""}` : "τ:—";
     const rhoTxt = (m.rho !== null) ? `ρ≈${(m.rho).toFixed(2)}${m.dates.rhoDate ? " ("+m.dates.rhoDate+")" : ""}` : "ρ:—";
     const cpTxt  = (m.C_people !== null && m.P_people !== null) ? `C=${toM(m.C_people).toFixed(2)}M · P=${toM(m.P_people).toFixed(2)}M` : "C/P:—";
 
+    const partTxt = `participación≈${(state.participation*100).toFixed(0)}% · u≈${(state.u*100).toFixed(0)}%`;
+    const alphaTxt = `${state.oecd.pensionerFactorNote}`;
+
+    const flagStr = flags.length ? ` · ${flags.join(", ")}` : "";
+
     els.oecdInfo.textContent =
-      `${countryName} (${iso3}) · DEMO ${startYear}–${endYear} · ${tauTxt} · ${rhoTxt} · ${cpTxt} · participation≈${state.participation.toFixed(2)}${flagStr}`;
+      `${countryName} · ${demoNote} · ${tauTxt} · ${rhoTxt} · ${cpTxt} · ${partTxt} · ${alphaTxt}${flagStr}`;
 
     try{ localStorage.setItem("pensionSim_oecdCountry", countryName); }catch(e){}
 
+    // Repintar
     syncUI();
     renderPyramid();
     renderTimeChart();
   }
 
-  // ======================
-  // Lógica del simulador
-  // ======================
+  // ==========================================================
+  // SIMULADOR
+  // ==========================================================
   function kEquilibrium(){
     const rho = Math.max(1e-6, state.rho);
     return state.tau / rho;
@@ -1693,9 +1800,7 @@
         h = expected;
       } else if (expected > 1){
         const ratio = h / expected;
-        if (ratio < 0.85 || ratio > 1.15){
-          h = expected;
-        }
+        if (ratio < 0.85 || ratio > 1.15) h = expected;
       }
     }
 
@@ -1704,12 +1809,12 @@
       const cssH = parseFloat(cs.height);
       if (isFinite(cssH) && cssH > 1) h = cssH;
     }
+
     return (isFinite(h) && h > 0) ? h : 0;
   }
 
   function syncSidebarToSvg({ shell, input, svg }){
     if (!shell || !input || !svg) return;
-
     let targetH = getRenderedSvgHeight(svg);
     if (targetH <= 1) return;
 
@@ -1760,18 +1865,16 @@
     if (els.peakShell) ro.observe(els.peakShell);
   }
 
-  // ======================
-  // Pirámide sintética (hipotético)
-  // ======================
+  // ==========================================================
+  // PIRÁMIDE HIPOTÉTICA
+  // ==========================================================
   function gaussian(x, mu, sigma){
     const z = (x - mu) / Math.max(1e-6, sigma);
     return Math.exp(-0.5 * z * z);
   }
-
   function densityPower(d){
     return 0.65 + (d - 0.35) * (2.20 - 0.65) / (1.25 - 0.35);
   }
-
   function buildSyntheticTotalShares(){
     const n = AGE_LABELS.length;
     const peak = state.peakIdx;
@@ -1794,103 +1897,114 @@
 
       const p = (i <= peak) ? pYoung : pOld;
       v = Math.pow(Math.max(0, v), p);
+
       total[i] = v;
     }
 
     let s = total.reduce((a,b)=>a+b,0);
     if (s <= 0) s = 1;
     for (let i=0;i<n;i++) total[i] /= s;
-
     return total;
   }
 
-  // ======================
-  // Serie temporal
-  // ======================
+  // ==========================================================
+  // SERIE TEMPORAL
+  // ==========================================================
   function buildSeries(){
-    // ===== MODO OCDE: usa proyección año a año desde OECD_demografia.csv =====
-    if (state.oecd.mode && state.oecd.demoIso3 && Array.isArray(state.oecd.demoYears) && state.oecd.demoYears.length >= 2){
-      const iso3 = state.oecd.demoIso3;
-      const years = state.oecd.demoYears;
-      const T = Math.min(state.years, years.length - 1);
+    // MOD CLAVE: si OCDE modo ON y hay demografía, la serie sale del CSV año a año
+    if (state.oecd.mode && state.oecd.usesDemog && state.oecd.selectedName){
+      const iso3 = NAME_TO_ISO3[state.oecd.selectedName] || null;
+      const baseYear = state.oecd.baseYear;
+      const maxT = state.oecd.maxT;
 
-      const series = [];
-      for (let t=0; t<=T; t++){
-        const year = years[t];
+      if (!iso3 || !isFinite(baseYear) || !isFinite(maxT) || maxT < 0){
+        // fallback
+      } else {
+        const T = Math.min(state.years, maxT);
+        const series = [];
 
-        let pyr = getOECDPyramidForIso3Year(iso3, year);
-        if (!pyr){
-          // fallback: primer año disponible
-          pyr = getOECDPyramidForIso3Year(iso3, years[0]);
-        }
-        if (!pyr){
-          // fallback duro: no hay pirámide válida
-          const total = state.popTotalM * 1_000_000;
+        for (let t=0; t<=T; t++){
+          const year = baseYear + t;
+          const maps = getDemogMapsForIsoYear(iso3, year);
+          if (!maps){
+            // Si falta, reusa último disponible
+            const fallbackYear = closestYear(state.oecd.demogYearsByIso3.get(iso3)||[], year);
+            const maps2 = getDemogMapsForIsoYear(iso3, fallbackYear);
+            if (!maps2) continue;
+            const g = computeGroupsFrom18Bins(maps2.tMap, maps2.mMap, maps2.fMap);
+
+            const total = g.total;
+            const minors = g.minors;
+            const workingAge = g.working;
+
+            const labour = workingAge * clamp(state.participation,0,1);
+            const unemployed = labour * clamp(state.u,0,1);
+            const cotEff = labour - unemployed;
+            const inactive = Math.max(0, workingAge - labour);
+
+            const P65 = g.retired65;
+            const retired = clamp(state.oecd.pensionerFactor, 0.01, 5.0) * P65;
+
+            series.push({
+              t, year: maps2.year,
+              total,
+              minors,
+              cot: cotEff,
+              inactive,
+              noncot: unemployed,
+              retired
+            });
+            continue;
+          }
+
+          const g = computeGroupsFrom18Bins(maps.tMap, maps.mMap, maps.fMap);
+
+          const total = g.total;
+          const minors = g.minors;
+          const workingAge = g.working;
+
+          const labour = workingAge * clamp(state.participation,0,1);
+          const unemployed = labour * clamp(state.u,0,1);
+          const cotEff = labour - unemployed;
+          const inactive = Math.max(0, workingAge - labour);
+
+          const P65 = g.retired65;
+          const retired = clamp(state.oecd.pensionerFactor, 0.01, 5.0) * P65;
+
           series.push({
-            t, total,
-            minors: total*0.18,
-            cot: total*0.48*(1-state.u)*state.participation,
-            inactive: total*0.48*(1-state.participation),
-            noncot: total*0.48*state.participation*state.u,
-            retired: total*0.34,
-            sMin: 0.18, sWork: 0.48, sRet: 0.34,
-            year
+            t, year: maps.year,
+            total,
+            minors,
+            cot: cotEff,
+            inactive,
+            noncot: unemployed,
+            retired
           });
-          continue;
         }
 
-        const total = pyr.totalVals.reduce((a,b)=>a+(b||0),0) || 0;
-
-        const minors = computeMinorsFromBins(pyr.totalVals);
-        const retired = computeRetired65PlusFromBins(pyr.totalVals);
-        const workingAge = Math.max(0, total - minors - retired);
-
-        const sMin = (total>0) ? minors/total : 0;
-        const sRet = (total>0) ? retired/total : 0;
-        const sWork = (total>0) ? workingAge/total : 0;
-
-        const labour = workingAge * clamp(state.participation,0,1);
-        const unemployed = labour * clamp(state.u,0,1);
-        const cotEff = labour - unemployed;
-        const inactive = Math.max(0, workingAge - labour);
-
-        series.push({
-          t, total,
-          minors,
-          cot: cotEff,
-          inactive,
-          noncot: unemployed,
-          retired,
-          sMin, sWork, sRet,
-          year
-        });
+        return series;
       }
-      return series;
     }
 
-    // ===== MODO HIPOTÉTICO (original) =====
+    // ===== fallback: modo hipotético (original) =====
     const T = state.years;
     const series = [];
     let total = state.popTotalM * 1_000_000;
 
-    // shares desde pirámide sintética
+    // Shares base desde pirámide sintética
     const shares = buildSyntheticTotalShares();
 
-    const minorsShare =
+    const minors0 =
       (shares[0]||0) + (shares[1]||0) + (shares[2]||0) + 0.60*(shares[3]||0);
+    let work0 = 0.40*(shares[3]||0);
+    for (let i=4;i<=12;i++) work0 += (shares[i]||0);
+    let retired0 = 0;
+    for (let i=13;i<shares.length;i++) retired0 += (shares[i]||0);
 
-    let workShare = 0.40*(shares[3]||0);
-    for (let i=4;i<=12;i++) workShare += (shares[i]||0);
-
-    let retShare = 0;
-    for (let i=13;i<shares.length;i++) retShare += (shares[i]||0);
-
-    let s = minorsShare + workShare + retShare;
+    let s = minors0 + work0 + retired0;
     if (s <= 1e-9) s = 1;
 
-    let sMin = clamp(minorsShare/s, 0.02, 0.70);
-    let sWork = clamp(workShare/s, 0.10, 0.80);
-    let sRet = clamp(retShare/s, 0.02, 0.60);
+    let sMin = minors0/s, sWork = work0/s, sRet = retired0/s;
 
     for (let t=0; t<=T; t++){
       const minors = total * sMin;
@@ -1903,13 +2017,13 @@
       const inactive = Math.max(0, workingAge - labour);
 
       series.push({
-        t, total,
+        t, year: null,
+        total,
         minors,
         cot: cotEff,
         inactive,
         noncot: unemployed,
-        retired,
-        sMin, sWork, sRet
+        retired
       });
 
       total = total * (1 + state.popGrowth);
@@ -1921,7 +2035,6 @@
       if (rem > 0){
         let takeFromMin = Math.min(sMin, rem);
         sMin -= takeFromMin;
-        rem -= takeFromMin;
       }
       sRet = clamp(sRet + dR, 0.02, 0.85);
 
@@ -1933,15 +2046,12 @@
     return series;
   }
 
-  // ======================
-  // Leyenda chart 1
-  // ======================
   function renderTimeLegendHorizontal(svg, y){
     const items = [
       { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
       { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
       { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
-      { label: "Pensionistas (≈65+)", fill: COLORS.retired, op: "0.50" }
+      { label: "Pensionistas", fill: COLORS.retired, op: "0.50" }
     ];
 
     const g = svgEl('g', { "opacity":"0.95" });
@@ -1985,7 +2095,7 @@
       const bb = g.getBBox();
       const tx = (1000 - bb.width) / 2 - bb.x;
       g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
-    } catch(e){}
+    }catch(e){}
   }
 
   function viewXFromClientX(svg, clientX){
@@ -2028,9 +2138,9 @@
     els.timeSvg.addEventListener("pointerleave", end);
   }
 
-  // ======================
-  // Chart 1
-  // ======================
+  // ==========================================================
+  // CHART 1
+  // ==========================================================
   function renderTimeChart(){
     const svg = els.timeSvg;
     clearSvg(svg);
@@ -2041,7 +2151,7 @@
     const innerH = H - pad.t - pad.b;
 
     const data = buildSeries();
-    const T = state.years;
+    const T = (data.length ? data[data.length-1].t : state.years);
 
     state.timeLayout = { W, H, pad, innerW, innerH, T };
 
@@ -2151,7 +2261,7 @@
       "stroke-opacity":"0.95"
     }));
 
-    const tNow = clamp(Math.round(state.t), 0, state.years);
+    const tNow = clamp(Math.round(state.t), 0, T);
     const cur = data[Math.min(data.length-1, tNow)];
     const xNow = xToPx(cur.t);
 
@@ -2168,17 +2278,19 @@
       fill: COLORS.primary, "fill-opacity":"0.95"
     }));
 
-    els.tReadout.textContent = `t: ${cur.t}`;
+    // tReadout + año calendario si aplica
+    const calYear = (cur.year && isFinite(cur.year)) ? ` (${cur.year})` : "";
+    els.tReadout.textContent = `t: ${cur.t}${calYear}`;
 
     const countryTag = (state.oecd.mode && state.oecd.selectedName) ? ` · ${state.oecd.selectedName}` : "";
-    const yearTag = (state.oecd.mode && cur.year) ? ` · ${cur.year}` : "";
-    els.simMeta.textContent = `Año: ${cur.t} | Población: ${toM(cur.total).toFixed(1)} M${countryTag}${yearTag}`;
+    const calTag = (cur.year && isFinite(cur.year)) ? ` · Año cal: ${cur.year}` : "";
+    els.simMeta.textContent = `Año: ${cur.t} | Población: ${toM(cur.total).toFixed(1)} M${countryTag}${calTag}`;
 
     updateSystemPill(cur);
     renderCPChartSim(cur, data);
 
-    // En modo OCDE, repinta pirámide para el año actual
-    if (state.oecd.mode) renderPyramid();
+    // MOD: pirámide dinámica por t cuando OCDE+demog
+    if (state.oecd.mode && state.oecd.usesDemog) renderPyramid();
 
     syncAllSidebarsStable();
   }
@@ -2201,9 +2313,9 @@
     }
   }
 
-  // ======================
-  // Chart 2: C–P
-  // ======================
+  // ==========================================================
+  // CHART 2 (C–P)
+  // ==========================================================
   function niceCeil(x, step){
     if (!isFinite(x) || x <= 0) return step;
     return Math.ceil(x / step) * step;
@@ -2252,8 +2364,8 @@
     const xTicks = ticksFrom(xMax, cStep);
     const yTicks = ticksFrom(yMax, pStep);
 
-    const xToPx = (x) => pad.l + (x / Math.max(1e-9,xMax)) * innerW;
-    const yToPx = (y) => pad.t + innerH - (y / Math.max(1e-9,yMax)) * innerH;
+    const xToPx = (x) => pad.l + (x / xMax) * innerW;
+    const yToPx = (y) => pad.t + innerH - (y / yMax) * innerH;
 
     yTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
@@ -2487,9 +2599,9 @@
     els.heroWorkersIcons.style.gap = `${gap}px`;
   }
 
-  // ======================
-  // Pirámide render
-  // ======================
+  // ==========================================================
+  // PIRÁMIDE (render) — dinámica si OCDE+demog
+  // ==========================================================
   function buildSyntheticSharesMF(){
     const total = buildSyntheticTotalShares();
     const n = total.length;
@@ -2520,25 +2632,34 @@
     let fBins = null;
     let titleMeta = "";
 
-    // ===== OCDE: pirámide del año actual (t -> year) =====
-    if (state.oecd.mode && state.oecd.demoIso3 && Array.isArray(state.oecd.demoYears) && state.oecd.demoYears.length){
-      const tNow = clamp(Math.round(state.t), 0, state.years);
-      const year = state.oecd.demoYears[Math.min(state.oecd.demoYears.length-1, tNow)] || state.oecd.demoYears[0];
+    if (state.oecd.mode && state.oecd.usesDemog && state.oecd.selectedName){
+      const iso3 = NAME_TO_ISO3[state.oecd.selectedName] || null;
+      const baseYear = state.oecd.baseYear;
+      const maxT = state.oecd.maxT;
 
-      const pyr = getOECDPyramidForIso3Year(state.oecd.demoIso3, year) || getOECDPyramidForIso3Year(state.oecd.demoIso3, state.oecd.demoYears[0]);
+      const tNow = clamp(Math.round(state.t), 0, isFinite(maxT)?maxT:0);
+      const year = (isFinite(baseYear) ? (baseYear + tNow) : null);
 
-      if (pyr){
-        mBins = pyr.mVals.slice();
-        fBins = pyr.fVals.slice();
+      if (iso3 && year !== null){
+        const maps = getDemogMapsForIsoYear(iso3, year);
+        if (maps){
+          const built = buildPyramid21BinsFromOECDMaps(maps.mMap, maps.fMap, maps.tMap);
+          mBins = built.mVals.slice();
+          fBins = built.fVals.slice();
+          const totalPop = (mBins.reduce((a,b)=>a+b,0) + fBins.reduce((a,b)=>a+b,0)) || 0;
+          titleMeta = `${state.oecd.selectedName} · ${maps.year} · ${toM(totalPop).toFixed(1)} M${built.fromTotal ? " (T/2)" : ""}`;
 
-        const totalPop = mBins.reduce((a,b)=>a+b,0) + fBins.reduce((a,b)=>a+b,0);
-        const name = state.oecd.selectedName || "—";
-        titleMeta = `${name} · ${year} · ${(toM(totalPop)).toFixed(1)} M${pyr.fromTotal ? " (T/2)" : ""}`;
+          // cache (opcional)
+          state.oecd.pyrYear = maps.year;
+          state.oecd.pyrM21 = mBins.slice();
+          state.oecd.pyrF21 = fBins.slice();
+          state.oecd.pyrFromTotal = !!built.fromTotal;
+        }
       }
     }
 
-    // Fallback hipotético
     if (!mBins || !fBins){
+      // fallback hipotético
       const mf = buildSyntheticSharesMF();
       const totalPeople = state.popTotalM * 1_000_000;
       mBins = mf.m.map(s => s * totalPeople);
@@ -2616,9 +2737,9 @@
     syncAllSidebarsStable();
   }
 
-  // ======================
-  // Animación
-  // ======================
+  // ==========================================================
+  // ANIMACIÓN
+  // ==========================================================
   function tick(ts){
     if (!state.playing){
       state.lastTs = ts;
@@ -2628,11 +2749,14 @@
     state.lastTs = ts;
 
     state.t = state.t + dt * 12 * 1.0;
-    if (state.t > state.years) state.t = state.years;
+
+    // En OCDE+demog capea a horizonte real si existe
+    const maxT = (state.oecd.mode && state.oecd.usesDemog && isFinite(state.oecd.maxT)) ? state.oecd.maxT : state.years;
+    if (state.t > maxT) state.t = maxT;
 
     renderTimeChart();
 
-    if (state.t >= state.years){
+    if (state.t >= maxT){
       state.playing = false;
     }
   }
@@ -2641,9 +2765,9 @@
     requestAnimationFrame(rafLoop);
   }
 
-  // ======================
-  // Sync UI
-  // ======================
+  // ==========================================================
+  // UI SYNC
+  // ==========================================================
   function syncUI(){
     els.popSlider.value = state.popTotalM;
     els.popVal.textContent = state.popTotalM.toFixed(1);
@@ -2663,24 +2787,15 @@
     els.tauSlider.value = state.tau;
     els.uSlider.value = Math.round(state.u * 100);
 
-    // En modo OCDE, estos sliders pueden estar deshabilitados; mantenemos el texto consistente
     els.popGrowthSlider.value = (state.popGrowth*100).toFixed(2);
     els.agingSlider.value = (state.agingPP*100).toFixed(2);
-
     els.yearsSlider.value = state.years;
 
     els.rhoVal.textContent = state.rho.toFixed(2);
     els.tauVal.textContent = state.tau.toFixed(2);
     els.uVal.textContent = Math.round(state.u * 100) + "%";
-
-    if (state.oecd.mode){
-      els.popGrowthVal.textContent = "OCDE";
-      els.agingVal.textContent = "OCDE";
-    } else {
-      els.popGrowthVal.textContent = (state.popGrowth*100).toFixed(2) + "%";
-      els.agingVal.textContent = (state.agingPP*100).toFixed(2) + " pp";
-    }
-
+    els.popGrowthVal.textContent = (state.popGrowth*100).toFixed(2) + "%";
+    els.agingVal.textContent = (state.agingPP*100).toFixed(2) + " pp";
     els.yearsVal.textContent = String(state.years);
 
     [
@@ -2689,12 +2804,15 @@
       els.peakSlider
     ].forEach(paintRange);
 
+    // Aplica bloqueos según modo
+    setOecdModeUI(state.oecd.mode);
+
     syncAllSidebarsStable();
   }
 
-  // ======================
-  // Handlers
-  // ======================
+  // ==========================================================
+  // HANDLERS
+  // ==========================================================
   els.peakSlider.addEventListener('input', (e) => {
     if (state.oecd.mode) return;
     state.peakIdx = Number(e.target.value);
@@ -2731,7 +2849,7 @@
   });
 
   els.popSlider.addEventListener('input', (e) => {
-    if (state.oecd.mode) return;
+    if (state.oecd.mode) return; // bloqueado en OCDE profesional
     state.popTotalM = Number(e.target.value);
     els.popVal.textContent = state.popTotalM.toFixed(1);
     paintRange(els.popSlider);
@@ -2762,7 +2880,7 @@
   });
 
   els.popGrowthSlider.addEventListener('input', (e) => {
-    if (state.oecd.mode) return;
+    if (state.oecd.mode && state.oecd.usesDemog) return; // no aplica en demog
     const vPct = Number(e.target.value);
     state.popGrowth = vPct / 100.0;
     els.popGrowthVal.textContent = vPct.toFixed(2) + "%";
@@ -2771,7 +2889,7 @@
   });
 
   els.agingSlider.addEventListener('input', (e) => {
-    if (state.oecd.mode) return;
+    if (state.oecd.mode && state.oecd.usesDemog) return; // no aplica en demog
     const v = Number(e.target.value);
     state.agingPP = v / 100.0;
     els.agingVal.textContent = v.toFixed(2) + " pp";
@@ -2781,6 +2899,13 @@
 
   els.yearsSlider.addEventListener('input', (e) => {
     state.years = Number(e.target.value);
+
+    // Si OCDE+demog, capea al horizonte (sin cambiar el max del slider)
+    if (state.oecd.mode && state.oecd.usesDemog && isFinite(state.oecd.maxT)){
+      state.years = Math.min(state.years, state.oecd.maxT);
+      els.yearsSlider.value = state.years;
+    }
+
     els.yearsVal.textContent = String(state.years);
     state.t = clamp(state.t, 0, state.years);
     paintRange(els.yearsSlider);
@@ -2801,9 +2926,9 @@
     if (isFinite(cp)) renderWorkersIcons(cp);
   });
 
-  // ======================
+  // ==========================================================
   // OCDE UI
-  // ======================
+  // ==========================================================
   function renderOecdSelect(){
     const sel = els.oecdCountrySelect;
     if (!sel) return;
@@ -2853,6 +2978,7 @@
     if (els.oecdModeToggle){
       els.oecdModeToggle.addEventListener("change", (e) => {
         const on = !!e.target.checked;
+
         if (on && !state.oecd.mode){
           const name = els.oecdCountrySelect?.value || state.oecd.selectedName;
           if (name) applyOecdCountry(name);
@@ -2870,13 +2996,22 @@
   async function initOECD(){
     els.oecdInfo.textContent = "Cargando datasets OCDE…";
     try{
-      await Promise.all([loadPensionsJSON(), loadDemographyCSV()]);
+      await Promise.all([loadPensionsJSON(), loadDemografiaCSV()]);
       state.oecd.ready = true;
 
       renderOecdSelect();
       wireOecdUI();
 
-      const msg = `Datasets OK · países(bundle)=${state.oecd.oecdNames.length} · demografía(ISO3)=${state.oecd.demoByIso3.size} · CSV=${OECD_DEMOG_CSV}`;
+      // Stats
+      const isoCount = state.oecd.demogByIso3.size;
+      let minY = null, maxY = null;
+      for (const ys of state.oecd.demogYearsByIso3.values()){
+        if (!ys.length) continue;
+        minY = (minY===null) ? ys[0] : Math.min(minY, ys[0]);
+        maxY = (maxY===null) ? ys[ys.length-1] : Math.max(maxY, ys[ys.length-1]);
+      }
+
+      const msg = `Datasets OK · países(bundles)=${state.oecd.oecdNames.length} · DEMOG(ISO3)=${isoCount} · años=${minY ?? "—"}→${maxY ?? "—"}`;
       els.oecdInfo.textContent = msg;
 
       els.oecdModeToggle.checked = false;
@@ -2894,9 +3029,9 @@
     }
   }
 
-  // ======================
-  // init
-  // ======================
+  // ==========================================================
+  // INIT
+  // ==========================================================
   ensureWorkerSeq(30);
   syncUI();
   renderPyramid();
