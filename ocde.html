@@ -558,7 +558,7 @@
             </div>
             <svg id="pyrSvg" class="pyrsvg" viewBox="0 0 520 520" preserveAspectRatio="xMidYMid meet" aria-label="Pirámide poblacional (total)"></svg>
             <div class="pyrnote" id="pyrNote">
-              Fuente: OECD Population (HIST). Si el CSV solo tiene sexo total, se muestra una pirámide simétrica (total/2 a cada lado).
+              Fuente: OECD Population (PROJ). Si el CSV solo tiene sexo total, se muestra una pirámide simétrica (total/2 a cada lado).
             </div>
           </div>
 
@@ -619,7 +619,9 @@
 (() => {
   /* ========= MODIFICACIÓN: apuntar al NUEVO JSON ========= */
   const DATA_URL = "merged_countries.json";
-  const POP_CSV_URL = "OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,1.0+.POP.PS._T..H.csv";
+
+  /* ========= MODIFICACIÓN: CSV PROYECCIONES (DF_POP_PROJ) con SEX=F/M/_T (para pirámide con Hombre/Mujer) ========= */
+  const POP_CSV_URL = "OECD.ELS.SAE,DSD_POPULATION@DF_POP_PROJ,1.0+DEU+AUT+BEL+CAN+CHL+COL+KOR+CRI+DNK+ESP+EST+USA+FIN+FRA+GRC+HUN+IRL+ISL+ISR+ITA+JPN+LVA+LTU+LUX+MEX+NOR+NZL+NLD+POL+PRT+SVK+GBR+SVN+SWE+CHE+CZE+TUR+AUS..PS.F+M._T+Y_LE4+Y5T9+Y10T14+Y15T19+Y20T24+Y25T29+Y30T34+Y35T39+Y40T44+Y45T49+Y50T54+Y55T59+Y60T64+Y65T69+Y70T74+Y75T79+Y80T84+Y_GE85.csv";
 
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const COLORS = {
@@ -1027,8 +1029,8 @@
     els.pyrMeta.textContent = `${pyr.year} · ${(totalPop/1e6).toFixed(1)} M`;
 
     els.pyrNote.textContent = pyr.fromTotal
-      ? `OECD POP (HIST), año ${pyr.year}. El CSV no trae M/F (solo Total), se dibuja simétrico (Total/2 a cada lado).`
-      : `OECD POP (HIST), año ${pyr.year}. Se dibuja Hombre (izq) y Mujer (der) con datos del CSV.`;
+      ? `OECD POP (PROJ), año ${pyr.year}. El CSV no trae M/F (solo Total), se dibuja simétrico (Total/2 a cada lado).`
+      : `OECD POP (PROJ), año ${pyr.year}. Se dibuja Hombre (izq) y Mujer (der) con datos del CSV.`;
   }
 
   function setExplainPanel(metrics){
@@ -1379,6 +1381,9 @@
     const iYear = idx("TIME_PERIOD");
     const iVal = idx("OBS_VALUE");
 
+    /* ========= MODIFICACIÓN: DF_POP_PROJ trae TIME_HORIZ (ej. "P"). Si existe, filtramos a "P". ========= */
+    const iHoriz = idx("TIME_HORIZ");
+
     if ([iRef,iSex,iAge,iYear,iVal].some(i => i < 0)){
       throw new Error("CSV población: faltan columnas REF_AREA, SEX, AGE, TIME_PERIOD, OBS_VALUE.");
     }
@@ -1392,6 +1397,12 @@
       const age = (r[iAge] || "").trim();
       const year = (r[iYear] || "").trim();
       const val = Number((r[iVal] || "").trim());
+
+      /* ========= MODIFICACIÓN: si existe TIME_HORIZ, nos quedamos con P ========= */
+      if (iHoriz >= 0){
+        const horiz = (r[iHoriz] || "").trim();
+        if (horiz && horiz !== "P") continue;
+      }
 
       if (!ref || !year || !isFinite(val)) continue;
 
@@ -1414,8 +1425,16 @@
       bySex.get(sex).set(age, val);
     }
 
+    /* ========= MODIFICACIÓN: preferir el último año <= año actual (si existe), si no, el máximo disponible ========= */
     const years = [...state.popYears].map(y => Number(y)).filter(n => isFinite(n)).sort((a,b)=>a-b);
-    state.popPreferredYear = years.length ? String(years[years.length-1]) : null;
+    if (years.length){
+      const nowY = (new Date()).getFullYear();
+      const pastOrNow = years.filter(y => y <= nowY);
+      const chosen = pastOrNow.length ? pastOrNow[pastOrNow.length-1] : years[years.length-1];
+      state.popPreferredYear = String(chosen);
+    } else {
+      state.popPreferredYear = null;
+    }
   }
 
   /* ========= MODIFICACIÓN: soportar countries como ARRAY (viejo) o como OBJETO por ISO2 (nuevo) ========= */
