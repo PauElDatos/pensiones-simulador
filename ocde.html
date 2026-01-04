@@ -617,7 +617,8 @@
 
 <script>
 (() => {
-  const DATA_URL = "oecd_pensions_merged.json";
+  /* ========= MODIFICACIÓN: apuntar al NUEVO JSON ========= */
+  const DATA_URL = "merged_countries.json";
   const POP_CSV_URL = "OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,1.0+.POP.PS._T..H.csv";
 
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -644,6 +645,14 @@
     "Irlanda":"IRL","Israel":"ISR","Italia":"ITA","Japón":"JPN","Letonia":"LVA","Lituania":"LTU","Luxemburgo":"LUX","México":"MEX",
     "Noruega":"NOR","Nueva Zelanda":"NZL","Países Bajos":"NLD","Polonia":"POL","Portugal":"PRT","Reino Unido":"GBR",
     "República Checa":"CZE","Suecia":"SWE","Suiza":"CHE","Turquía":"TUR"
+  };
+
+  /* ========= MODIFICACIÓN: ISO2 -> ISO3 (para pirámide, sin depender del nombre) ========= */
+  const ISO2_TO_ISO3 = {
+    "AT":"AUT","AU":"AUS","BE":"BEL","CA":"CAN","CH":"CHE","CL":"CHL","CO":"COL","CR":"CRI","CZ":"CZE",
+    "DE":"DEU","DK":"DNK","EE":"EST","ES":"ESP","FI":"FIN","FR":"FRA","GB":"GBR","UK":"GBR","GR":"GRC",
+    "HU":"HUN","IE":"IRL","IL":"ISR","IS":"ISL","IT":"ITA","JP":"JPN","KR":"KOR","LT":"LTU","LU":"LUX","LV":"LVA",
+    "MX":"MEX","NL":"NLD","NO":"NOR","NZ":"NZL","PL":"POL","PT":"PRT","SE":"SWE","SI":"SVN","SK":"SVK","TR":"TUR","US":"USA"
   };
 
   const PYR_AGE_ORDER = [
@@ -723,31 +732,59 @@
     return rates.reduce((a,b)=>a+b,0);
   }
 
+  /* ========= MODIFICACIÓN: resolver métricas usando la NUEVA estructura (inputs) y fallback a observations ========= */
   function resolveCountryMetrics(countryEntry){
-    if (!countryEntry || !Array.isArray(countryEntry.observations)) return null;
-    const obs = countryEntry.observations;
+    if (!countryEntry) return null;
 
-    const pObs = pickLatestObservation(obs, o => o.metric === "pensioners_people");
-    const P_people = pObs ? safeNum(pObs.value) : null;
+    const name = countryEntry.country?.name ?? "—";
+    const inp = (countryEntry && typeof countryEntry.inputs === "object") ? countryEntry.inputs : null;
 
-    const cObs = pickLatestObservation(obs, o =>
-      o.metric === "contributors_employed_people" ||
-      o.metric === "contributors_affiliates_people" ||
-      o.metric === "contributors_affiliated_people"
-    );
-    const C_people = cObs ? safeNum(cObs.value) : null;
+    // Preferencia: inputs (ya trae C_m, P_m, tau, rho, k calculados)
+    let C_m = safeNum(inp?.C_m);
+    let P_m = safeNum(inp?.P_m);
+    const C_people_inp = safeNum(inp?.C_people);
+    const P_people_inp = safeNum(inp?.P_people);
 
-    const rhoObs = pickLatestObservation(obs, o => o.metric === "replacement_rate_gross_full_career");
-    const rho = rhoObs ? safeNum(rhoObs.value) : null;
+    if (C_m === null && C_people_inp !== null) C_m = toMillions(C_people_inp);
+    if (P_m === null && P_people_inp !== null) P_m = toMillions(P_people_inp);
 
-    const tau = sumContributionRates(obs);
+    let tau = safeNum(inp?.tau);
+    let rho = safeNum(inp?.rho);
+    let k   = safeNum(inp?.k);
 
-    const C_m = (C_people !== null) ? toMillions(C_people) : null;
-    const P_m = (P_people !== null) ? toMillions(P_people) : null;
+    // Fallback: observations (por compatibilidad con JSON antiguo o si falta algo)
+    const obs = Array.isArray(countryEntry.observations) ? countryEntry.observations : [];
 
-    const k = (tau !== null && rho !== null && rho > 0) ? (tau / rho) : null;
+    if (P_m === null){
+      const pObs = pickLatestObservation(obs, o => o.metric === "pensioners_people");
+      const P_people = pObs ? safeNum(pObs.value) : null;
+      if (P_people !== null) P_m = toMillions(P_people);
+    }
 
-    return { name: countryEntry.country?.name ?? "—", C_m, P_m, tau, rho, k };
+    if (C_m === null){
+      const cObs = pickLatestObservation(obs, o =>
+        o.metric === "contributors_employed_people" ||
+        o.metric === "contributors_affiliates_people" ||
+        o.metric === "contributors_affiliated_people"
+      );
+      const C_people = cObs ? safeNum(cObs.value) : null;
+      if (C_people !== null) C_m = toMillions(C_people);
+    }
+
+    if (rho === null){
+      const rhoObs = pickLatestObservation(obs, o => o.metric === "replacement_rate_gross_full_career");
+      rho = rhoObs ? safeNum(rhoObs.value) : null;
+    }
+
+    if (tau === null){
+      tau = sumContributionRates(obs);
+    }
+
+    if (k === null){
+      k = (tau !== null && rho !== null && rho > 0) ? (tau / rho) : null;
+    }
+
+    return { name, C_m, P_m, tau, rho, k };
   }
 
   function hasCoreData(m){
@@ -854,9 +891,18 @@
     });
   }
 
+  /* ========= MODIFICACIÓN: obtener ISO3 usando entry.country.iso2 (nuevo JSON) ========= */
   function getPyramidForCountry(countryName){
-    const iso3 = NAME_TO_ISO3[countryName] || null;
+    const entry = state.countriesByName.get(countryName) || null;
+
+    const iso2 = (entry?.country?.iso2 || "").trim() || null;
+    const iso3 =
+      (entry?.country?.iso3 || "").trim() ||
+      (iso2 && ISO2_TO_ISO3[iso2] ? ISO2_TO_ISO3[iso2] : null) ||
+      (NAME_TO_ISO3[countryName] || null);
+
     if (!iso3) return null;
+
     const byYear = state.popByIso3.get(iso3) || null;
     if (!byYear) return null;
 
@@ -1372,12 +1418,22 @@
     state.popPreferredYear = years.length ? String(years[years.length-1]) : null;
   }
 
+  /* ========= MODIFICACIÓN: soportar countries como ARRAY (viejo) o como OBJETO por ISO2 (nuevo) ========= */
   async function loadPensionsJSON(){
     const res = await fetch(DATA_URL, { cache: "no-store" });
     if (!res.ok) throw new Error(`JSON pensiones: HTTP ${res.status}`);
     const json = await res.json();
 
-    const countries = Array.isArray(json?.countries) ? json.countries : [];
+    const raw = json?.countries;
+    let countries = [];
+    if (Array.isArray(raw)) {
+      countries = raw;
+    } else if (raw && typeof raw === "object") {
+      countries = Object.values(raw);
+    } else {
+      countries = [];
+    }
+
     state.countriesByName.clear();
     state.oecdNames = [];
 
@@ -1413,7 +1469,12 @@
       els.leftNote.textContent = leftMsg;
       if (els.leftNoteMobile) els.leftNoteMobile.textContent = leftMsg;
 
-      const defaultCountry = state.countriesByName.has("España") ? "España" : (state.oecdNames[0] || null);
+      /* ========= MODIFICACIÓN: default robusto (España o Spain si existe) ========= */
+      const defaultCountry =
+        state.countriesByName.has("España") ? "España" :
+        state.countriesByName.has("Spain") ? "Spain" :
+        (state.oecdNames[0] || null);
+
       state.selectedCountry = defaultCountry;
 
       els.selectedCountryMeta.textContent = defaultCountry ? `Seleccionado: ${defaultCountry}` : `Sin países`;

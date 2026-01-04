@@ -920,6 +920,10 @@
     "figuras/noun-nun-5116487.svg"
   ];
 
+  /* ========= MOD (OCDE): JSON unificado ========= */
+  const OECD_PENSIONS_JSON = "merged_countries.json";
+  /* ========= FIN MOD (OCDE) ========= */
+
   const AGE_LABELS = [
     "0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
     "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-94","95-99","100+"
@@ -949,6 +953,16 @@
 
     timeLayout: null,
     draggingTime: false,
+
+    /* ========= MOD (OCDE): caché de dataset ========= */
+    oecd: {
+      loaded: false,
+      error: null,
+      countries: [],
+      countriesByName: new Map(),
+      countriesByISO2: new Map()
+    }
+    /* ========= FIN MOD (OCDE) ========= */
   };
 
   const els = {
@@ -1052,6 +1066,180 @@
 
     input.style.background = `linear-gradient(to right, ${CSS('--primary')} 0%, ${CSS('--primary')} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
   }
+
+  /* ========= MOD (OCDE): compatibilidad countries:[] y countries:{ISO2:entry} + inputs/latest_observations_used ========= */
+  const safeNum = (x) => (typeof x === "number" && isFinite(x)) ? x : null;
+
+  function pickLatestObservation(observations, predicate){
+    const arr = observations.filter(o => predicate(o));
+    if (!arr.length) return null;
+    arr.sort((a,b) => (b?.period?.date || "").localeCompare(a?.period?.date || ""));
+    return arr[0];
+  }
+
+  // Suma τ usando "último dato" de cada componente contribution_rate_*
+  function sumContributionRatesLatest(observations){
+    const byMetric = new Map();
+    observations.forEach(o => {
+      const m = o?.metric;
+      if (typeof m !== "string" || !m.startsWith("contribution_rate_")) return;
+      const dt = (o?.period?.date || "");
+      if (!byMetric.has(m)) byMetric.set(m, o);
+      else {
+        const cur = byMetric.get(m);
+        if ((dt || "").localeCompare(cur?.period?.date || "") > 0) byMetric.set(m, o);
+      }
+    });
+
+    let sum = 0;
+    let maxDate = null;
+    let count = 0;
+
+    for (const o of byMetric.values()){
+      const v = safeNum(o.value);
+      if (v === null) continue;
+      sum += v;
+      count++;
+      const dt = o?.period?.date || null;
+      if (dt && (!maxDate || dt.localeCompare(maxDate) > 0)) maxDate = dt;
+    }
+    if (!count) return { tau: null, date: null };
+    return { tau: sum, date: maxDate };
+  }
+
+  function resolveCountryMetrics(countryEntry){
+    if (!countryEntry) return null;
+
+    // Preferencia: inputs ya procesados (merged_countries.json)
+    const inputs = countryEntry?.inputs;
+    if (inputs && typeof inputs === "object"){
+      const C_people = safeNum(inputs.C_people);
+      const P_people = safeNum(inputs.P_people);
+      const rho = safeNum(inputs.rho);
+      const tau = safeNum(inputs.tau);
+      const k0 = safeNum(inputs.k);
+      const k = (k0 !== null) ? k0 : ((tau !== null && rho !== null && rho > 0) ? (tau / rho) : null);
+
+      const lu = countryEntry?.latest_observations_used || null;
+      const cDate = lu?.C?.period?.date || null;
+      const pDate = lu?.P?.period?.date || null;
+      const rhoDate = lu?.rho?.period?.date || null;
+
+      let tauDate = null;
+      if (Array.isArray(lu?.tau_components) && lu.tau_components.length){
+        const ds = lu.tau_components
+          .map(o => (o?.period?.date || null))
+          .filter(d => typeof d === "string" && d);
+        ds.sort();
+        tauDate = ds.length ? ds[ds.length-1] : null;
+      }
+
+      return {
+        name: countryEntry.country?.name ?? "—",
+        C_people, P_people,
+        tau, rho, k,
+        dates: { tauDate, rhoDate, cDate, pDate }
+      };
+    }
+
+    // Fallback: esquema antiguo basado en observations
+    if (!Array.isArray(countryEntry.observations)) return null;
+    const obs = countryEntry.observations;
+
+    const pObs = pickLatestObservation(obs, o => o.metric === "pensioners_people");
+    const P_people = pObs ? safeNum(pObs.value) : null;
+    const pDate = pObs?.period?.date || null;
+
+    const cObs = pickLatestObservation(obs, o =>
+      o.metric === "contributors_employed_people" ||
+      o.metric === "contributors_affiliates_people" ||
+      o.metric === "contributors_affiliated_people"
+    );
+    const C_people = cObs ? safeNum(cObs.value) : null;
+    const cDate = cObs?.period?.date || null;
+
+    const rhoObs = pickLatestObservation(obs, o => o.metric === "replacement_rate_gross_full_career");
+    const rho = rhoObs ? safeNum(rhoObs.value) : null;
+    const rhoDate = rhoObs?.period?.date || null;
+
+    const tauPack = sumContributionRatesLatest(obs);
+    const tau = tauPack.tau;
+    const tauDate = tauPack.date;
+
+    const k = (tau !== null && rho !== null && rho > 0) ? (tau / rho) : null;
+
+    return {
+      name: countryEntry.country?.name ?? "—",
+      C_people, P_people,
+      tau, rho, k,
+      dates: { tauDate, rhoDate, cDate, pDate }
+    };
+  }
+
+  async function loadPensionsJSON(){
+    const res = await fetch(OECD_PENSIONS_JSON, { cache: "no-store" });
+    if (!res.ok) throw new Error(`JSON pensiones: HTTP ${res.status}`);
+    const json = await res.json();
+
+    // Acepta:
+    // - antiguo: { countries: [ ... ] }
+    // - nuevo:   { mode:"map", countries: { "AT": {...}, ... } }
+    let countries = [];
+    if (Array.isArray(json?.countries)) {
+      countries = json.countries;
+    } else if (json?.countries && typeof json.countries === "object") {
+      countries = Object.values(json.countries);
+    } else {
+      countries = [];
+    }
+    return countries;
+  }
+
+  async function initOECDDataset(){
+    try{
+      const countries = await loadPensionsJSON();
+      state.oecd.countries = countries;
+
+      const byName = new Map();
+      const byISO2 = new Map();
+
+      for (const c of countries){
+        const name = c?.country?.name || null;
+        const iso2 =
+          c?.country?.iso2 ||
+          c?.country?.code ||
+          c?.iso2 ||
+          c?.iso ||
+          null;
+
+        if (name) byName.set(name, c);
+        if (iso2) byISO2.set(String(iso2).toUpperCase(), c);
+      }
+
+      state.oecd.countriesByName = byName;
+      state.oecd.countriesByISO2 = byISO2;
+      state.oecd.loaded = true;
+      state.oecd.error = null;
+    }catch(err){
+      state.oecd.loaded = false;
+      state.oecd.error = String(err?.message || err);
+      // Importante: no rompemos el simulador si no existe el JSON en móvil.
+      console.warn("No se pudo cargar merged_countries.json:", err);
+    }
+  }
+
+  // Helpers opcionales (no usados por la UI móvil, pero disponibles)
+  function getOECDMetricsByCountryName(name){
+    if (!name || !state.oecd?.countriesByName) return null;
+    const entry = state.oecd.countriesByName.get(name);
+    return resolveCountryMetrics(entry);
+  }
+  function getOECDMetricsByISO2(iso2){
+    if (!iso2 || !state.oecd?.countriesByISO2) return null;
+    const entry = state.oecd.countriesByISO2.get(String(iso2).toUpperCase());
+    return resolveCountryMetrics(entry);
+  }
+  /* ========= FIN MOD (OCDE) ========= */
 
   /* ========= MODIFICACIÓN: leer datos introducidos en pensionSim_pyramid_v1 y pensionSim_time_v1 ========= */
   function safeJsonParse(s){
@@ -2306,6 +2494,10 @@
   /* ========= MODIFICACIÓN: aplicar valores guardados antes de pintar UI/gráficas ========= */
   loadInputsFromPensionSim();
   /* ========= FIN MODIFICACIÓN ========= */
+
+  /* ========= MOD (OCDE): cargar merged_countries.json sin romper el simulador ========= */
+  initOECDDataset();
+  /* ========= FIN MOD (OCDE) ========= */
 
   syncUI();
   renderPyramid();
