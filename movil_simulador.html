@@ -1531,8 +1531,6 @@
   function indexPyramidsData(json){
     const map = new Map();
 
-    const asArray = (v) => Array.isArray(v) ? v : null;
-
     let year = null;
 
     const ingestRecord = (iso3, rec) => {
@@ -1612,14 +1610,15 @@
 
     const normToShares = (arr) => {
       if (!Array.isArray(arr) || arr.length < 10) return null;
-      const a = arr.slice(0, 21).map(x => Math.max(0, Number(x) || 0));
+      const a = new Array(21).fill(0);
+      for (let i=0;i<21;i++){
+        const v = (i < arr.length) ? Number(arr[i]) : 0;
+        a[i] = Math.max(0, isFinite(v) ? v : 0);
+      }
       let s = a.reduce((p,c)=>p+c,0);
       if (!isFinite(s) || s <= 0) return null;
 
       // si ya parecen shares (s ~ 1), dejamos; si no, normalizamos
-      if (s > 0.98 && s < 1.02){
-        return a.map(v => v / s);
-      }
       return a.map(v => v / s);
     };
 
@@ -2003,7 +2002,11 @@
   function buildSyntheticTotalShares(){
     /* ========= NUEVO: si hay override (OCDE), usarlo ========= */
     if (state.pyramidOverride && Array.isArray(state.pyramidOverride) && state.pyramidOverride.length >= 10){
-      const a = state.pyramidOverride.slice(0, 21).map(x => Math.max(0, Number(x) || 0));
+      const a = new Array(21).fill(0);
+      for (let i=0;i<21;i++){
+        const v = (i < state.pyramidOverride.length) ? Number(state.pyramidOverride[i]) : 0;
+        a[i] = Math.max(0, isFinite(v) ? v : 0);
+      }
       let s = a.reduce((p,c)=>p+c,0);
       if (s <= 0) s = 1;
       for (let i=0;i<a.length;i++) a[i] /= s;
@@ -2784,15 +2787,19 @@
   function buildSyntheticSharesMF(){
     /* ========= NUEVO: si hay pirámide por sexo, usarla ========= */
     if (state.pyramidOverrideMF && state.pyramidOverrideMF.m && state.pyramidOverrideMF.f){
-      const m = state.pyramidOverrideMF.m.slice(0,21).map(x => Math.max(0, Number(x)||0));
-      const f = state.pyramidOverrideMF.f.slice(0,21).map(x => Math.max(0, Number(x)||0));
-      let sm = m.reduce((p,c)=>p+c,0); if (sm<=0) sm=1;
-      let sf = f.reduce((p,c)=>p+c,0); if (sf<=0) sf=1;
+      const mIn = state.pyramidOverrideMF.m;
+      const fIn = state.pyramidOverrideMF.f;
 
-      // normalizar cada lado respecto a su propio total, pero mantener proporciones coherentes:
-      // si el dataset ya venía en shares de total, esto no se ejecuta normalmente porque sumaría ~<1.
-      // Aun así, lo dejamos robusto.
-      // Mejor: normalizar a shares del total: si m+f ya suma 1, no tocamos.
+      const m = new Array(21).fill(0);
+      const f = new Array(21).fill(0);
+
+      for (let i=0;i<21;i++){
+        const vm = (i < mIn.length) ? Number(mIn[i]) : 0;
+        const vf = (i < fIn.length) ? Number(fIn[i]) : 0;
+        m[i] = Math.max(0, isFinite(vm) ? vm : 0);
+        f[i] = Math.max(0, isFinite(vf) ? vf : 0);
+      }
+
       const tot = m.map((v,i)=>v+(f[i]||0));
       let st = tot.reduce((p,c)=>p+c,0);
       if (st>0){
@@ -2800,6 +2807,9 @@
         const ff = f.map(v => v / st);
         return { m: mm, f: ff };
       }
+
+      let sm = m.reduce((p,c)=>p+c,0); if (sm<=0) sm=1;
+      let sf = f.reduce((p,c)=>p+c,0); if (sf<=0) sf=1;
       return { m: m.map(v=>v/sm), f: f.map(v=>v/sf) };
     }
     /* ========= FIN NUEVO ========= */
