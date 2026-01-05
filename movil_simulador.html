@@ -107,14 +107,11 @@
 
     /* ========= NUEVO: barra OCDE (móvil + desktop) ========= */
     .oecd-bar{
-      position: sticky;
-      top: 0;
-      z-index: 60;
+      position: relative;   /* CAMBIO: ya no es sticky/fija */
+      z-index: auto;        /* CAMBIO */
       padding: 10px 10px;
       background: linear-gradient(180deg, rgba(0,0,0,.88), rgba(0,0,0,.70));
       border-bottom: 1px solid var(--stroke);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
 
       display:flex;
       align-items:center;
@@ -146,21 +143,40 @@
       flex: 1 1 240px;
       min-width: 180px;
     }
-    .oecd-input{
+
+    /* CAMBIO: <select> real para desplegable de países */
+    .oecd-select{
       width: 100%;
-      padding: 8px 12px;
+      padding: 8px 38px 8px 12px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.06);
       color: #fff;
       outline: none;
       font-size: calc(12px * var(--fontScale));
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+
+      background-image:
+        linear-gradient(45deg, transparent 50%, rgba(255,255,255,.75) 50%),
+        linear-gradient(135deg, rgba(255,255,255,.75) 50%, transparent 50%),
+        linear-gradient(to right, rgba(255,255,255,.08), rgba(255,255,255,.08));
+      background-position:
+        calc(100% - 18px) 50%,
+        calc(100% - 12px) 50%,
+        calc(100% - 34px) 50%;
+      background-size:
+        6px 6px,
+        6px 6px,
+        1px 18px;
+      background-repeat: no-repeat;
     }
-    .oecd-input::placeholder{ color: rgba(255,255,255,.55); }
-    .oecd-input:focus{
+    .oecd-select:focus{
       border-color: rgba(254,247,2,.35);
       box-shadow: 0 0 0 3px rgba(254,247,2,.10);
     }
+
     .oecd-btn{
       cursor: pointer;
       border-radius: 999px;
@@ -201,25 +217,76 @@
       accent-color: var(--primary);
     }
 
-    .oecd-right{
-      opacity: .85;
-      font-size: calc(12px * var(--fontScale));
-      white-space: nowrap;
+    /* CAMBIO: fila de navegación (debajo de Cargar/Volver) */
+    .oecd-nav{
+      flex: 1 1 100%;
+      display:flex;
+      gap:10px;
+    }
+    .oecd-nav .oecd-btn{
+      flex: 1 1 0;
+    }
+
+    /* CAMBIO: en vez de “Datasets: …”, un desplegable explicativo */
+    .oecd-info{
       flex: 0 0 auto;
-      padding: 6px 10px;
-      border-radius: 999px;
+      border-radius: 14px;
       border: 1px solid rgba(255,255,255,.08);
       background: rgba(255,255,255,.03);
+      overflow:hidden;
+      min-width: 260px;
+    }
+    .oecd-info summary{
+      cursor:pointer;
+      list-style:none;
+      outline:none;
+      padding: 8px 10px;
+      font-size: calc(12px * var(--fontScale));
+      opacity:.92;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .oecd-info summary::-webkit-details-marker{ display:none; }
+    .oecd-info summary::after{
+      content:"ABRIR ▾";
+      font-weight:700;
+      color:#fff;
+      padding:6px 10px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      line-height:1;
+      font-size: calc(12px * var(--fontScale));
+      opacity:.95;
+    }
+    .oecd-info[open] summary::after{ content:"CERRAR ▴"; }
+    .oecd-info-body{
+      padding: 10px 10px 12px 10px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      font-size: calc(12px * var(--fontScale));
+      opacity:.88;
+      line-height:1.35;
+    }
+
+    /* Mantengo el status interno (JS), pero oculto */
+    .oecd-status-hidden{
+      display:none !important;
     }
 
     @media (max-width: 520px){
       .oecd-field{ flex: 1 1 100%; min-width: 0; }
       .oecd-btn{ flex: 1 1 140px; }
       .oecd-toggle{ width: 100%; justify-content:flex-start; }
-      .oecd-right{
+      .oecd-info{
         width: 100%;
-        white-space: normal;
+        min-width: 0;
       }
+      .oecd-nav{ width: 100%; }
     }
     /* ========= FIN barra OCDE ========= */
 
@@ -727,12 +794,20 @@
     <div class="oecd-brand">OCDE</div>
 
     <div class="oecd-field">
-      <input id="oecdCountryInput" class="oecd-input" type="text" list="oecdCountries" value="Alemania" placeholder="Escribe un país…" autocomplete="off" />
-      <datalist id="oecdCountries"></datalist>
+      <!-- CAMBIO: desplegable real -->
+      <select id="oecdCountrySelect" class="oecd-select" aria-label="País OCDE">
+        <option value="Alemania" selected>Alemania</option>
+      </select>
     </div>
 
     <button id="loadCountryBtn" type="button" class="oecd-btn oecd-btn-primary">Cargar país</button>
     <button id="backHypoBtn" type="button" class="oecd-btn">Volver a hipotético</button>
+
+    <!-- CAMBIO: botones Anterior/Siguiente debajo (misma fila, lado a lado) -->
+    <div class="oecd-nav" aria-label="Navegación de países OCDE">
+      <button id="prevCountryBtn" type="button" class="oecd-btn">◀ Anterior</button>
+      <button id="nextCountryBtn" type="button" class="oecd-btn">Siguiente ▶</button>
+    </div>
 
     <label class="oecd-toggle" title="Al activar, el simulador toma los valores del país seleccionado (si hay dataset)">
       <input id="useOecdChk" type="checkbox" />
@@ -740,7 +815,20 @@
     </label>
   </div>
 
-  <div class="oecd-right mono" id="oecdStatus">Datasets: cargando…</div>
+  <!-- CAMBIO: en lugar de “Datasets: …”, desplegable explicativo -->
+  <details class="oecd-info" id="oecdInfo">
+    <summary>En modo OCDE</summary>
+    <div class="oecd-info-body">
+      En modo OCDE:
+      <div>1) τ y ρ se inicializan con valores del dataset (pendiente k=τ/ρ).</div>
+      <div>2) La demografía se lee de OECD_demografia.csv (proyección por edades), y sustituye a los sliders de crec. población y envejecimiento.</div>
+      <div>3) C(t) se calibra en t0 para cuadrar C_people ajustando participación/u y se proyecta con la demografía.</div>
+      <div>4) P(t) usa Opción B: P(t)=α·(65+)(t) con α calibrado en t0 para que P(t0)=P_people (con checks de plausibilidad y fallback a α=1).</div>
+    </div>
+  </details>
+
+  <!-- Mantengo el “status” para JS, pero oculto -->
+  <span class="oecd-status-hidden mono" id="oecdStatus" aria-hidden="true">Datasets: …</span>
 </div>
 <!-- ========= FIN barra OCDE ========= -->
 
@@ -1202,11 +1290,13 @@
     PStar2: document.getElementById('PStar2'),
 
     /* ========= NUEVO: barra OCDE ========= */
-    oecdCountryInput: document.getElementById('oecdCountryInput'),
-    oecdCountries: document.getElementById('oecdCountries'),
+    oecdCountrySelect: document.getElementById('oecdCountrySelect'),
     loadCountryBtn: document.getElementById('loadCountryBtn'),
     backHypoBtn: document.getElementById('backHypoBtn'),
+    prevCountryBtn: document.getElementById('prevCountryBtn'),
+    nextCountryBtn: document.getElementById('nextCountryBtn'),
     useOecdChk: document.getElementById('useOecdChk'),
+    oecdInfo: document.getElementById('oecdInfo'),
     oecdStatus: document.getElementById('oecdStatus')
     /* ========= FIN NUEVO ========= */
   };
@@ -1374,10 +1464,21 @@
   }
 
   function setOECDStatusTemp(msg, ms=2500){
-    const base = computeOECDStatusLine();
-    els.oecdStatus.textContent = msg;
-    window.clearTimeout(setOECDStatusTemp._t);
-    setOECDStatusTemp._t = window.setTimeout(() => { els.oecdStatus.textContent = base; }, ms);
+    // Ya no mostramos “Datasets: …” en UI. Usamos el summary del <details> como feedback breve.
+    const sum = els.oecdInfo ? els.oecdInfo.querySelector("summary") : null;
+    const baseSummary = "En modo OCDE";
+
+    if (sum){
+      sum.textContent = msg;
+      window.clearTimeout(setOECDStatusTemp._t);
+      setOECDStatusTemp._t = window.setTimeout(() => { sum.textContent = baseSummary; }, ms);
+    } else {
+      try{ console.warn("[OCDE]", msg); }catch(e){}
+    }
+
+    if (els.oecdStatus){
+      els.oecdStatus.textContent = msg;
+    }
   }
 
   function computeOECDStatusLine(){
@@ -1513,18 +1614,40 @@
   }
 
   function populateCountryDatalist(){
-    if (!els.oecdCountries) return;
-    els.oecdCountries.innerHTML = "";
+    // Mantengo el nombre de la función para no tocar llamadas: ahora rellena el <select>
+    const sel = els.oecdCountrySelect;
+    if (!sel) return;
+
+    sel.innerHTML = "";
+
+    const list = (state.oecd.countries || [])
+      .filter(c => c && c.name)
+      .map(c => c.name.trim())
+      .filter(Boolean);
 
     const seen = new Set();
-    for (const c of state.oecd.countries){
-      if (!c || !c.name) continue;
-      const n = c.name.trim();
-      if (!n || seen.has(n.toLowerCase())) continue;
-      seen.add(n.toLowerCase());
+    const uniq = [];
+    for (const n of list){
+      const k = nowStrip(n);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      uniq.push(n);
+    }
+    uniq.sort((a,b)=> a.localeCompare(b, "es", { sensitivity: "base" }));
+
+    for (const n of uniq){
       const opt = document.createElement("option");
       opt.value = n;
-      els.oecdCountries.appendChild(opt);
+      opt.textContent = n;
+      sel.appendChild(opt);
+    }
+
+    const desired = (state.oecdCountry || "").trim();
+    if (desired && uniq.some(n => nowStrip(n) === nowStrip(desired))){
+      sel.value = uniq.find(n => nowStrip(n) === nowStrip(desired));
+    } else if (uniq.length){
+      sel.value = uniq[0];
+      state.oecdCountry = uniq[0];
     }
   }
 
@@ -1713,7 +1836,11 @@
 
   function setOecdCountryName(name){
     state.oecdCountry = (name || "").trim() || state.oecdCountry;
-    if (els.oecdCountryInput) els.oecdCountryInput.value = state.oecdCountry;
+    if (els.oecdCountrySelect){
+      const opts = Array.from(els.oecdCountrySelect.options || []);
+      const hit = opts.find(o => nowStrip(o.value) === nowStrip(state.oecdCountry));
+      if (hit) els.oecdCountrySelect.value = hit.value;
+    }
     try{ localStorage.setItem("pensionSim_oecd_country", state.oecdCountry); }catch(e){}
   }
 
@@ -1825,7 +1952,8 @@
   }
 
   async function initOECDDatasets(){
-    els.oecdStatus.textContent = "Datasets: cargando…";
+    // status interno oculto
+    if (els.oecdStatus) els.oecdStatus.textContent = "Datasets: cargando…";
 
     // 1) countries/metrics
     const countriesRes = await fetchJsonFirst(OECD_COUNTRIES_JSON_CANDIDATES);
@@ -1874,7 +2002,7 @@
 
     if (savedCountry && savedCountry.trim()){
       state.oecdCountry = savedCountry.trim();
-      if (els.oecdCountryInput) els.oecdCountryInput.value = state.oecdCountry;
+      setOecdCountryName(state.oecdCountry);
     }
 
     if (use === "1"){
@@ -1899,8 +2027,8 @@
       }
     }
 
-    // status final
-    els.oecdStatus.textContent = computeOECDStatusLine();
+    // status final oculto
+    if (els.oecdStatus) els.oecdStatus.textContent = computeOECDStatusLine();
   }
   /* ========= FIN NUEVO ========= */
 
@@ -2789,10 +2917,6 @@
       let sm = m.reduce((p,c)=>p+c,0); if (sm<=0) sm=1;
       let sf = f.reduce((p,c)=>p+c,0); if (sf<=0) sf=1;
 
-      // normalizar cada lado respecto a su propio total, pero mantener proporciones coherentes:
-      // si el dataset ya venía en shares de total, esto no se ejecuta normalmente porque sumaría ~<1.
-      // Aun así, lo dejamos robusto.
-      // Mejor: normalizar a shares del total: si m+f ya suma 1, no tocamos.
       const tot = m.map((v,i)=>v+(f[i]||0));
       let st = tot.reduce((p,c)=>p+c,0);
       if (st>0){
@@ -3078,11 +3202,67 @@
   ensureWorkerSeq(30);
 
   /* ========= NUEVO: wiring barra OCDE ========= */
-  if (els.oecdCountryInput){
-    els.oecdCountryInput.addEventListener("input", (e) => {
-      setOecdCountryName(e.target.value);
-    });
-    els.oecdCountryInput.addEventListener("change", (e) => {
+  function applySelectedCountryFromSelect(){
+    if (!state.oecd.loaded){
+      setOECDStatusTemp("Dataset de países no cargado (revisa rutas/JSON)");
+      return false;
+    }
+
+    if (!state.oecdUse){
+      takeHypoSnapshot();
+      setOecdUse(true);
+    }
+
+    const name =
+      (els.oecdCountrySelect ? els.oecdCountrySelect.value : state.oecdCountry) ||
+      state.oecdCountry;
+
+    setOecdCountryName(name);
+
+    const entry = getCountryEntryByAnyKey(name);
+    if (!entry){
+      setOECDStatusTemp(`País no encontrado: ${name}`);
+      return false;
+    }
+
+    const ok = applyCountryToState(entry);
+    if (!ok){
+      setOECDStatusTemp("No se pudo aplicar el país (datos incompletos)");
+      return false;
+    }
+
+    syncUI();
+    renderPyramid();
+    renderTimeChart();
+
+    if (els.oecdStatus) els.oecdStatus.textContent = computeOECDStatusLine();
+    return true;
+  }
+
+  function stepCountry(delta){
+    const sel = els.oecdCountrySelect;
+    if (!sel || !sel.options || sel.options.length <= 0){
+      setOECDStatusTemp("Lista de países no disponible");
+      return;
+    }
+
+    const opts = Array.from(sel.options);
+    let idx = opts.findIndex(o => nowStrip(o.value) === nowStrip(sel.value));
+    if (idx < 0) idx = 0;
+
+    let next = idx + delta;
+    if (next < 0) next = opts.length - 1;
+    if (next >= opts.length) next = 0;
+
+    sel.value = opts[next].value;
+    setOecdCountryName(sel.value);
+
+    // Al avanzar/retroceder: aplicar directamente el país
+    applySelectedCountryFromSelect();
+  }
+
+  if (els.oecdCountrySelect){
+    els.oecdCountrySelect.addEventListener("change", (e) => {
       setOecdCountryName(e.target.value);
     });
   }
@@ -3105,47 +3285,23 @@
         renderTimeChart();
       } else {
         setOecdUse(true);
-        // no aplicamos automáticamente aquí: se aplica al pulsar "Cargar país"
+        // no aplicamos automáticamente aquí: se aplica al pulsar "Cargar país" o con Anterior/Siguiente
       }
     });
   }
 
   if (els.loadCountryBtn){
     els.loadCountryBtn.addEventListener("click", () => {
-      if (!state.oecd.loaded){
-        setOECDStatusTemp("Dataset de países no cargado (revisa rutas/JSON)");
-        return;
-      }
-
-      // si estaba apagado, al cargar país asumimos que lo quieres encender
-      if (!state.oecdUse){
-        takeHypoSnapshot();
-        setOecdUse(true);
-      }
-
-      const name = (els.oecdCountryInput ? els.oecdCountryInput.value : state.oecdCountry) || state.oecdCountry;
-      setOecdCountryName(name);
-
-      const entry = getCountryEntryByAnyKey(name);
-      if (!entry){
-        setOECDStatusTemp(`País no encontrado: ${name}`);
-        return;
-      }
-
-      const ok = applyCountryToState(entry);
-      if (!ok){
-        setOECDStatusTemp("No se pudo aplicar el país (datos incompletos)");
-        return;
-      }
-
-      // refrescar UI + gráficas
-      syncUI();
-      renderPyramid();
-      renderTimeChart();
-
-      // status vuelve al base (datasets)
-      els.oecdStatus.textContent = computeOECDStatusLine();
+      applySelectedCountryFromSelect();
     });
+  }
+
+  if (els.prevCountryBtn){
+    els.prevCountryBtn.addEventListener("click", () => stepCountry(-1));
+  }
+
+  if (els.nextCountryBtn){
+    els.nextCountryBtn.addEventListener("click", () => stepCountry(+1));
   }
 
   if (els.backHypoBtn){
