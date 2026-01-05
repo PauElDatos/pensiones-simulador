@@ -201,25 +201,6 @@
       line-height:1.35;
     }
 
-    /* Dropdown detalles modo OCDE */
-    .oecd-details{ position:relative; }
-    .oecd-details > summary{ list-style:none; }
-    .oecd-details > summary::-webkit-details-marker{ display:none; }
-    .oecd-details-panel{
-      margin-top:8px;
-      padding:10px 12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.14);
-      border-radius:12px;
-      font-size: calc(11px * var(--fontScale));
-      opacity:.78;
-      line-height:1.35;
-      max-width: 680px;
-    }
-
-    /* Oculta el texto informativo a la derecha del toggle OCDE */
-    #oecdInfo{ display:none !important; }
-
     .chart-area{
       padding:12px;
       display:flex;
@@ -647,18 +628,15 @@
         <span>Usar datos OCDE</span>
       </label>
 
-      <details class="oecd-details" id="oecdDetails">
-        <summary class="oecd-btn" title="Ver explicación del modo OCDE">Detalles modo OCDE</summary>
-        <div class="oecd-details-panel">
-          En <span class="mono">modo OCDE</span>:
-          <br>1) <span class="mono">τ</span> y <span class="mono">ρ</span> se inicializan con valores del dataset (pendiente <span class="mono">k=τ/ρ</span>).
-          <br>2) La <span class="mono">demografía</span> se lee de <span class="mono">OECD_demografia.csv</span> (proyección por edades), y sustituye a los sliders de <span class="mono">crec. población</span> y <span class="mono">envejecimiento</span>.
-          <br>3) <span class="mono">C(t)</span> se calibra en <span class="mono">t0</span> para cuadrar <span class="mono">C_people</span> ajustando participación/<span class="mono">u</span> y se proyecta con la demografía.
-          <br>4) <span class="mono">P(t)</span> usa Opción B: <span class="mono">P(t)=α·(65+)(t)</span> con <span class="mono">α</span> calibrado en <span class="mono">t0</span> para que <span class="mono">P(t0)=P_people</span> (con checks de plausibilidad y fallback a <span class="mono">α=1</span>).
-        </div>
-      </details>
-
       <div class="oecd-info mono" id="oecdInfo">Cargando datasets OCDE…</div>
+    </div>
+
+    <div class="oecd-hint">
+      En <span class="mono">modo OCDE</span>:
+      <br>1) <span class="mono">τ</span> y <span class="mono">ρ</span> se inicializan con valores del dataset (pendiente <span class="mono">k=τ/ρ</span>).
+      <br>2) La <span class="mono">demografía</span> se lee de <span class="mono">OECD_demografia.csv</span> (proyección por edades), y sustituye a los sliders de <span class="mono">crec. población</span> y <span class="mono">envejecimiento</span>.
+      <br>3) <span class="mono">C(t)</span> se calibra en <span class="mono">t0</span> para cuadrar <span class="mono">C_people</span> ajustando participación/<span class="mono">u</span> y se proyecta con la demografía.
+      <br>4) <span class="mono">P(t)</span> usa Opción B: <span class="mono">P(t)=α·(65+)(t)</span> con <span class="mono">α</span> calibrado en <span class="mono">t0</span> para que <span class="mono">P(t0)=P_people</span> (con checks de plausibilidad y fallback a <span class="mono">α=1</span>).
     </div>
 
     <div class="chart-area">
@@ -748,7 +726,8 @@
             </div>
 
             <div class="caption">
-              ρ es un parámetro “resumen” de productividad agregada: captura el nivel de tecnología, la eficiencia organizativa y, en general, cuánta producción (base imponible) genera cada trabajador en promedio. Un ρ más alto significa que, con el mismo número de cotizantes, la economía genera más valor y el sistema puede sostener más pensiones sin aumentar tipos; un ρ más bajo implica el caso contrario (misma población activa, menor capacidad de financiación real). Por su parte, τ representa la intensidad contributiva: el porcentaje del output/labor income que se deriva al sistema (vía cotizaciones/tributación afectada). Subir τ aumenta ingresos por cotizante, pero también refleja una mayor carga sobre salarios y empresas; bajar τ alivia la cuña fiscal pero exige, para el mismo nivel de pensiones, más cotizantes o más productividad. Juntas, ambas variables determinan la pendiente de equilibrio k=τ/ρ, es decir, la “regla” que relaciona cuántos pensionistas pueden financiarse de manera sostenible para un nivel dado de cotizantes.
+              En modo OCDE con <span class="mono">OECD_demografia.csv</span>, la trayectoria de población y estructura por edad se toma del dataset (no de los sliders de crecimiento/envejecimiento).
+              La sostenibilidad usa <span class="mono">P ≤ k·C</span> con <span class="mono">k=τ/ρ</span>.
             </div>
           </div>
         </div>
