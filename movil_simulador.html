@@ -2108,58 +2108,67 @@
   }
 
   // ========= Leyenda time (móvil: gaps/escala) =========
-  function renderTimeLegendHorizontal(svg, y){
-    const items = [
-      { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
-      { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
-      { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
-      { label: "Pensionistas", fill: COLORS.retired, op: "0.50" }
-    ];
+function renderTimeLegendHorizontal(svg, y){
+  const items = [
+    { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
+    { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
+    { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
+    { label: "Pensionistas", fill: COLORS.retired, op: "0.50" }
+  ];
 
-    const g = svgEl('g', { "opacity":"0.95" });
+  const g = svgEl('g', { "opacity":"0.95" });
 
-    const box = 16;
-    const gap = 10;
-    const itemGap = getTimeLegendItemGap();
+  const box = 16;
+  const gap = 10;
 
-    let x = 0;
+  // OJO: este gap ahora actúa como separación VERTICAL entre filas
+  const itemGap = getTimeLegendItemGap();
+  const lineH = box + itemGap;
 
-    items.forEach((it) => {
-      g.appendChild(svgEl('rect', {
-        x: x, y: y - (box - 2),
-        width: box, height: box,
-        fill: it.fill,
-        "fill-opacity": it.op,
-        stroke: COLORS.text,
-        "stroke-width":"1",
-        "stroke-opacity":"0.20",
-        rx:"3", ry:"3"
-      }));
+  // Coloca la última fila en "y" y apila hacia arriba para no salirse del viewBox
+  const startY = y - (items.length - 1) * lineH;
 
-      const t = svgEl('text', {
-        x: x + box + gap,
-        y: y + 3,
-        fill: COLORS.text,
-        "font-size": fsLegend(12),
-        "font-family":"Arial, sans-serif",
-        "text-anchor":"start",
-        "opacity":"0.92"
-      });
-      t.textContent = it.label;
-      g.appendChild(t);
+  const x = 0;
 
-      // Avanza un ancho aproximado + gap configurado
-      x = x + box + gap + (it.label.length * 8.0) + itemGap;
+  items.forEach((it, i) => {
+    const yy = startY + i * lineH;
+
+    g.appendChild(svgEl('rect', {
+      x: x,
+      y: yy - (box - 2),
+      width: box,
+      height: box,
+      fill: it.fill,
+      "fill-opacity": it.op,
+      stroke: COLORS.text,
+      "stroke-width":"1",
+      "stroke-opacity":"0.20",
+      rx:"3",
+      ry:"3"
+    }));
+
+    const t = svgEl('text', {
+      x: x + box + gap,
+      y: yy + 3,
+      fill: COLORS.text,
+      "font-size": fsLegend(12),
+      "font-family":"Arial, sans-serif",
+      "text-anchor":"start",
+      "opacity":"0.92"
     });
+    t.textContent = it.label;
+    g.appendChild(t);
+  });
 
-    svg.appendChild(g);
+  svg.appendChild(g);
 
-    try{
-      const bb = g.getBBox();
-      const tx = (1000 - bb.width) / 2 - bb.x;
-      g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
-    }catch(e){}
-  }
+  // Centrar horizontalmente el bloque completo de leyenda
+  try{
+    const bb = g.getBBox();
+    const tx = (1000 - bb.width) / 2 - bb.x;
+    g.setAttribute("transform", `translate(${tx.toFixed(2)} 0)`);
+  }catch(e){}
+}
 
   // ========= Time scrub =========
   function viewXFromClientX(svg, clientX){
