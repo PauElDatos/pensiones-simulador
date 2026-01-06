@@ -7,10 +7,27 @@
 
   <style>
     :root{
+      /* =========================================================
+         VARIABLES “TIPO DESKTOP” (posicionamiento + escalado SVG)
+         ========================================================= */
       --fontScale: 1.12;
       --axisLabelGap: 78px;
       --axisLabelFontScale: 1.05;
 
+      --timeXAxisLabelGap: 100px;     /* distancia texto eje X al eje X (EVOLUCIÓN EN EL TIEMPO) */
+      --timeYAxisLabelGap: 20px;      /* distancia texto eje Y al eje Y (EVOLUCIÓN EN EL TIEMPO) */
+      --cpXAxisLabelGap: 100px;       /* distancia texto eje X al eje X (C–P Y EQUILIBRIO) */
+      --cpYAxisLabelGap: 20px;        /* distancia texto eje Y al eje Y (C–P Y EQUILIBRIO) */
+
+      --timeLegendFontScale: 1.35;    /* tamaño del texto SOLO de la leyenda (EVOLUCIÓN EN EL TIEMPO) */
+      --timeLegendItemGap: 90px;      /* (si usas leyenda horizontal) separación entre items */
+      --timeLegendToChartGap: 130px;  /* distancia vertical de la leyenda al eje X (la “gráfica”) */
+
+      --chartTextBoost: 2.0;          /* boost SOLO para textos SVG */
+
+      /* =========================================================
+         TEMA
+         ========================================================= */
       --bg:#252525;
       --primary:#FEF702;
       --text:#B0B0B0;
@@ -37,6 +54,13 @@
         --fontScale: 1.06;
         --axisLabelGap: 84px;
         --axisLabelFontScale: 1.00;
+
+        --timeXAxisLabelGap: 86px;
+        --timeYAxisLabelGap: 20px;
+        --cpXAxisLabelGap: 86px;
+        --cpYAxisLabelGap: 20px;
+
+        --timeLegendToChartGap: 112px;
       }
     }
 
@@ -210,19 +234,6 @@
       flex: 1 1 100%;
     }
     .oecd-toggle input{ accent-color: var(--primary); }
-    .oecd-info{
-      flex: 1 1 100%;
-      min-width: 240px;
-      font-size: calc(11px * var(--fontScale));
-      opacity:.78;
-      line-height:1.25;
-    }
-    .oecd-hint{
-      padding:0 10px 10px 10px;
-      font-size: calc(11px * var(--fontScale));
-      opacity:.72;
-      line-height:1.35;
-    }
 
     .oecd-details{ position:relative; flex: 1 1 100%; }
     .oecd-details > summary{ list-style:none; }
@@ -239,12 +250,18 @@
       max-width: 680px;
     }
 
-    #oecdInfo{ display:none !important; }
-
     .oecd-nav{
       display:flex;
       gap:10px;
       flex: 1 1 100%;
+    }
+
+    .oecd-status{
+      flex: 1 1 100%;
+      font-size: calc(11px * var(--fontScale));
+      opacity:.78;
+      line-height:1.25;
+      padding:2px 2px 0 2px;
     }
 
     .chart-area{
@@ -255,7 +272,6 @@
       height:100%;
     }
 
-    /* MÓVIL: 1 columna SIEMPRE */
     .charts-row{
       display:grid;
       grid-template-columns: 1fr;
@@ -297,11 +313,7 @@
       min-width: 140px;
     }
 
-    .chart-card .ch.cp-head{
-      display:block;
-      align-items:unset;
-      justify-content:unset;
-    }
+    .chart-card .ch.cp-head{ display:block; }
 
     .cp-head-row{
       display:grid;
@@ -345,6 +357,11 @@
       display:block;
     }
 
+    /* IMPORTANTE: damos más altura a “Evolución en el tiempo” para la leyenda inferior */
+    #timeSvg{
+      aspect-ratio: 1000 / 900;
+    }
+
     .sim-wrap{
       display:grid;
       grid-template-columns: 1fr;
@@ -360,7 +377,6 @@
       padding-top:8px;
     }
 
-    .caption-details{ }
     .caption-details > summary{ list-style:none; }
     .caption-details > summary::-webkit-details-marker{ display:none; }
     .caption-toggle{
@@ -624,6 +640,7 @@
     }
     #playBtn:hover, #pauseBtn:hover, #resetBtn:hover{ filter: brightness(0.95); }
 
+    /* bloque deshabilitado (modo OCDE con demografía) */
     .disabled-block{
       opacity: .55;
       filter: saturate(0.85);
@@ -670,7 +687,7 @@
         </select>
       </div>
 
-      <button class="oecd-btn primary" id="oecdLoadBtn" type="button" disabled title="Carga τ, ρ, C, P y demografía del país seleccionado">
+      <button class="oecd-btn primary" id="oecdLoadBtn" type="button" disabled title="Carga τ, ρ y calibra C/P con demografía del país seleccionado">
         Cargar país
       </button>
 
@@ -679,10 +696,10 @@
       </button>
 
       <div class="oecd-nav" aria-label="Navegación de países OCDE">
-        <button class="oecd-btn" id="oecdPrevBtn" type="button" disabled title="Carga el país anterior en la lista">
+        <button class="oecd-btn" id="oecdPrevBtn" type="button" disabled title="Selecciona el país anterior">
           País anterior
         </button>
-        <button class="oecd-btn" id="oecdNextBtn" type="button" disabled title="Carga el país siguiente en la lista">
+        <button class="oecd-btn" id="oecdNextBtn" type="button" disabled title="Selecciona el país siguiente">
           País siguiente
         </button>
       </div>
@@ -697,13 +714,13 @@
         <div class="oecd-details-panel">
           En modo OCDE:
           <br>1) τ y ρ se inicializan con valores del dataset (pendiente k=τ/ρ).
-          <br>2) La demografía se lee de OECD_demografia.csv (proyección por edades), y sustituye a los sliders de crec. población y envejecimiento.
-          <br>3) C(t) se calibra en t0 para cuadrar C_people ajustando participación/u y se proyecta con la demografía.
-          <br>4) P(t) usa Opción B: P(t)=α·(65+)(t) con α calibrado en t0 para que P(t0)=P_people (con checks de plausibilidad y fallback a α=1).
+          <br>2) La demografía se lee de <span class="mono">OECD_demografia.csv</span> (proyección por edades), sustituyendo a crec. población y envejecimiento.
+          <br>3) <span class="mono">C(t)</span> se calibra en <span class="mono">t0</span> con <span class="mono">C_people</span> ajustando participación/u (si está disponible).
+          <br>4) <span class="mono">P(t)=α·(65+)(t)</span>, con α calibrado en <span class="mono">t0</span> para aproximar <span class="mono">P_people</span> (con checks y fallback a α=1).
         </div>
       </details>
 
-      <div class="oecd-info mono" id="oecdInfo">Cargando datasets OCDE…</div>
+      <div class="oecd-status mono" id="oecdStatus">Datasets: cargando…</div>
     </div>
 
     <div class="chart-area">
@@ -718,11 +735,13 @@
 
           <div class="cb">
             <div class="sim-wrap">
-              <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
+              <!-- IMPORTANTE: viewBox alto para leyenda -->
+              <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 900" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
             </div>
 
             <div class="sys-controls" aria-label="Parámetros del sistema">
-              <div class="sys-grid">
+              <div class="sys-grid" id="sysGrid">
+
                 <div class="ctl">
                   <label>
                     <span>ρ (tasa de reemplazo / parámetro del modelo)</span>
@@ -747,7 +766,7 @@
                   <input id="uSlider" type="range" min="0" max="35" step="1" value="10" />
                 </div>
 
-                <div class="ctl">
+                <div class="ctl" id="popGrowthCtl">
                   <label>
                     <span>Crec. población anual</span>
                     <span class="val mono" id="popGrowthVal">0.30%</span>
@@ -755,7 +774,7 @@
                   <input id="popGrowthSlider" type="range" min="-1.50" max="2.50" step="0.05" value="0.30" />
                 </div>
 
-                <div class="ctl">
+                <div class="ctl" id="agingCtl">
                   <label>
                     <span>Envejecimiento anual (Δ share pensión / 65+)</span>
                     <span class="val mono" id="agingVal">+0.20 pp</span>
@@ -795,7 +814,9 @@
             <details class="caption-details">
               <summary class="caption-toggle" title="Ver explicación de ρ, τ y k">Explicación ρ, τ y k</summary>
               <div class="caption">
-                ρ es un parámetro “resumen” de productividad agregada: captura el nivel de tecnología, la eficiencia organizativa y, en general, cuánta producción (base imponible) genera cada trabajador en promedio. Un ρ más alto significa que, con el mismo número de cotizantes, la economía genera más valor y el sistema puede sostener más pensiones sin aumentar tipos; un ρ más bajo implica el caso contrario (misma población activa, menor capacidad de financiación real). Por su parte, τ representa la intensidad contributiva: el porcentaje del output/labor income que se deriva al sistema (vía cotizaciones/tributación afectada). Subir τ aumenta ingresos por cotizante, pero también refleja una mayor carga sobre salarios y empresas; bajar τ alivia la cuña fiscal pero exige, para el mismo nivel de pensiones, más cotizantes o más productividad. Juntas, ambas variables determinan la pendiente de equilibrio k=τ/ρ, es decir, la “regla” que relaciona cuántos pensionistas pueden financiarse de manera sostenible para un nivel dado de cotizantes.
+                ρ resume productividad/“capacidad fiscal” por trabajador. τ es intensidad contributiva.
+                La pendiente de equilibrio es <span class="mono">k=τ/ρ</span>.
+                En modo OCDE con demografía, se usa la proyección por edades y se bloquean crec./envejecimiento hipotéticos.
               </div>
             </details>
           </div>
@@ -834,7 +855,6 @@
                     <div class="big mono" id="heroCP">—</div>
                   </div>
                 </div>
-
                 <div class="right" aria-label="Trabajadores que sostienen a 1 jubilado" id="heroWorkersIcons"></div>
               </div>
 
@@ -869,8 +889,8 @@
             </div>
 
             <div class="caption">
-              Punto (C,P) del país en cada t. Línea amarilla: equilibrio <span class="mono">P = k·C</span>.
-              En modo OCDE, <span class="mono">P(t)=α·(65+)(t)</span> y <span class="mono">C(t)</span> se proyecta con demografía y parámetros <span class="mono">participación</span>/<span class="mono">u</span>.
+              Punto (C,P) en cada t. Línea amarilla: equilibrio <span class="mono">P = k·C</span>.
+              En modo OCDE: <span class="mono">P(t)=α·(65+)(t)</span> y <span class="mono">C(t)</span> se proyecta con demografía y parámetros de participación/u.
             </div>
           </div>
         </div>
@@ -882,7 +902,7 @@
             <div class="csub mono" id="pyrMeta">Población total: 47.0 M</div>
           </div>
 
-          <div class="cb">
+          <div class="cb" id="pyrBlock">
             <div class="pyr-frame">
               <div class="vslider-shell" id="peakShell" title="Pico (quinquenio)">
                 <input id="peakSlider" type="range" min="0" max="20" step="1" value="9" />
@@ -933,8 +953,8 @@
           </div>
         </div>
 
-      </div>
-    </div>
+      </div><!-- charts-row -->
+    </div><!-- chart-area -->
   </section>
 </main>
 
@@ -944,13 +964,15 @@
   // FUENTES
   // ==========================================================
   const OECD_PENSIONS_JSON = "merged_countries.json";
-
-  // MOD CLAVE: este CSV es el que me pediste usar (proyección por edad/sexo/año)
-  // Debe estar en el mismo directorio que este HTML y servirse vía HTTP (GitHub Pages, etc.).
-  const OECD_DEMOG_CSV = "OECD_demografia.csv";
+  const OECD_DEMOG_CSV_CANDIDATES = [
+    "OECD_demografia.csv",
+    "data/OECD_demografia.csv",
+    "datasets/OECD_demografia.csv",
+    "oecd/OECD_demografia.csv"
+  ];
 
   const NAME_TO_ISO3 = {
-    "Alemania":"DEU","Australia":"AUS","Austria":"AUT","Bélgica":"BEL","Canadá":"CAN","Chile":"CHL","Colombia":"COL",
+    "Alemania":"DEU","Australia":"AUS","Austria":"AUT","Bélgica":"BEL","Canada":"CAN","Canadá":"CAN","Chile":"CHL","Colombia":"COL",
     "Corea del Sur":"KOR","Costa Rica":"CRI","Dinamarca":"DNK","Eslovaquia":"SVK","Eslovenia":"SVN","España":"ESP",
     "Estados Unidos":"USA","Estonia":"EST","Finlandia":"FIN","Francia":"FRA","Grecia":"GRC","Hungría":"HUN","Islandia":"ISL",
     "Irlanda":"IRL","Israel":"ISR","Italia":"ITA","Japón":"JPN","Letonia":"LVA","Lituania":"LTU","Luxemburgo":"LUX","México":"MEX",
@@ -983,15 +1005,60 @@
     noncot: CSS('--noncot')
   };
 
+  // ==========================================================
+  // CSS VAR HELPERS (NUEVO: gaps por gráfica + boost + leyenda)
+  // ==========================================================
   const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
+
   const getAxisLabelGap = () => {
     const v = parseFloat(CSS('--axisLabelGap'));
     return isFinite(v) ? v : 60;
   };
+
+  const getTimeXAxisLabelGap = () => {
+    const v = parseFloat(CSS('--timeXAxisLabelGap'));
+    return isFinite(v) ? v : getAxisLabelGap();
+  };
+  const getTimeYAxisLabelGap = () => {
+    const v = parseFloat(CSS('--timeYAxisLabelGap'));
+    return isFinite(v) ? v : getAxisLabelGap();
+  };
+
+  const getCPXAxisLabelGap = () => {
+    const v = parseFloat(CSS('--cpXAxisLabelGap'));
+    return isFinite(v) ? v : getAxisLabelGap();
+  };
+  const getCPYAxisLabelGap = () => {
+    const v = parseFloat(CSS('--cpYAxisLabelGap'));
+    return isFinite(v) ? v : getAxisLabelGap();
+  };
+
   const getAxisLabelFontScale = () => {
     const v = parseFloat(CSS('--axisLabelFontScale'));
     return isFinite(v) ? v : 1;
   };
+
+  const getChartTextBoost = () => {
+    const v = parseFloat(CSS('--chartTextBoost'));
+    return isFinite(v) ? v : 1;
+  };
+
+  const getTimeLegendFontScale = () => {
+    const v = parseFloat(CSS('--timeLegendFontScale'));
+    return isFinite(v) ? v : 1;
+  };
+
+  const getTimeLegendToChartGap = () => {
+    const v = parseFloat(CSS('--timeLegendToChartGap'));
+    if (isFinite(v)) return v;
+    return getTimeXAxisLabelGap() + 28;
+  };
+
+  // Tamaños de fuente “centralizados” (NUEVO)
+  const fs       = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
+  const fsTick   = (px) => (px * getFontScale() * getChartTextBoost()).toFixed(2);
+  const fsAxis   = (px) => (px * getFontScale() * getAxisLabelFontScale() * getChartTextBoost()).toFixed(2);
+  const fsLegend = (px) => (px * getFontScale() * getChartTextBoost() * getTimeLegendFontScale()).toFixed(2);
 
   const WORKER_POOL = [
     "figuras/noun-avatar-5116460.svg",
@@ -1027,7 +1094,7 @@
     agingPP: 0.002,
     years: 80,
 
-    participation: 1.00, // “participación” laboral (0..1), calibrada en OCDE
+    participation: 1.00, // calibrable en OCDE
 
     t: 0,
     playing: false,
@@ -1037,40 +1104,35 @@
     timeLayout: null,
     draggingTime: false,
 
-    // ===== OCDE =====
     oecd: {
       ready: false,
-      countriesByName: new Map(),
-      oecdNames: [],
 
-      // DEMOG: iso3 -> year -> sex(_M/_F/_T) -> age -> value
-      demogByIso3: new Map(),
-      demogYearsByIso3: new Map(), // iso3 -> sorted numeric years
-
+      countries: [],            // [{name, iso3, metrics, raw}]
+      byName: new Map(),        // normalized -> entry
+      nameList: [],             // nombres (para select)
       selectedName: null,
+
+      demogLoaded: false,
+      demogByIso3: new Map(),   // iso3 -> Map(yearStr -> Map(sex -> Map(age -> val)))
+      demogYearsByIso3: new Map(),
+
       mode: false,
+      usesDemog: false,
 
-      // Calendario
-      baseYear: null,      // año calendario de t=0
-      maxT: null,          // horizonte máximo disponible (lastYear-baseYear)
-      usesDemog: false,    // si hay demografía cargada para el país
+      iso3Selected: null,
+      baseYear: null,
+      maxT: null,
 
-      // Calibración Opción B
-      pensionerFactor: 1.0,   // α
+      pensionerFactor: 1.0,     // α
       pensionerFactorNote: "",
 
-      // Targets desde el bundle de pensiones
-      targets: null,    // {C_people,P_people,tauDate,rhoDate,cDate,pDate}
+      // snapshot de targets del bundle (opcional)
+      targets: null,
 
-      // Cache para pirámide del año actual
-      pyrYear: null,
-      pyrM21: null,
-      pyrF21: null,
-      pyrFromTotal: false
+      pyrYear: null
     },
 
-    // backup del estado hipotético
-    hypoBackup: null,
+    hypoBackup: null
   };
 
   // ==========================================================
@@ -1101,6 +1163,9 @@
     agingVal: document.getElementById('agingVal'),
     yearsVal: document.getElementById('yearsVal'),
 
+    popGrowthCtl: document.getElementById('popGrowthCtl'),
+    agingCtl: document.getElementById('agingCtl'),
+
     playBtn: document.getElementById('playBtn'),
     pauseBtn: document.getElementById('pauseBtn'),
     resetBtn: document.getElementById('resetBtn'),
@@ -1110,7 +1175,7 @@
 
     pyrSvg: document.getElementById('pyrSvg'),
     pyrMeta: document.getElementById('pyrMeta'),
-    pyrControlsBlock: document.getElementById('pyrControlsBlock'),
+    pyrBlock: document.getElementById('pyrBlock'),
 
     peakSlider: document.getElementById('peakSlider'),
     peakShell: document.getElementById('peakShell'),
@@ -1143,14 +1208,14 @@
     oecdCountrySelect: document.getElementById('oecdCountrySelect'),
     oecdLoadBtn: document.getElementById('oecdLoadBtn'),
     oecdClearBtn: document.getElementById('oecdClearBtn'),
-    oecdModeToggle: document.getElementById('oecdModeToggle'),
-    oecdInfo: document.getElementById('oecdInfo'),
     oecdPrevBtn: document.getElementById('oecdPrevBtn'),
     oecdNextBtn: document.getElementById('oecdNextBtn'),
+    oecdModeToggle: document.getElementById('oecdModeToggle'),
+    oecdStatus: document.getElementById('oecdStatus'),
   };
 
   // ==========================================================
-  // HELPERS
+  // UTILS
   // ==========================================================
   const svgEl = (name, attrs={}) => {
     const el = document.createElementNS("http://www.w3.org/2000/svg", name);
@@ -1158,16 +1223,145 @@
     return el;
   };
   const clearSvg = (svg) => { while (svg.firstChild) svg.removeChild(svg.firstChild); };
-
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const toM = (x) => x / 1_000_000;
 
-  const fs = (px) => (px * getFontScale()).toFixed(2);
-  const fsTick = (px) => (px * getFontScale()).toFixed(2);
-  const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale()).toFixed(2);
+  function paintRange(input){
+    if (!input) return;
+    const min = Number(input.min || 0);
+    const max = Number(input.max || 100);
+    const val = Number(input.value || 0);
+    const pct = ((val - min) / Math.max(1e-9, (max - min))) * 100;
+    input.style.background = `linear-gradient(to right, ${CSS('--primary')} 0%, ${CSS('--primary')} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
+  }
 
-  const safeNum = (x) => (typeof x === "number" && isFinite(x)) ? x : null;
+  function nowStrip(s){
+    if (s == null) return "";
+    const t = String(s).trim().toLowerCase();
+    try{
+      return t.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+    }catch(e){
+      return t.replace(/á/g,"a").replace(/é/g,"e").replace(/í/g,"i").replace(/ó/g,"o").replace(/ú/g,"u").replace(/ñ/g,"n");
+    }
+  }
 
+  function asNumber(v){
+    if (v == null) return NaN;
+    if (typeof v === "number") return v;
+    const s = String(v).trim().replace(",", ".");
+    if (!s) return NaN;
+    const n = Number(s.replace("%",""));
+    return isFinite(n) ? n : NaN;
+  }
+
+  function asPercentToUnit(v){
+    if (typeof v === "string" && v.trim().endsWith("%")){
+      const n = asNumber(v);
+      return isFinite(n) ? (n/100) : NaN;
+    }
+    const n = asNumber(v);
+    if (!isFinite(n)) return NaN;
+    return (n > 1) ? (n/100) : n;
+  }
+
+  function pickFirst(obj, keys){
+    if (!obj || typeof obj !== "object") return undefined;
+    for (const k of keys){
+      if (k in obj) return obj[k];
+    }
+    return undefined;
+  }
+
+  function setStatus(msg){
+    if (!els.oecdStatus) return;
+    els.oecdStatus.textContent = msg;
+  }
+
+  // ==========================================================
+  // MODELO
+  // ==========================================================
+  function kEquilibrium(){
+    const rho = Math.max(1e-6, state.rho);
+    return state.tau / rho;
+  }
+
+  function randWorkerIcon(){
+    if (!WORKER_POOL.length) return null;
+    const i = Math.floor(Math.random() * WORKER_POOL.length);
+    return WORKER_POOL[i];
+  }
+
+  // Pirámide sintética
+  function gaussian(x, mu, sigma){
+    const z = (x - mu) / Math.max(1e-6, sigma);
+    return Math.exp(-0.5 * z * z);
+  }
+  function densityPower(d){ return 0.65 + (d - 0.35) * (2.20 - 0.65) / (1.25 - 0.35); }
+
+  function buildSyntheticTotalShares(){
+    const n = AGE_LABELS.length;
+    const peak = state.peakIdx;
+    const sigmaModel = state.sigma / 6.0;
+
+    const pYoung = densityPower(state.densityYoung);
+    const pOld   = densityPower(state.densityOld);
+
+    const total = new Array(n).fill(0);
+
+    for (let i=0;i<n;i++){
+      let v = gaussian(i, peak, sigmaModel);
+      v += 0.22 * gaussian(i, 2.0, sigmaModel * 1.6);
+
+      const tailStart = Math.max(0, peak + 4);
+      if (i >= tailStart){
+        const t = (i - tailStart);
+        v += 0.10 * Math.exp(-t / Math.max(1.5, sigmaModel*1.2));
+      }
+
+      const p = (i <= peak) ? pYoung : pOld;
+      v = Math.pow(Math.max(0, v), p);
+
+      total[i] = v;
+    }
+
+    let s = total.reduce((a,b)=>a+b,0);
+    if (s <= 0) s = 1;
+    for (let i=0;i<n;i++) total[i] /= s;
+
+    return total;
+  }
+
+  function buildSyntheticSharesMF(){
+    const total = buildSyntheticTotalShares();
+    const n = total.length;
+    const m = new Array(n).fill(0);
+    const f = new Array(n).fill(0);
+
+    for (let i=0;i<n;i++){
+      const ageFactor = i / (n-1);
+      const femaleBias = 0.50 + 0.10 * Math.pow(ageFactor, 1.6);
+      const fb = Math.min(0.62, Math.max(0.50, femaleBias));
+      f[i] = total[i] * fb;
+      m[i] = total[i] * (1 - fb);
+    }
+    return {m,f};
+  }
+
+  function sharesFromPyramidTotal(totalShares){
+    const shares = totalShares;
+    const minors = (shares[0]||0) + (shares[1]||0) + (shares[2]||0) + 0.60*(shares[3]||0);
+    let work = 0.40*(shares[3]||0);
+    for (let i=4;i<=12;i++) work += (shares[i]||0);
+    let retired = 0;
+    for (let i=13;i<shares.length;i++) retired += (shares[i]||0);
+    let s = minors + work + retired;
+    if (s <= 1e-9) s = 1;
+    return { sMin: minors/s, sWork: work/s, sRet: retired/s };
+  }
+
+  // ==========================================================
+  // DEMOG CSV
+  // ==========================================================
   function parseCSV(text){
     const rows = [];
     let row = [];
@@ -1199,147 +1393,9 @@
     return { header: rows[0].map(h => h.trim()), data: rows.slice(1) };
   }
 
-  // ==========================================================
-  // BUNDLE PENSIONES (merged_countries.json)
-  // ==========================================================
-  function pickLatestObservation(observations, predicate){
-    const arr = observations.filter(o => predicate(o));
-    if (!arr.length) return null;
-    arr.sort((a,b) => (b?.period?.date || "").localeCompare(a?.period?.date || ""));
-    return arr[0];
-  }
+  function safeNum(x){ return (typeof x === "number" && isFinite(x)) ? x : null; }
 
-  function sumContributionRatesLatest(observations){
-    const byMetric = new Map();
-    observations.forEach(o => {
-      const m = o?.metric;
-      if (typeof m !== "string" || !m.startsWith("contribution_rate_")) return;
-      const dt = (o?.period?.date || "");
-      if (!byMetric.has(m)) byMetric.set(m, o);
-      else {
-        const cur = byMetric.get(m);
-        if ((dt || "").localeCompare(cur?.period?.date || "") > 0) byMetric.set(m, o);
-      }
-    });
-
-    let sum = 0;
-    let maxDate = null;
-    let count = 0;
-
-    for (const o of byMetric.values()){
-      const v = safeNum(o.value);
-      if (v === null) continue;
-      sum += v;
-      count++;
-      const dt = o?.period?.date || null;
-      if (dt && (!maxDate || dt.localeCompare(maxDate) > 0)) maxDate = dt;
-    }
-    if (!count) return { tau: null, date: null };
-    return { tau: sum, date: maxDate };
-  }
-
-  function resolveCountryMetrics(countryEntry){
-    if (!countryEntry) return null;
-
-    // Preferencia: inputs del bundle
-    const inputs = countryEntry?.inputs;
-    if (inputs && typeof inputs === "object"){
-      const C_people = safeNum(inputs.C_people);
-      const P_people = safeNum(inputs.P_people);
-      const rho = safeNum(inputs.rho);
-      const tau = safeNum(inputs.tau);
-      const k0 = safeNum(inputs.k);
-      const k = (k0 !== null) ? k0 : ((tau !== null && rho !== null && rho > 0) ? (tau / rho) : null);
-
-      const lu = countryEntry?.latest_observations_used || null;
-      const cDate = lu?.C?.period?.date || null;
-      const pDate = lu?.P?.period?.date || null;
-      const rhoDate = lu?.rho?.period?.date || null;
-
-      let tauDate = null;
-      if (Array.isArray(lu?.tau_components) && lu.tau_components.length){
-        const ds = lu.tau_components
-          .map(o => (o?.period?.date || null))
-          .filter(d => typeof d === "string" && d);
-        ds.sort();
-        tauDate = ds.length ? ds[ds.length-1] : null;
-      }
-
-      return {
-        name: countryEntry.country?.name ?? "—",
-        C_people, P_people,
-        tau, rho, k,
-        dates: { tauDate, rhoDate, cDate, pDate }
-      };
-    }
-
-    // Fallback: esquema antiguo
-    if (!Array.isArray(countryEntry.observations)) return null;
-    const obs = countryEntry.observations;
-
-    const pObs = pickLatestObservation(obs, o => o.metric === "pensioners_people");
-    const P_people = pObs ? safeNum(pObs.value) : null;
-    const pDate = pObs?.period?.date || null;
-
-    const cObs = pickLatestObservation(obs, o =>
-      o.metric === "contributors_employed_people" ||
-      o.metric === "contributors_affiliates_people" ||
-      o.metric === "contributors_affiliated_people"
-    );
-    const C_people = cObs ? safeNum(cObs.value) : null;
-    const cDate = cObs?.period?.date || null;
-
-    const rhoObs = pickLatestObservation(obs, o => o.metric === "replacement_rate_gross_full_career");
-    const rho = rhoObs ? safeNum(rhoObs.value) : null;
-    const rhoDate = rhoObs?.period?.date || null;
-
-    const tauPack = sumContributionRatesLatest(obs);
-    const tau = tauPack.tau;
-    const tauDate = tauPack.date;
-
-    const k = (tau !== null && rho !== null && rho > 0) ? (tau / rho) : null;
-
-    return {
-      name: countryEntry.country?.name ?? "—",
-      C_people, P_people,
-      tau, rho, k,
-      dates: { tauDate, rhoDate, cDate, pDate }
-    };
-  }
-
-  async function loadPensionsJSON(){
-    const res = await fetch(OECD_PENSIONS_JSON, { cache: "no-store" });
-    if (!res.ok) throw new Error(`JSON pensiones: HTTP ${res.status}`);
-    const json = await res.json();
-
-    let countries = [];
-    if (Array.isArray(json?.countries)) {
-      countries = json.countries;
-    } else if (json?.countries && typeof json.countries === "object") {
-      countries = Object.values(json.countries);
-    } else {
-      countries = [];
-    }
-
-    state.oecd.countriesByName.clear();
-    state.oecd.oecdNames = [];
-
-    for (const c of countries){
-      const name = c?.country?.name;
-      if (!name) continue;
-      state.oecd.countriesByName.set(name, c);
-      state.oecd.oecdNames.push(name);
-    }
-    state.oecd.oecdNames.sort((a,b)=>a.localeCompare(b, "es"));
-  }
-
-  // ==========================================================
-  // DEMOGRAFÍA (OECD_demografia.csv)
-  // ==========================================================
-  async function loadDemografiaCSV(){
-    const res = await fetch(OECD_DEMOG_CSV, { cache: "no-store" });
-    if (!res.ok) throw new Error(`CSV demografía: HTTP ${res.status}`);
-    const text = await res.text();
+  function loadDemografiaCSVText(text){
     const { header, data } = parseCSV(text);
 
     const idx = (name) => header.indexOf(name);
@@ -1350,7 +1406,7 @@
     const iVal  = idx("OBS_VALUE");
 
     if ([iRef,iSex,iAge,iYear,iVal].some(i => i < 0)){
-      throw new Error("CSV demografía: faltan columnas REF_AREA, SEX, AGE, TIME_PERIOD, OBS_VALUE.");
+      throw new Error("OECD_demografia.csv: faltan columnas REF_AREA, SEX, AGE, TIME_PERIOD, OBS_VALUE.");
     }
 
     state.oecd.demogByIso3.clear();
@@ -1364,8 +1420,6 @@
       const val = Number((r[iVal] || "").trim());
 
       if (!ref || !year || !isFinite(val)) continue;
-
-      // Nos quedamos con bins quinquenales + 85+ (para pirámide y cálculos 65+/18-64)
       if (!PYR_AGE_ORDER_OECD.includes(age)) continue;
 
       if (sex === "M") sex = "_M";
@@ -1383,7 +1437,6 @@
       bySex.get(sex).set(age, val);
     }
 
-    // Construye años disponibles por país (rápido de consultar)
     for (const [iso3, byYear] of state.oecd.demogByIso3.entries()){
       const years = [...byYear.keys()]
         .map(y => Number(y))
@@ -1391,6 +1444,41 @@
         .sort((a,b)=>a-b);
       state.oecd.demogYearsByIso3.set(iso3, years);
     }
+
+    state.oecd.demogLoaded = state.oecd.demogByIso3.size > 0;
+  }
+
+  function closestYear(years, target){
+    if (!years || !years.length) return null;
+    const t = Number(target);
+    if (!isFinite(t)) return years[0];
+    let lo=0, hi=years.length-1;
+    if (t <= years[0]) return years[0];
+    if (t >= years[hi]) return years[hi];
+    while (hi - lo > 1){
+      const mid = (lo + hi) >> 1;
+      if (years[mid] === t) return years[mid];
+      if (years[mid] < t) lo = mid; else hi = mid;
+    }
+    return (Math.abs(years[lo]-t) <= Math.abs(years[hi]-t)) ? years[lo] : years[hi];
+  }
+
+  function getDemogMapsForIsoYear(iso3, year){
+    const byYear = state.oecd.demogByIso3.get(iso3) || null;
+    if (!byYear) return null;
+
+    const years = state.oecd.demogYearsByIso3.get(iso3) || [];
+    const y = closestYear(years, year);
+    if (y === null) return null;
+
+    const bySex = byYear.get(String(y)) || null;
+    if (!bySex) return null;
+
+    const mMap = bySex.get("_M") || null;
+    const fMap = bySex.get("_F") || null;
+    const tMap = bySex.get("_T") || null;
+
+    return { year: y, mMap, fMap, tMap };
   }
 
   function buildPyramid21BinsFromOECDMaps(mMap, fMap, tMap){
@@ -1401,8 +1489,6 @@
     const tRaw18 = PYR_AGE_ORDER_OECD.map(code => get(tMap, code));
 
     const hasMF = !(mRaw18.every(v => v === null) || fRaw18.every(v => v === null));
-    const fromTotal = !hasMF;
-
     const vM = (code) => {
       const i = PYR_AGE_ORDER_OECD.indexOf(code);
       const v = hasMF ? mRaw18[i] : tRaw18[i];
@@ -1421,6 +1507,7 @@
       "Y_LE4","Y5T9","Y10T14","Y15T19","Y20T24","Y25T29","Y30T34","Y35T39","Y40T44","Y45T49",
       "Y50T54","Y55T59","Y60T64","Y65T69","Y70T74","Y75T79","Y80T84"
     ];
+
     for (let i=0;i<mapDirect.length;i++){
       const code = mapDirect[i];
       if (hasMF){
@@ -1450,637 +1537,147 @@
     }
 
     const totalVals = mVals.map((v,i)=>v + fVals[i]);
-    return { mVals, fVals, totalVals, fromTotal };
-  }
-
-  function closestYear(years, target){
-    if (!years || !years.length) return null;
-    const t = Number(target);
-    if (!isFinite(t)) return years[0];
-    let lo=0, hi=years.length-1;
-    if (t <= years[0]) return years[0];
-    if (t >= years[hi]) return years[hi];
-    while (hi - lo > 1){
-      const mid = (lo + hi) >> 1;
-      if (years[mid] === t) return years[mid];
-      if (years[mid] < t) lo = mid; else hi = mid;
-    }
-    // decide nearest
-    return (Math.abs(years[lo]-t) <= Math.abs(years[hi]-t)) ? years[lo] : years[hi];
-  }
-
-  function getDemogMapsForIsoYear(iso3, year){
-    const byYear = state.oecd.demogByIso3.get(iso3) || null;
-    if (!byYear) return null;
-    const years = state.oecd.demogYearsByIso3.get(iso3) || [];
-    const y = closestYear(years, year);
-    if (y === null) return null;
-
-    const bySex = byYear.get(String(y)) || null;
-    if (!bySex) return null;
-
-    const mMap = bySex.get("_M") || null;
-    const fMap = bySex.get("_F") || null;
-    const tMap = bySex.get("_T") || null;
-
-    return { year: y, mMap, fMap, tMap };
-  }
-
-  function sum18(mapOrNull){
-    if (!mapOrNull) return 0;
-    let s=0;
-    for (const code of PYR_AGE_ORDER_OECD){
-      const v = safeNum(mapOrNull.get(code));
-      if (v !== null) s += v;
-    }
-    return s;
+    return { mVals, fVals, totalVals, hasMF };
   }
 
   function computeGroupsFrom18Bins(tMap, mMap, fMap){
-    // Devuelve grupos en personas (minors <18, working 18-64, retired65plus)
-    // Preferimos _T; si no, sumamos _M+_F.
     const getT = (code) => safeNum(tMap?.get(code));
     const getMF = (code) => {
       const vm = safeNum(mMap?.get(code)) ?? 0;
       const vf = safeNum(fMap?.get(code)) ?? 0;
       return vm + vf;
     };
-
     const hasT = !!tMap;
+
     const v = (code) => {
       const vt = getT(code);
       if (hasT && vt !== null) return vt;
       return getMF(code);
     };
 
-    // Indices: 0..17
     const b = PYR_AGE_ORDER_OECD.map(code => v(code));
 
     const minors = (b[0]||0) + (b[1]||0) + (b[2]||0) + 0.60*(b[3]||0);
-    const working = 0.40*(b[3]||0) + (b[4]||0)+(b[5]||0)+(b[6]||0)+(b[7]||0)+(b[8]||0)+(b[9]||0)+(b[10]||0)+(b[11]||0)+(b[12]||0);
+    const working =
+      0.40*(b[3]||0) + (b[4]||0)+(b[5]||0)+(b[6]||0)+(b[7]||0)+(b[8]||0)+(b[9]||0)+(b[10]||0)+(b[11]||0)+(b[12]||0);
     const retired65 = (b[13]||0)+(b[14]||0)+(b[15]||0)+(b[16]||0)+(b[17]||0);
 
     const total = b.reduce((a,x)=>a+(x||0),0) || 0;
     return { minors, working, retired65, total };
   }
 
-  function snapshotHypoState(){
-    state.hypoBackup = {
-      popTotalM: state.popTotalM,
-      peakIdx: state.peakIdx,
-      sigma: state.sigma,
-      densityYoung: state.densityYoung,
-      densityOld: state.densityOld,
-      rho: state.rho,
-      tau: state.tau,
-      u: state.u,
-      popGrowth: state.popGrowth,
-      agingPP: state.agingPP,
-      years: state.years,
-      participation: state.participation,
-      t: state.t,
-    };
-  }
+  function normalizePeopleCountSmart(v, pop0, expectedShare){
+    const n = asNumber(v);
+    if (!isFinite(n) || n <= 0) return { people: NaN, kind: null };
 
-  function restoreHypoState(){
-    const b = state.hypoBackup;
-    if (!b) return;
+    const candidates = [
+      { people: n, kind: "people" },
+      { people: n * 1_000_000, kind: "million" },
+      { people: n * pop0, kind: "share" }
+    ];
 
-    state.popTotalM = b.popTotalM;
-    state.peakIdx = b.peakIdx;
-    state.sigma = b.sigma;
-    state.densityYoung = b.densityYoung;
-    state.densityOld = b.densityOld;
-    state.rho = b.rho;
-    state.tau = b.tau;
-    state.u = b.u;
-    state.popGrowth = b.popGrowth;
-    state.agingPP = b.agingPP;
-    state.years = b.years;
-    state.participation = b.participation;
-    state.t = b.t;
+    const valid = candidates.filter(c =>
+      isFinite(c.people) && c.people > 0 && c.people < pop0 * 0.98
+    );
+    if (!valid.length) return { people: n, kind: "people" };
 
-    state.oecd.mode = false;
-    state.oecd.selectedName = null;
-    state.oecd.baseYear = null;
-    state.oecd.maxT = null;
-    state.oecd.usesDemog = false;
-    state.oecd.pensionerFactor = 1.0;
-    state.oecd.pensionerFactorNote = "";
-    state.oecd.targets = null;
-    state.oecd.pyrYear = null;
-    state.oecd.pyrM21 = null;
-    state.oecd.pyrF21 = null;
-    state.oecd.pyrFromTotal = false;
-
-    setOecdModeUI(false);
-    syncUI();
-    renderPyramid();
-    renderTimeChart();
-  }
-
-  function setOecdModeUI(enabled){
-    state.oecd.mode = !!enabled;
-
-    if (els.oecdModeToggle){
-      els.oecdModeToggle.checked = !!enabled;
-      els.oecdModeToggle.disabled = !state.oecd.ready;
-    }
-    if (els.oecdClearBtn){
-      els.oecdClearBtn.disabled = !enabled;
+    const target = (isFinite(expectedShare) && expectedShare > 0) ? (pop0 * expectedShare) : null;
+    if (target){
+      valid.forEach(c => { c.score = Math.abs(Math.log((c.people + 1e-9) / (target + 1e-9))); });
+      valid.sort((a,b)=>a.score-b.score);
+      return { people: valid[0].people, kind: valid[0].kind };
     }
 
-    // Bloquea controles de pirámide + población cuando OCDE está ON
-    if (els.pyrControlsBlock){
-      els.pyrControlsBlock.classList.toggle("disabled-block", !!enabled);
+    const million = valid.find(c => c.kind === "million");
+    if (million && million.people > 50_000 && million.people < pop0 * 0.90) return million;
+    return { people: valid[0].people, kind: valid[0].kind };
+  }
+
+  function calibrateAlphaFromDemog(P_people, retired65Count){
+    if (!isFinite(P_people) || P_people <= 0 || !isFinite(retired65Count) || retired65Count <= 0){
+      return { alpha: 1.0, used:false, rawAlpha: NaN, note: "Sin P_people o sin 65+" };
     }
-    if (els.peakSlider) els.peakSlider.disabled = !!enabled;
-    if (els.sigmaSlider) els.sigmaSlider.disabled = !!enabled;
-    if (els.densityYoungSlider) els.densityYoungSlider.disabled = !!enabled;
-    if (els.densityOldSlider) els.densityOldSlider.disabled = !!enabled;
-    if (els.popSlider) els.popSlider.disabled = !!enabled;
-
-    // MOD CLAVE: si usamos demografía, estos sliders dejan de aplicarse (pero se mantienen visibles)
-    const demogOn = !!enabled && !!state.oecd.usesDemog;
-    if (els.popGrowthSlider) els.popGrowthSlider.disabled = demogOn;
-    if (els.agingSlider) els.agingSlider.disabled = demogOn;
-  }
-
-  function clampToSlider(val, slider){
-    if (!slider || !isFinite(val)) return { v: val, clamped: false };
-    const min = Number(slider.min);
-    const max = Number(slider.max);
-    const v = clamp(val, min, max);
-    return { v, clamped: Math.abs(v - val) > 1e-12 };
-  }
-
-  function calibrateLabourParams({ C_target, workingAge, uFixed }){
-    // Devuelve {participation,u,note}
-    let participation = 1.0;
-    let u = state.u;
+    const rawAlpha = P_people / retired65Count;
+    let alpha = rawAlpha;
+    let used = true;
     let note = "";
 
-    if (!isFinite(C_target) || !isFinite(workingAge) || workingAge <= 1) return { participation, u, note: "sin calibrar" };
-
-    if (uFixed !== null && isFinite(uFixed)){
-      u = clamp(uFixed, 0, 0.35);
-      participation = C_target / (workingAge * Math.max(1e-9, (1 - u)));
-
-      if (participation > 1){
-        participation = 1;
-        u = 1 - C_target / (workingAge * Math.max(1e-9, participation));
-        u = clamp(u, 0, 0.35);
-        note = "u fijo, participación cap=1";
-      } else {
-        note = "u fijo";
-      }
-      participation = clamp(participation, 0, 1);
-      return { participation, u, note };
-    }
-
-    // Intento 1: participation=1 -> u implícito
-    u = 1 - (C_target / (workingAge * Math.max(1e-9, participation)));
-
-    // Si u sale negativo, significa que C_target > workingAge (imposible), entonces u=0 y ajusto participation
-    if (u < 0){
-      u = 0;
-      participation = C_target / (workingAge * (1 - u));
-      participation = clamp(participation, 0, 1);
-      note = "u=0, participación ajustada";
-      return { participation, u, note };
-    }
-
-    // Si u excede el máximo plausible, lo capeo y ajusto participation
-    if (u > 0.35){
-      u = 0.35;
-      participation = C_target / (workingAge * (1 - u));
-      participation = clamp(participation, 0, 1);
-      // Recalcula u efectivo tras cap (por coherencia)
-      u = 1 - (C_target / (workingAge * Math.max(1e-9, participation)));
-      u = clamp(u, 0, 0.35);
-      note = "u cap=35%, participación ajustada";
-      return { participation, u, note };
-    }
-
-    u = clamp(u, 0, 0.35);
-    participation = clamp(participation, 0, 1);
-    note = "participación=1, u implícito";
-    return { participation, u, note };
-  }
-
-  function applyOecdCountry(countryName){
-    if (!state.oecd.ready) return;
-
-    const entry = state.oecd.countriesByName.get(countryName) || null;
-    if (!entry){
-      els.oecdInfo.textContent = `No hay entrada de pensiones para "${countryName}".`;
-      return;
-    }
-
-    const m = resolveCountryMetrics(entry);
-    if (!m){
-      els.oecdInfo.textContent = `No se pudieron resolver métricas para "${countryName}".`;
-      return;
-    }
-
-    const iso3 = NAME_TO_ISO3[countryName] || null;
-    if (!iso3){
-      els.oecdInfo.textContent = `No tengo ISO3 para "${countryName}".`;
-      return;
-    }
-
-    // Snapshot hipotético si es la primera vez
-    if (!state.oecd.mode) snapshotHypoState();
-
-    // τ y ρ desde dataset (clamp a sliders)
-    const tauPack = clampToSlider(m.tau ?? NaN, els.tauSlider);
-    const rhoPack = clampToSlider(m.rho ?? NaN, els.rhoSlider);
-
-    if (isFinite(tauPack.v)) state.tau = tauPack.v;
-    if (isFinite(rhoPack.v)) state.rho = rhoPack.v;
-
-    // DEMOG: baseYear/horizonte y pirámide en t0
-    const yearsAvail = state.oecd.demogYearsByIso3.get(iso3) || [];
-    const hasDemog = yearsAvail.length > 0;
-    state.oecd.usesDemog = hasDemog;
-
-    let baseYear = null;
-    let maxT = null;
-    let demoNote = "DEMOG:—";
-
-    let groups0 = null;
-    let pyr0 = null;
-
-    if (hasDemog){
-      baseYear = yearsAvail[0];                // t=0 en el primer año disponible (típico: 2024)
-      const lastYear = yearsAvail[yearsAvail.length - 1];
-      maxT = lastYear - baseYear;
-
-      const maps0 = getDemogMapsForIsoYear(iso3, baseYear);
-      if (maps0){
-        groups0 = computeGroupsFrom18Bins(maps0.tMap, maps0.mMap, maps0.fMap);
-        const built0 = buildPyramid21BinsFromOECDMaps(maps0.mMap, maps0.fMap, maps0.tMap);
-        pyr0 = { year: maps0.year, ...built0 };
-      }
-
-      if (groups0 && groups0.total > 0){
-        state.popTotalM = clamp(toM(groups0.total), Number(els.popSlider.min||0.1), Number(els.popSlider.max||400));
-      }
-
-      demoNote = `DEMOG ${baseYear}→${baseYear+maxT} (t max=${maxT})`;
-    }
-
-    state.oecd.baseYear = baseYear;
-    state.oecd.maxT = maxT;
-
-    // Years: si hay demog, capea a horizonte; si no, deja como estaba
-    if (hasDemog && isFinite(maxT) && maxT >= 0){
-      state.years = Math.min(state.years, maxT);
-      if (els.yearsSlider){
-        // no cambiamos max del slider para no romper UI, pero sincronizamos valor
-        els.yearsSlider.value = state.years;
-      }
-    }
-
-    // Calibración Opción B: α = P_people / (65+)(t0), con checks y fallback
-    let alpha = 1.0;
-    let alphaNote = "";
-    if (hasDemog && groups0 && groups0.retired65 > 0 && m.P_people !== null){
-      const raw = m.P_people / groups0.retired65;
-      alpha = raw;
-
-      // checks de plausibilidad (ajustables)
-      // La idea es evitar outliers por mismatch de definiciones/datos.
-      if (!isFinite(alpha) || alpha <= 0){
-        alpha = 1.0;
-        alphaNote = "α inválido → 1";
-      } else if (alpha < 0.50 || alpha > 1.60){
-        alpha = 1.0;
-        alphaNote = `α outlier (${raw.toFixed(2)}) → 1`;
-      } else {
-        alphaNote = `α=${alpha.toFixed(2)} (calibrado en ${baseYear})`;
-      }
+    if (!isFinite(alpha) || alpha <= 0){
+      alpha = 1.0; used = false; note = "α inválido → fallback a 1";
+    } else if (alpha < 0.60 || alpha > 1.60){
+      alpha = 1.0; used = false; note = `α outlier (${rawAlpha.toFixed(2)}) → fallback a 1`;
     } else {
-      alpha = 1.0;
-      alphaNote = "α=1 (sin P_people o sin 65+)";
+      note = `α OK (${alpha.toFixed(2)})`;
     }
-    state.oecd.pensionerFactor = alpha;
-    state.oecd.pensionerFactorNote = alphaNote;
-
-    // Calibración C(t): participation/u en t0 para cuadrar C_people, y luego proyecta
-    // Si tu bundle ya trae inputs.u (fracción), lo respetamos como u fijo.
-    const inputs = (entry?.inputs && typeof entry.inputs === "object") ? entry.inputs : null;
-    const uFixed = (inputs && safeNum(inputs.u) !== null) ? clamp(safeNum(inputs.u), 0, 0.35) : null;
-
-    if (hasDemog && groups0 && groups0.working > 0 && m.C_people !== null){
-      const cal = calibrateLabourParams({
-        C_target: m.C_people,
-        workingAge: groups0.working,
-        uFixed: uFixed
-      });
-      state.participation = cal.participation;
-      state.u = cal.u;
-    } else {
-      // Si no hay demog o no hay C_target, mantenemos parámetros actuales.
-      state.participation = clamp(state.participation, 0, 1);
-      state.u = clamp(state.u, 0, 0.35);
-    }
-
-    // Cache pirámide t0 (se irá actualizando al moverte por t)
-    if (pyr0){
-      state.oecd.pyrYear = pyr0.year;
-      state.oecd.pyrM21 = pyr0.mVals.slice();
-      state.oecd.pyrF21 = pyr0.fVals.slice();
-      state.oecd.pyrFromTotal = !!pyr0.fromTotal;
-    } else {
-      state.oecd.pyrYear = null;
-      state.oecd.pyrM21 = null;
-      state.oecd.pyrF21 = null;
-      state.oecd.pyrFromTotal = false;
-    }
-
-    state.oecd.selectedName = countryName;
-    state.oecd.targets = { C_people: m.C_people, P_people: m.P_people, ...m.dates };
-
-    // Activar modo OCDE si hay demog o al menos τ/ρ
-    setOecdModeUI(true);
-
-    // Reset tiempo
-    state.playing = false;
-    state.t = 0;
-
-    // Mensaje info
-    const flags = [];
-    if (tauPack.clamped) flags.push("τ clamped");
-    if (rhoPack.clamped) flags.push("ρ clamped");
-
-    const tauTxt = (m.tau !== null) ? `τ≈${(m.tau).toFixed(3)}${m.dates.tauDate ? " ("+m.dates.tauDate+")" : ""}` : "τ:—";
-    const rhoTxt = (m.rho !== null) ? `ρ≈${(m.rho).toFixed(2)}${m.dates.rhoDate ? " ("+m.dates.rhoDate+")" : ""}` : "ρ:—";
-    const cpTxt  = (m.C_people !== null && m.P_people !== null) ? `C=${toM(m.C_people).toFixed(2)}M · P=${toM(m.P_people).toFixed(2)}M` : "C/P:—";
-
-    const partTxt = `participación≈${(state.participation*100).toFixed(0)}% · u≈${(state.u*100).toFixed(0)}%`;
-    const alphaTxt = `${state.oecd.pensionerFactorNote}`;
-
-    const flagStr = flags.length ? ` · ${flags.join(", ")}` : "";
-
-    els.oecdInfo.textContent =
-      `${countryName} · ${demoNote} · ${tauTxt} · ${rhoTxt} · ${cpTxt} · ${partTxt} · ${alphaTxt}${flagStr}`;
-
-    try{ localStorage.setItem("pensionSim_oecdCountry", countryName); }catch(e){}
-
-    // Repintar
-    syncUI();
-    renderPyramid();
-    renderTimeChart();
+    return { alpha, used, rawAlpha, note };
   }
 
   // ==========================================================
-  // SIMULADOR
-  // ==========================================================
-  function kEquilibrium(){
-    const rho = Math.max(1e-6, state.rho);
-    return state.tau / rho;
-  }
-
-  function randWorkerIcon(){
-    if (!WORKER_POOL.length) return null;
-    const i = Math.floor(Math.random() * WORKER_POOL.length);
-    return WORKER_POOL[i];
-  }
-
-  function paintRange(input){
-    if (!input) return;
-    const min = Number(input.min || 0);
-    const max = Number(input.max || 100);
-    const val = Number(input.value || 0);
-    const pct = ((val - min) / Math.max(1e-9, (max - min))) * 100;
-    input.style.background = `linear-gradient(to right, ${CSS('--primary')} 0%, ${CSS('--primary')} ${pct}%, rgba(255,255,255,.12) ${pct}%, rgba(255,255,255,.12) 100%)`;
-  }
-
-  function getRenderedSvgHeight(svg){
-    if (!svg) return 0;
-    const rect = svg.getBoundingClientRect();
-    let h = rect.height;
-
-    const w = rect.width || svg.clientWidth || 0;
-    const vb = svg.viewBox && svg.viewBox.baseVal;
-
-    if (w > 0 && vb && vb.width > 0 && vb.height > 0){
-      const expected = w * (vb.height / vb.width);
-      if (!isFinite(h) || h <= 1){
-        h = expected;
-      } else if (expected > 1){
-        const ratio = h / expected;
-        if (ratio < 0.85 || ratio > 1.15) h = expected;
-      }
-    }
-
-    if (!isFinite(h) || h <= 1){
-      const cs = getComputedStyle(svg);
-      const cssH = parseFloat(cs.height);
-      if (isFinite(cssH) && cssH > 1) h = cssH;
-    }
-
-    return (isFinite(h) && h > 0) ? h : 0;
-  }
-
-  function syncSidebarToSvg({ shell, input, svg }){
-    if (!shell || !input || !svg) return;
-    let targetH = getRenderedSvgHeight(svg);
-    if (targetH <= 1) return;
-
-    const wrap = svg && svg.parentElement;
-    if (wrap){
-      const wh = wrap.getBoundingClientRect().height;
-      if (isFinite(wh) && wh > targetH) targetH = wh;
-    }
-
-    shell.style.height = `${targetH}px`;
-
-    const shellRect = shell.getBoundingClientRect();
-    const cs = getComputedStyle(shell);
-
-    const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
-    const borderY = (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.borderBottomWidth) || 0);
-
-    const usable = Math.max(120, (shellRect.height || targetH) - padY - borderY);
-    input.style.width = `${usable}px`;
-    input.style.height = `4px`;
-
-    paintRange(input);
-  }
-
-  function syncAllSidebars(){
-    syncSidebarToSvg({ shell: els.peakShell, input: els.peakSlider, svg: els.pyrSvg });
-  }
-  function syncAllSidebarsStable(){
-    let n = 0;
-    const step = () => {
-      syncAllSidebars();
-      if (++n < 10) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }
-
-  function setupSidebarObservers(){
-    if (!("ResizeObserver" in window)) return;
-
-    const ro = new ResizeObserver(() => {
-      syncAllSidebarsStable();
-      const cp = parseFloat(els.heroCP.textContent);
-      if (isFinite(cp)) renderWorkersIcons(cp);
-    });
-
-    ro.observe(els.timeSvg);
-    ro.observe(els.pyrSvg);
-    if (els.peakShell) ro.observe(els.peakShell);
-  }
-
-  // ==========================================================
-  // PIRÁMIDE HIPOTÉTICA
-  // ==========================================================
-  function gaussian(x, mu, sigma){
-    const z = (x - mu) / Math.max(1e-6, sigma);
-    return Math.exp(-0.5 * z * z);
-  }
-  function densityPower(d){
-    return 0.65 + (d - 0.35) * (2.20 - 0.65) / (1.25 - 0.35);
-  }
-  function buildSyntheticTotalShares(){
-    const n = AGE_LABELS.length;
-    const peak = state.peakIdx;
-    const sigmaModel = state.sigma / 6.0;
-
-    const pYoung = densityPower(state.densityYoung);
-    const pOld   = densityPower(state.densityOld);
-
-    const total = new Array(n).fill(0);
-
-    for (let i=0;i<n;i++){
-      let v = gaussian(i, peak, sigmaModel);
-      v += 0.22 * gaussian(i, 2.0, sigmaModel * 1.6);
-
-      const tailStart = Math.max(0, peak + 4);
-      if (i >= tailStart){
-        const t = (i - tailStart);
-        v += 0.10 * Math.exp(-t / Math.max(1.5, sigmaModel*1.2));
-      }
-
-      const p = (i <= peak) ? pYoung : pOld;
-      v = Math.pow(Math.max(0, v), p);
-
-      total[i] = v;
-    }
-
-    let s = total.reduce((a,b)=>a+b,0);
-    if (s <= 0) s = 1;
-    for (let i=0;i<n;i++) total[i] /= s;
-    return total;
-  }
-
-  // ==========================================================
-  // SERIE TEMPORAL
+  // SERIES (hipotético vs OCDE)
   // ==========================================================
   function buildSeries(){
-    // MOD CLAVE: si OCDE modo ON y hay demografía, la serie sale del CSV año a año
-    if (state.oecd.mode && state.oecd.usesDemog && state.oecd.selectedName){
-      const iso3 = NAME_TO_ISO3[state.oecd.selectedName] || null;
-      const baseYear = state.oecd.baseYear;
-      const maxT = state.oecd.maxT;
-
-      if (!iso3 || !isFinite(baseYear) || !isFinite(maxT) || maxT < 0){
-        // fallback
-      } else {
-        const T = Math.min(state.years, maxT);
-        const series = [];
-
-        for (let t=0; t<=T; t++){
-          const year = baseYear + t;
-          const maps = getDemogMapsForIsoYear(iso3, year);
-          if (!maps){
-            // Si falta, reusa último disponible
-            const fallbackYear = closestYear(state.oecd.demogYearsByIso3.get(iso3)||[], year);
-            const maps2 = getDemogMapsForIsoYear(iso3, fallbackYear);
-            if (!maps2) continue;
-            const g = computeGroupsFrom18Bins(maps2.tMap, maps2.mMap, maps2.fMap);
-
-            const total = g.total;
-            const minors = g.minors;
-            const workingAge = g.working;
-
-            const labour = workingAge * clamp(state.participation,0,1);
-            const unemployed = labour * clamp(state.u,0,1);
-            const cotEff = labour - unemployed;
-            const inactive = Math.max(0, workingAge - labour);
-
-            const P65 = g.retired65;
-            const retired = clamp(state.oecd.pensionerFactor, 0.01, 5.0) * P65;
-
-            series.push({
-              t, year: maps2.year,
-              total,
-              minors,
-              cot: cotEff,
-              inactive,
-              noncot: unemployed,
-              retired
-            });
-            continue;
-          }
-
-          const g = computeGroupsFrom18Bins(maps.tMap, maps.mMap, maps.fMap);
-
-          const total = g.total;
-          const minors = g.minors;
-          const workingAge = g.working;
-
-          const labour = workingAge * clamp(state.participation,0,1);
-          const unemployed = labour * clamp(state.u,0,1);
-          const cotEff = labour - unemployed;
-          const inactive = Math.max(0, workingAge - labour);
-
-          const P65 = g.retired65;
-          const retired = clamp(state.oecd.pensionerFactor, 0.01, 5.0) * P65;
-
-          series.push({
-            t, year: maps.year,
-            total,
-            minors,
-            cot: cotEff,
-            inactive,
-            noncot: unemployed,
-            retired
-          });
-        }
-
-        return series;
-      }
-    }
-
-    // ===== fallback: modo hipotético (original) =====
     const T = state.years;
     const series = [];
+
+    const useDemog = !!(state.oecd.mode && state.oecd.usesDemog && state.oecd.iso3Selected && state.oecd.baseYear != null);
+
+    if (useDemog){
+      const iso3 = state.oecd.iso3Selected;
+      const baseY = state.oecd.baseYear;
+      const alphaP = (isFinite(state.oecd.pensionerFactor) && state.oecd.pensionerFactor > 0) ? state.oecd.pensionerFactor : 1.0;
+
+      for (let t=0; t<=T; t++){
+        const yTarget = baseY + t;
+        const maps = getDemogMapsForIsoYear(iso3, yTarget);
+        if (!maps) break;
+
+        const g = computeGroupsFrom18Bins(maps.tMap, maps.mMap, maps.fMap);
+        const total = g.total;
+
+        const minWorkFloor = 0.05 * total;
+
+        // pensionistas efectivos: α·(65+) con cierre de total
+        const retiredEff = clamp(alphaP * g.retired65, 0.01 * total, total - g.minors - minWorkFloor);
+        const workingEff = Math.max(minWorkFloor, total - g.minors - retiredEff);
+
+        const labour = workingEff * clamp(state.participation,0,1);
+        const unemployed = labour * clamp(state.u,0,1);
+        const cotEff = labour - unemployed;
+        const inactive = Math.max(0, workingEff - labour);
+
+        series.push({
+          t, year: maps.year,
+          total,
+          minors: g.minors,
+          cot: cotEff,
+          inactive,
+          noncot: unemployed,
+          retired: retiredEff,
+          demog: true
+        });
+      }
+      return series;
+    }
+
+    // ===== modo hipotético =====
     let total = state.popTotalM * 1_000_000;
+    const baseShares = buildSyntheticTotalShares();
+    const base = sharesFromPyramidTotal(baseShares);
 
-    // Shares base desde pirámide sintética
-    const shares = buildSyntheticTotalShares();
-
-    const minors0 =
-      (shares[0]||0) + (shares[1]||0) + (shares[2]||0) + 0.60*(shares[3]||0);
-    let work0 = 0.40*(shares[3]||0);
-    for (let i=4;i<=12;i++) work0 += (shares[i]||0);
-    let retired0 = 0;
-    for (let i=13;i<shares.length;i++) retired0 += (shares[i]||0);
-
-    let s = minors0 + work0 + retired0;
-    if (s <= 1e-9) s = 1;
-
-    let sMin = minors0/s, sWork = work0/s, sRet = retired0/s;
+    let sMin = clamp(base.sMin, 0.02, 0.70);
+    let sWork = clamp(base.sWork, 0.10, 0.80);
+    let sRet = clamp(base.sRet, 0.02, 0.60);
+    let n0 = sMin + sWork + sRet;
+    sMin /= n0; sWork /= n0; sRet /= n0;
 
     for (let t=0; t<=T; t++){
+      const minWorkFloor = 0.05;
+      const sP = clamp(1.0 * sRet, 0.01, 1 - sMin - minWorkFloor);
+      const sWorkEff = Math.max(minWorkFloor, 1 - sMin - sP);
+
       const minors = total * sMin;
-      const workingAge = total * sWork;
-      const retired = total * sRet;
+      const workingAge = total * sWorkEff;
+      const retired = total * sP;
 
       const labour = workingAge * clamp(state.participation,0,1);
       const unemployed = labour * clamp(state.u,0,1);
@@ -2088,13 +1685,13 @@
       const inactive = Math.max(0, workingAge - labour);
 
       series.push({
-        t, year: null,
-        total,
+        t, total,
         minors,
         cot: cotEff,
         inactive,
         noncot: unemployed,
-        retired
+        retired,
+        demog: false
       });
 
       total = total * (1 + state.popGrowth);
@@ -2117,28 +1714,44 @@
     return series;
   }
 
-  function renderTimeLegendHorizontal(svg, y){
-    const items = [
+  // ==========================================================
+  // LEYENDA (EVOLUCIÓN) — usa timeLegendFontScale + timeLegendToChartGap
+  // ==========================================================
+  function getTimeLegendItems(){
+    const isNarrow = window.matchMedia && window.matchMedia("(max-width: 520px)").matches;
+    return isNarrow ? [
+      { label: "Menores",   fill: COLORS.minors,  op: "0.35" },
+      { label: "Trabajadores", fill: COLORS.workers, op: "0.50" },
+      { label: "Paro",      fill: COLORS.noncot,  op: "0.55" },
+      { label: "Pensionistas", fill: COLORS.retired, op: "0.50" }
+    ] : [
       { label: "Menores (<18)", fill: COLORS.minors, op: "0.35" },
       { label: "Cotizantes efectivos", fill: COLORS.workers, op: "0.50" },
       { label: "Desempleados", fill: COLORS.noncot, op: "0.55" },
-      { label: "Pensionistas", fill: COLORS.retired, op: "0.50" }
+      { label: "Pensionistas (P)", fill: COLORS.retired, op: "0.50" }
     ];
+  }
+
+  function renderTimeLegendVertical(svg, yStart){
+    const items = getTimeLegendItems();
+    const boost = getChartTextBoost();
+    const box = Math.round(14 * boost);
+    const gapX = Math.round(10 * boost);
+    const vGap = Math.round(10 * boost);
+
+    const legendFontPx = 13 * getFontScale() * boost * getTimeLegendFontScale();
+    const lineH = Math.max(box, legendFontPx) + vGap;
 
     const g = svgEl('g', { "opacity":"0.95" });
 
-    const box = 14;
-    const gap = 10;
-    const rowH = 24;
-
-    const startY = y - ((items.length - 1) * rowH) / 2;
-
     items.forEach((it, i) => {
-      const yy = startY + i * rowH;
+      const y = yStart + i * lineH;
 
       g.appendChild(svgEl('rect', {
-        x: 0, y: yy - (box - 2),
-        width: box, height: box,
+        x: 0,
+        y: y - (box - 2),
+        width: box,
+        height: box,
         fill: it.fill,
         "fill-opacity": it.op,
         stroke: COLORS.text,
@@ -2148,10 +1761,10 @@
       }));
 
       const t = svgEl('text', {
-        x: box + gap,
-        y: yy + 2,
+        x: box + gapX,
+        y: y + 2,
         fill: COLORS.text,
-        "font-size": fsTick(18),
+        "font-size": fsLegend(13),
         "font-family":"Arial, sans-serif",
         "text-anchor":"start",
         "opacity":"0.92"
@@ -2169,6 +1782,9 @@
     }catch(e){}
   }
 
+  // ==========================================================
+  // SCRUB TIEMPO (arrastrar en la gráfica)
+  // ==========================================================
   function viewXFromClientX(svg, clientX){
     const rect = svg.getBoundingClientRect();
     if (!rect || rect.width <= 0) return 0;
@@ -2178,7 +1794,6 @@
   function setTimeFromClientX(clientX){
     const L = state.timeLayout;
     if (!L) return;
-
     const x = viewXFromClientX(els.timeSvg, clientX);
     const t = ((x - L.pad.l) / L.innerW) * L.T;
     const tt = clamp(Math.round(t), 0, state.years);
@@ -2187,6 +1802,7 @@
   }
 
   function setupTimeScrub(){
+    if (!els.timeSvg) return;
     els.timeSvg.style.cursor = "ew-resize";
     els.timeSvg.style.touchAction = "none";
 
@@ -2196,42 +1812,86 @@
       try{ els.timeSvg.setPointerCapture(e.pointerId); }catch(err){}
       setTimeFromClientX(e.clientX);
     });
-
     els.timeSvg.addEventListener("pointermove", (e) => {
       if (!state.draggingTime) return;
       setTimeFromClientX(e.clientX);
     });
-
     const end = () => { state.draggingTime = false; };
-
     els.timeSvg.addEventListener("pointerup", end);
     els.timeSvg.addEventListener("pointercancel", end);
     els.timeSvg.addEventListener("pointerleave", end);
   }
 
   // ==========================================================
-  // CHART 1
+  // RENDER: TIME CHART (usa gaps por gráfica + legendToChartGap)
   // ==========================================================
   function renderTimeChart(){
     const svg = els.timeSvg;
+    if (!svg) return;
     clearSvg(svg);
 
-    const W = 1000, H = 700;
-    const pad = {l: 90, r: 30, t: 24, b: 140};
+    const W = 1000, H = 900;
+    const boost = getChartTextBoost();
+
+    const xGap = getTimeXAxisLabelGap();
+    const yGap = getTimeYAxisLabelGap();
+
+    const tickFontPx = 12 * getFontScale() * boost;
+    const axisLabelFontPx = 14 * getFontScale() * getAxisLabelFontScale() * boost;
+    const tickLabelOffset = Math.round((10 * boost) + tickFontPx);
+
+    const xAxisGapEff = Math.max(xGap, tickLabelOffset + tickFontPx + Math.round(10 * boost));
+
+    const legendItems = getTimeLegendItems();
+    const legendBox = Math.round(14 * boost);
+    const legendFontPx = 13 * getFontScale() * boost * getTimeLegendFontScale();
+    const legendLineH = Math.max(legendBox, legendFontPx) + Math.round(10 * boost);
+    const legendTotalH = legendItems.length * legendLineH;
+
+    const legendFromAxisMin = xAxisGapEff + axisLabelFontPx + Math.round(18 * boost);
+    const legendFromAxis = Math.max(getTimeLegendToChartGap(), legendFromAxisMin);
+
+    const bottomNeed = Math.max(
+      tickLabelOffset + tickFontPx + Math.round(10 * boost),
+      xAxisGapEff + axisLabelFontPx + Math.round(10 * boost),
+      legendFromAxis + legendTotalH + Math.round(12 * boost)
+    ) + 18;
+
+    const estTickW = Math.max(44 * boost, tickFontPx * 2.4);
+    const leftNeed = 16 + estTickW + yGap + axisLabelFontPx;
+
+    let pad = { l: Math.max(90, leftNeed), r: 34, t: 24, b: Math.max(140, bottomNeed) };
+
+    // reserva mínima de altura interior
+    const minInnerH = 280;
+    pad.b = Math.min(pad.b, Math.max(120, H - pad.t - minInnerH));
+
+    const minInnerW = 360;
+    pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
+
+    pad.r = Math.max(pad.r, pad.l);
+    if (W - pad.l - pad.r < minInnerW){
+      const over = minInnerW - (W - pad.l - pad.r);
+      const reduce = Math.ceil(over / 2);
+      pad.l = Math.max(90, pad.l - reduce);
+      pad.r = Math.max(30, pad.r - reduce);
+    }
+
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
     const data = buildSeries();
-    const T = (data.length ? data[data.length-1].t : state.years);
+    const T = state.years;
 
     state.timeLayout = { W, H, pad, innerW, innerH, T };
 
     const yMax = Math.max(...data.map(d => d.total)) / 1_000_000;
-    const yNice = Math.ceil(yMax/5)*5 || 5;
+    const yNice = Math.ceil((yMax||1)/5)*5 || 5;
 
-    const xToPx = (x) => pad.l + (x / Math.max(1,T)) * innerW;
+    const xToPx = (x) => pad.l + (x / Math.max(1e-9,T)) * innerW;
     const yToPx = (yM) => pad.t + innerH - (yM / yNice) * innerH;
 
+    // grid Y
     const yTicks = 6;
     for (let i=0;i<=yTicks;i++){
       const yv = (yNice * i / yTicks);
@@ -2241,7 +1901,7 @@
         "stroke-dasharray":"6 6"
       }));
       const t = svgEl('text',{
-        x: pad.l - 6, y: yToPx(yv) + 4,
+        x: pad.l - 10, y: yToPx(yv) + 4,
         fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
@@ -2249,6 +1909,7 @@
       svg.appendChild(t);
     }
 
+    // grid X
     const xTicks = 5;
     for (let i=0;i<=xTicks;i++){
       const xv = Math.round(T * i / xTicks);
@@ -2257,7 +1918,7 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.30"
       }));
       const t = svgEl('text',{
-        x: xToPx(xv), y: pad.t + innerH + 26,
+        x: xToPx(xv), y: pad.t + innerH + tickLabelOffset,
         fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
@@ -2265,6 +1926,7 @@
       svg.appendChild(t);
     }
 
+    // axes
     svg.appendChild(svgEl('line',{
       x1: pad.l, y1: pad.t+innerH, x2: pad.l+innerW, y2: pad.t+innerH,
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
@@ -2274,24 +1936,26 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = Math.min(H - 44, pad.t + innerH + getAxisLabelGap());
+    // axis labels (posicionados con gaps específicos)
+    const xAxisLabelY = pad.t + innerH + xAxisGapEff;
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
-      fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxis(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    const legendY = Math.min(H - 16, xAxisLabelY + 30);
-    renderTimeLegendHorizontal(svg, legendY);
+    const legendY = pad.t + innerH + legendFromAxis;
+    renderTimeLegendVertical(svg, legendY);
 
-    const yLabelX = Math.max(18, pad.l - (getAxisLabelGap() * 0.65));
+    const yLabelX = Math.max(14, pad.l - (estTickW + yGap));
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxis(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
     })).textContent = "Personas (millones)";
 
+    // stack areas
     const minorsTop = [];
     const cotTop = [];
     const noncotTop = [];
@@ -2324,6 +1988,7 @@
     }
     svg.appendChild(svgEl('path', { d: polyPath(totalTop, noncotTop), fill: COLORS.retired,"fill-opacity":"0.50", stroke:"none" }));
 
+    // outline
     svg.appendChild(svgEl('path', {
       d: "M " + totalTop.map(p => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(" L "),
       fill: "none",
@@ -2332,7 +1997,8 @@
       "stroke-opacity":"0.95"
     }));
 
-    const tNow = clamp(Math.round(state.t), 0, T);
+    // cursor
+    const tNow = clamp(Math.round(state.t), 0, state.years);
     const cur = data[Math.min(data.length-1, tNow)];
     const xNow = xToPx(cur.t);
 
@@ -2343,27 +2009,17 @@
       "stroke-opacity":"0.65",
       "stroke-dasharray":"8 6"
     }));
-
     svg.appendChild(svgEl('circle', {
       cx: xNow, cy: yToPx(toM(cur.total)), r: "5.5",
       fill: COLORS.primary, "fill-opacity":"0.95"
     }));
 
-    // tReadout + año calendario si aplica
-    const calYear = (cur.year && isFinite(cur.year)) ? ` (${cur.year})` : "";
-    els.tReadout.textContent = `t: ${cur.t}${calYear}`;
-
-    const countryTag = (state.oecd.mode && state.oecd.selectedName) ? ` · ${state.oecd.selectedName}` : "";
-    const calTag = (cur.year && isFinite(cur.year)) ? ` · Año cal: ${cur.year}` : "";
-    els.simMeta.textContent = `Año: ${cur.t} | Población: ${toM(cur.total).toFixed(1)} M${countryTag}${calTag}`;
+    els.tReadout.textContent = `t: ${cur.t}` + (cur.demog && cur.year ? ` · año=${cur.year}` : "");
+    els.simMeta.textContent = `Año: ${cur.t} | Población: ${toM(cur.total).toFixed(1)} M`;
 
     updateSystemPill(cur);
     renderCPChartSim(cur, data);
-
-    // MOD: pirámide dinámica por t cuando OCDE+demog
-    if (state.oecd.mode && state.oecd.usesDemog) renderPyramid();
-
-    syncAllSidebarsStable();
+    renderPyramid(); // si hay demog, queda ligada a t
   }
 
   function updateSystemPill(cur){
@@ -2385,7 +2041,7 @@
   }
 
   // ==========================================================
-  // CHART 2 (C–P)
+  // CP CHART (usa gaps por gráfica)
   // ==========================================================
   function niceCeil(x, step){
     if (!isFinite(x) || x <= 0) return step;
@@ -2412,10 +2068,53 @@
 
   function renderCPChartSim(cur, series){
     const svg = els.cpSvg;
+    if (!svg) return;
     clearSvg(svg);
 
     const W = 1000, H = 700;
-    const pad = {l: 90, r: 30, t: 26, b: 70};
+    const boost = getChartTextBoost();
+
+    const xGap = getCPXAxisLabelGap();
+    const yGap = getCPYAxisLabelGap();
+
+    const tickFontPx = 12 * getFontScale() * boost;
+    const axisLabelFontPx = 14 * getFontScale() * getAxisLabelFontScale() * boost;
+    const tickLabelOffset = Math.round((10 * boost) + tickFontPx);
+
+    const xAxisGapEff = Math.max(
+      xGap,
+      tickLabelOffset + tickFontPx + Math.round(10 * boost)
+    );
+
+    const bottomNeed = Math.max(
+      tickLabelOffset + tickFontPx + Math.round(10 * boost),
+      xAxisGapEff + axisLabelFontPx + Math.round(10 * boost)
+    ) + 18;
+
+    const estTickW = Math.max(44 * boost, tickFontPx * 2.4);
+    const leftNeed = 16 + estTickW + yGap + axisLabelFontPx;
+
+    let pad = {
+      l: Math.max(90, leftNeed),
+      r: 34,
+      t: 26,
+      b: Math.max(90, bottomNeed)
+    };
+
+    const minInnerH = 260;
+    pad.b = Math.min(pad.b, Math.max(70, H - pad.t - minInnerH));
+
+    const minInnerW = 360;
+    pad.l = Math.min(pad.l, Math.max(90, W - pad.r - minInnerW));
+
+    pad.r = Math.max(pad.r, pad.l);
+    if (W - pad.l - pad.r < minInnerW){
+      const over = minInnerW - (W - pad.l - pad.r);
+      const reduce = Math.ceil(over / 2);
+      pad.l = Math.max(90, pad.l - reduce);
+      pad.r = Math.max(30, pad.r - reduce);
+    }
+
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -2435,8 +2134,8 @@
     const xTicks = ticksFrom(xMax, cStep);
     const yTicks = ticksFrom(yMax, pStep);
 
-    const xToPx = (x) => pad.l + (x / xMax) * innerW;
-    const yToPx = (y) => pad.t + innerH - (y / yMax) * innerH;
+    const xToPx = (x) => pad.l + (x / Math.max(1e-9,xMax)) * innerW;
+    const yToPx = (y) => pad.t + innerH - (y / Math.max(1e-9,yMax)) * innerH;
 
     yTicks.forEach(v => {
       svg.appendChild(svgEl('line',{
@@ -2445,7 +2144,7 @@
         "stroke-dasharray":"6 6"
       }));
       const t = svgEl('text',{
-        x: pad.l - 6, y: yToPx(v) + 4,
+        x: pad.l - 10, y: yToPx(v) + 4,
         fill: COLORS.text, "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
@@ -2460,7 +2159,7 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.35"
       }));
       const t = svgEl('text',{
-        x: xToPx(v), y: pad.t + innerH + 26,
+        x: xToPx(v), y: pad.t + innerH + tickLabelOffset,
         fill: COLORS.text, "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
@@ -2478,18 +2177,18 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getAxisLabelGap());
+    const xAxisLabelY = pad.t + innerH + xAxisGapEff;
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
-      fill: COLORS.text, "font-size": fsAxisLabel(14),
+      fill: COLORS.text, "font-size": fsAxis(14),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
-    const yLabelX = Math.max(18, pad.l - (getAxisLabelGap() * 0.65));
+    const yLabelX = Math.max(14, pad.l - (estTickW + yGap));
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size": fsAxisLabel(14),
+      fill: COLORS.text, "font-size": fsAxis(14),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
@@ -2563,6 +2262,9 @@
     renderWorkersIcons(isFinite(CP) ? CP : NaN);
   }
 
+  // ==========================================================
+  // ICONOS “TRABAJADORES POR PENSIONISTA”
+  // ==========================================================
   function ensureWorkerSeq(cap){
     const target = Math.max(0, cap|0);
     while (state.workerIconSeq.length < target){
@@ -2573,47 +2275,20 @@
   }
 
   function renderWorkersIcons(cp){
+    if (!els.heroWorkersIcons) return;
     els.heroWorkersIcons.innerHTML = "";
-    if (!isFinite(cp) || cp <= 0) return;
+    if (!isFinite(cp)) return;
 
-    const N = Math.max(0, Math.round(cp));
+    let N = Math.round(cp);
+    if (cp < 1.99) N = Math.max(1, N);
+    N = Math.max(1, N);
+
     const CAP = 30;
     const show = Math.min(N, CAP);
     const hasPlus = N > CAP;
 
     ensureWorkerSeq(CAP);
 
-    const avail = els.heroWorkersIcons.getBoundingClientRect().width || 0;
-
-    const maxIcon = 30;
-    const minIcon = 14;
-    const baseGap = 8;
-
-    let iconSize = maxIcon;
-    let gap = baseGap;
-
-    if (avail > 50 && show > 0){
-      const tryCompute = (g) => {
-        const reserved = (show - 1) * g + (hasPlus ? (g + maxIcon) : 0);
-        const s = Math.floor((avail - reserved) / show);
-        return s;
-      };
-
-      let s = tryCompute(baseGap);
-      gap = baseGap;
-
-      if (s < 22){ s = tryCompute(6); gap = 6; }
-      if (s < 18){ s = tryCompute(4); gap = 4; }
-
-      iconSize = clamp(s, minIcon, maxIcon);
-
-      if (iconSize <= minIcon && avail < (show * minIcon + (show-1)*gap + (hasPlus ? (gap + minIcon) : 0))){
-        let maxShow = Math.max(1, Math.floor((avail - (hasPlus ? (gap + minIcon) : 0) + gap) / (minIcon + gap)));
-        maxShow = clamp(maxShow, 1, CAP);
-        return renderWorkersIconsWithLayout(N, maxShow, hasPlus, minIcon, gap);
-      }
-    }
-
     for (let i=0;i<show;i++){
       const src = state.workerIconSeq[i] || randWorkerIcon();
       if (!src) break;
@@ -2622,8 +2297,6 @@
       img.src = src;
       img.alt = "Trabajador";
       img.title = "Trabajador";
-      img.style.width = `${iconSize}px`;
-      img.style.height = `${iconSize}px`;
       els.heroWorkersIcons.appendChild(img);
     }
 
@@ -2631,66 +2304,16 @@
       const plus = document.createElement('div');
       plus.className = "plus";
       plus.textContent = "+";
-      plus.style.width = `${iconSize}px`;
-      plus.style.height = `${iconSize}px`;
-      plus.style.fontSize = `${Math.max(12, iconSize * 0.6)}px`;
       els.heroWorkersIcons.appendChild(plus);
     }
-
-    els.heroWorkersIcons.style.gap = `${gap}px`;
-  }
-
-  function renderWorkersIconsWithLayout(N, show, hasPlus, iconSize, gap){
-    els.heroWorkersIcons.innerHTML = "";
-    ensureWorkerSeq(30);
-
-    for (let i=0;i<show;i++){
-      const src = state.workerIconSeq[i] || randWorkerIcon();
-      if (!src) break;
-      const img = document.createElement('img');
-      img.className = "worker-icon";
-      img.src = src;
-      img.alt = "Trabajador";
-      img.title = "Trabajador";
-      img.style.width = `${iconSize}px`;
-      img.style.height = `${iconSize}px`;
-      els.heroWorkersIcons.appendChild(img);
-    }
-
-    if (hasPlus){
-      const plus = document.createElement('div');
-      plus.className = "plus";
-      plus.textContent = "+";
-      plus.style.width = `${iconSize}px`;
-      plus.style.height = `${iconSize}px`;
-      plus.style.fontSize = `${Math.max(12, iconSize * 0.6)}px`;
-      els.heroWorkersIcons.appendChild(plus);
-    }
-
-    els.heroWorkersIcons.style.gap = `${gap}px`;
   }
 
   // ==========================================================
-  // PIRÁMIDE (render) — dinámica si OCDE+demog
+  // PIRÁMIDE (usa demografía si modo OCDE)
   // ==========================================================
-  function buildSyntheticSharesMF(){
-    const total = buildSyntheticTotalShares();
-    const n = total.length;
-
-    const m = new Array(n).fill(0);
-    const f = new Array(n).fill(0);
-    for (let i=0;i<n;i++){
-      const ageFactor = i / (n-1);
-      const femaleBias = 0.50 + 0.10 * Math.pow(ageFactor, 1.6);
-      const fb = Math.min(0.62, Math.max(0.50, femaleBias));
-      f[i] = total[i] * fb;
-      m[i] = total[i] * (1 - fb);
-    }
-    return {m,f};
-  }
-
   function renderPyramid(){
     const svg = els.pyrSvg;
+    if (!svg) return;
     clearSvg(svg);
 
     const W = 520, H = 650;
@@ -2699,45 +2322,38 @@
     const innerH = H - pad.t - pad.b;
     const cx = pad.l + innerW/2;
 
-    let mBins = null;
-    let fBins = null;
-    let titleMeta = "";
+    let mShares = null, fShares = null;
+    let popTotal = state.popTotalM * 1_000_000;
 
-    if (state.oecd.mode && state.oecd.usesDemog && state.oecd.selectedName){
-      const iso3 = NAME_TO_ISO3[state.oecd.selectedName] || null;
-      const baseYear = state.oecd.baseYear;
-      const maxT = state.oecd.maxT;
+    const useDemog = !!(state.oecd.mode && state.oecd.usesDemog && state.oecd.iso3Selected && state.oecd.baseYear != null);
+    if (useDemog){
+      const iso3 = state.oecd.iso3Selected;
+      const baseY = state.oecd.baseYear;
+      const yTarget = baseY + clamp(Math.round(state.t), 0, state.years);
 
-      const tNow = clamp(Math.round(state.t), 0, isFinite(maxT)?maxT:0);
-      const year = (isFinite(baseYear) ? (baseYear + tNow) : null);
+      const maps = getDemogMapsForIsoYear(iso3, yTarget);
+      if (maps){
+        const pyr = buildPyramid21BinsFromOECDMaps(maps.mMap, maps.fMap, maps.tMap);
+        popTotal = pyr.totalVals.reduce((a,b)=>a+(b||0),0) || popTotal;
 
-      if (iso3 && year !== null){
-        const maps = getDemogMapsForIsoYear(iso3, year);
-        if (maps){
-          const built = buildPyramid21BinsFromOECDMaps(maps.mMap, maps.fMap, maps.tMap);
-          mBins = built.mVals.slice();
-          fBins = built.fVals.slice();
-          const totalPop = (mBins.reduce((a,b)=>a+b,0) + fBins.reduce((a,b)=>a+b,0)) || 0;
-          titleMeta = `${state.oecd.selectedName} · ${maps.year} · ${toM(totalPop).toFixed(1)} M${built.fromTotal ? " (T/2)" : ""}`;
+        const denom = Math.max(1e-9, pyr.totalVals.reduce((a,b)=>a+b,0));
+        mShares = pyr.mVals.map(v => v / denom);
+        fShares = pyr.fVals.map(v => v / denom);
 
-          // cache (opcional)
-          state.oecd.pyrYear = maps.year;
-          state.oecd.pyrM21 = mBins.slice();
-          state.oecd.pyrF21 = fBins.slice();
-          state.oecd.pyrFromTotal = !!built.fromTotal;
-        }
+        state.oecd.pyrYear = maps.year;
+        state.popTotalM = clamp(popTotal/1_000_000, 0.1, 400);
       }
     }
 
-    if (!mBins || !fBins){
-      // fallback hipotético
+    if (!mShares || !fShares){
       const mf = buildSyntheticSharesMF();
-      const totalPeople = state.popTotalM * 1_000_000;
-      mBins = mf.m.map(s => s * totalPeople);
-      fBins = mf.f.map(s => s * totalPeople);
-      titleMeta = `Población total: ${state.popTotalM.toFixed(1)} M`;
+      mShares = mf.m;
+      fShares = mf.f;
+      popTotal = state.popTotalM * 1_000_000;
+      state.oecd.pyrYear = null;
     }
 
+    // grid
     const gridLines = 6;
     for (let k=0;k<=gridLines;k++){
       const x = pad.l + (innerW * k/gridLines);
@@ -2751,6 +2367,7 @@
       stroke: COLORS.text, "stroke-width":1.2, "stroke-opacity":"0.65"
     }));
 
+    // labels
     svg.appendChild(svgEl('text',{
       x: cx - 10, y: 50,
       fill: COLORS.workers,
@@ -2770,7 +2387,7 @@
     })).textContent = "Mujer";
 
     let maxBin = 0;
-    for (let i=0;i<mBins.length;i++) maxBin = Math.max(maxBin, mBins[i]||0, fBins[i]||0);
+    for (let i=0;i<mShares.length;i++) maxBin = Math.max(maxBin, mShares[i], fShares[i]);
     if (maxBin <= 0) maxBin = 1;
     const maxPx = (innerW/2) * 0.92;
 
@@ -2781,8 +2398,8 @@
       const y = pad.t + (n - 1 - i) * barH + 1;
       const h = Math.max(1, barH - 2);
 
-      const wL = ((mBins[i]||0) / maxBin) * maxPx;
-      const wR = ((fBins[i]||0) / maxBin) * maxPx;
+      const wL = (mShares[i] / maxBin) * maxPx;
+      const wR = (fShares[i] / maxBin) * maxPx;
 
       svg.appendChild(svgEl('rect',{
         x: cx - wL, y, width: wL, height: h,
@@ -2804,40 +2421,420 @@
       svg.appendChild(t);
     }
 
-    els.pyrMeta.textContent = titleMeta;
-    syncAllSidebarsStable();
+    const suffix = (useDemog && state.oecd.pyrYear) ? ` · año=${state.oecd.pyrYear}` : "";
+    els.pyrMeta.textContent = `Población total: ${state.popTotalM.toFixed(1)} M${suffix}`;
   }
 
   // ==========================================================
-  // ANIMACIÓN
+  // SIDE BAR (slider vertical) sync básico
+  // ==========================================================
+  function getRenderedSvgHeight(svg){
+    if (!svg) return 0;
+    const rect = svg.getBoundingClientRect();
+    let h = rect.height;
+    const w = rect.width || svg.clientWidth || 0;
+    const vb = svg.viewBox && svg.viewBox.baseVal;
+    if (w > 0 && vb && vb.width > 0 && vb.height > 0){
+      const expected = w * (vb.height / vb.width);
+      if (!isFinite(h) || h <= 1) h = expected;
+    }
+    return (isFinite(h) && h > 0) ? h : 0;
+  }
+
+  function syncSidebarToSvg({ shell, input, svg }){
+    if (!shell || !input || !svg) return;
+    let targetH = getRenderedSvgHeight(svg);
+    if (targetH <= 1) return;
+
+    shell.style.height = `${targetH}px`;
+
+    const shellRect = shell.getBoundingClientRect();
+    const cs = getComputedStyle(shell);
+
+    const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+    const borderY = (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.borderBottomWidth) || 0);
+
+    const usable = Math.max(120, (shellRect.height || targetH) - padY - borderY);
+    input.style.width = `${usable}px`;
+    input.style.height = `4px`;
+
+    paintRange(input);
+  }
+
+  function syncAllSidebars(){
+    syncSidebarToSvg({ shell: els.peakShell, input: els.peakSlider, svg: els.pyrSvg });
+  }
+  function syncAllSidebarsStable(){
+    let n = 0;
+    const step = () => { syncAllSidebars(); if (++n < 8) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+
+  // ==========================================================
+  // OCDE: aplicar país + UI locking
+  // ==========================================================
+  function takeHypoSnapshot(){
+    state.hypoBackup = {
+      popTotalM: state.popTotalM,
+      peakIdx: state.peakIdx,
+      sigma: state.sigma,
+      densityYoung: state.densityYoung,
+      densityOld: state.densityOld,
+
+      rho: state.rho,
+      tau: state.tau,
+      u: state.u,
+      popGrowth: state.popGrowth,
+      agingPP: state.agingPP,
+      years: state.years,
+      participation: state.participation,
+
+      yearsSliderMax: els.yearsSlider ? Number(els.yearsSlider.max || 140) : 140
+    };
+  }
+
+  function restoreHypothetical(){
+    if (!state.hypoBackup) return;
+    const s = state.hypoBackup;
+
+    state.popTotalM = s.popTotalM;
+    state.peakIdx = s.peakIdx;
+    state.sigma = s.sigma;
+    state.densityYoung = s.densityYoung;
+    state.densityOld = s.densityOld;
+
+    state.rho = s.rho;
+    state.tau = s.tau;
+    state.u = s.u;
+    state.popGrowth = s.popGrowth;
+    state.agingPP = s.agingPP;
+    state.years = s.years;
+    state.participation = s.participation;
+
+    if (els.yearsSlider && s.yearsSliderMax) els.yearsSlider.max = String(s.yearsSliderMax);
+
+    // reset OCDE mode state
+    state.oecd.mode = false;
+    state.oecd.usesDemog = false;
+    state.oecd.iso3Selected = null;
+    state.oecd.baseYear = null;
+    state.oecd.maxT = null;
+    state.oecd.pensionerFactor = 1.0;
+    state.oecd.pensionerFactorNote = "";
+    state.oecd.targets = null;
+    state.oecd.pyrYear = null;
+
+    if (els.oecdModeToggle) els.oecdModeToggle.checked = false;
+
+    state.t = 0;
+    state.playing = false;
+
+    setDemogModeUI(false);
+  }
+
+  function setDemogModeUI(on){
+    const toggleBlock = (el, onx) => { if (!el) return; el.classList.toggle("disabled-block", !!onx); };
+    toggleBlock(els.popGrowthCtl, on);
+    toggleBlock(els.agingCtl, on);
+    toggleBlock(els.pyrBlock, on);
+
+    const dis = (input, v) => { if (input) input.disabled = !!v; };
+    dis(els.popGrowthSlider, on);
+    dis(els.agingSlider, on);
+
+    dis(els.popSlider, on);
+    dis(els.peakSlider, on);
+    dis(els.sigmaSlider, on);
+    dis(els.densityYoungSlider, on);
+    dis(els.densityOldSlider, on);
+  }
+
+  function parseYearFromAny(x){
+    if (x == null) return null;
+    const s = String(x);
+    const m = s.match(/(19|20)\d{2}/);
+    return m ? Number(m[0]) : null;
+  }
+
+  function normalizeCountryEntry(raw){
+    if (!raw || typeof raw !== "object") return null;
+
+    const name =
+      pickFirst(raw, ["name_es","name","country_es","country","pais","país","label"]) ??
+      (raw.country && pickFirst(raw.country, ["name_es","name"])) ??
+      (raw.meta && pickFirst(raw.meta, ["name_es","name","country"])) ??
+      null;
+
+    const iso3 =
+      pickFirst(raw, ["iso3","ISO3","alpha3","code3"]) ??
+      (raw.codes && pickFirst(raw.codes, ["iso3","ISO3","alpha3"])) ??
+      null;
+
+    const metrics =
+      (raw.inputs && typeof raw.inputs === "object") ? raw.inputs :
+      (raw.metrics && typeof raw.metrics === "object") ? raw.metrics :
+      raw;
+
+    return {
+      raw,
+      name: name ? String(name).trim() : null,
+      iso3: iso3 ? String(iso3).trim().toUpperCase() : null,
+      metrics
+    };
+  }
+
+  function extractCountriesArray(json){
+    if (!json) return [];
+    if (Array.isArray(json)) return json;
+    if (Array.isArray(json.countries)) return json.countries;
+    if (json.countries && typeof json.countries === "object") return Object.values(json.countries);
+    if (Array.isArray(json.data)) return json.data;
+    if (Array.isArray(json.items)) return json.items;
+    return [];
+  }
+
+  function applyCountryToState(entry){
+    if (!entry) return false;
+
+    if (!state.oecd.mode) takeHypoSnapshot();
+
+    const m = entry.metrics || entry.raw || {};
+
+    const rho = asNumber(pickFirst(m, ["rho","productividad","productivity","RHO"]));
+    if (isFinite(rho)) state.rho = clamp(rho, 0.40, 1.40);
+
+    const tau = asNumber(pickFirst(m, ["tau","tipoCotizacion","contribution_rate","contribucion","τ","TAU"]));
+    if (isFinite(tau)) state.tau = clamp(tau, 0.05, 0.45);
+
+    // iso3 (para demog)
+    let iso3 = entry.iso3 || null;
+    if (!iso3 && entry.name && NAME_TO_ISO3[entry.name]) iso3 = NAME_TO_ISO3[entry.name];
+    if (iso3) iso3 = String(iso3).toUpperCase();
+    state.oecd.iso3Selected = iso3;
+
+    const hasDemog = !!(iso3 && state.oecd.demogLoaded && state.oecd.demogByIso3.has(iso3));
+    state.oecd.usesDemog = hasDemog;
+
+    // activar modo OCDE (toggle manda la intención; aquí la “aplicación” del país)
+    state.oecd.mode = !!els.oecdModeToggle?.checked;
+
+    if (state.oecd.mode && hasDemog){
+      const years = state.oecd.demogYearsByIso3.get(iso3) || [];
+      if (!years.length){
+        state.oecd.usesDemog = false;
+        setDemogModeUI(false);
+        setStatus("OCDE: no hay años disponibles en demografía para ese ISO3.");
+      } else {
+        // baseYear: cerca del año del bundle si existe; si no, último disponible
+        const yHint =
+          parseYearFromAny(pickFirst(m, ["year","anio","año","popYear"])) ||
+          parseYearFromAny(pickFirst(entry.raw, ["rhoDate","tauDate","cDate","pDate"])) ||
+          null;
+
+        const base = closestYear(years, (yHint ?? years[years.length-1]));
+        state.oecd.baseYear = base;
+
+        const lastY = years[years.length-1];
+        state.oecd.maxT = Math.max(0, lastY - base);
+
+        if (els.yearsSlider){
+          const maxAllowed = Math.max(20, Math.min(140, state.oecd.maxT));
+          els.yearsSlider.max = String(maxAllowed);
+          if (state.years > maxAllowed) state.years = maxAllowed;
+        }
+
+        // calibraciones en t0
+        const maps0 = getDemogMapsForIsoYear(iso3, base);
+        if (!maps0){
+          state.oecd.usesDemog = false;
+          setDemogModeUI(false);
+          setStatus("OCDE: no se pudo leer demografía en el año base.");
+        } else {
+          const groups0 = computeGroupsFrom18Bins(maps0.tMap, maps0.mMap, maps0.fMap);
+          if (groups0.total > 0){
+            state.popTotalM = clamp(groups0.total / 1_000_000, 0.1, 400);
+          }
+
+          // α con P_people vs 65+
+          const P_people_raw = pickFirst(m, ["P_people","pensionistas","pensioners","P"]);
+          const P_people = normalizePeopleCountSmart(P_people_raw, groups0.total, (groups0.retired65/groups0.total)).people;
+
+          const calibAlpha = calibrateAlphaFromDemog(P_people, groups0.retired65);
+          state.oecd.pensionerFactor = calibAlpha.alpha;
+          state.oecd.pensionerFactorNote = calibAlpha.note;
+
+          // calibra participación/u con C_people
+          const C_people_raw = pickFirst(m, ["C_people","cotizantes","contributors","C"]);
+          const C_people = normalizePeopleCountSmart(C_people_raw, groups0.total, (groups0.working/groups0.total)).people;
+
+          const minWorkFloor = 0.05 * groups0.total;
+          const retiredEff = clamp(state.oecd.pensionerFactor * groups0.retired65, 0.01 * groups0.total, groups0.total - groups0.minors - minWorkFloor);
+          const workingEff = Math.max(minWorkFloor, groups0.total - groups0.minors - retiredEff);
+
+          if (isFinite(C_people) && C_people > 0 && workingEff > 0){
+            const u0 = clamp(state.u, 0, 0.35);
+            const part = C_people / (workingEff * (1 - u0));
+            if (isFinite(part) && part > 0 && part <= 1){
+              state.participation = clamp(part, 0, 1);
+              state.u = u0;
+            } else {
+              state.participation = 1.0;
+              const uCal = 1 - (C_people / workingEff);
+              if (isFinite(uCal)) state.u = clamp(uCal, 0, 0.35);
+            }
+          }
+
+          setDemogModeUI(true);
+
+          setStatus(`OCDE: ${entry.name} · demog:OK · base=${base} · maxT=${state.oecd.maxT} · ${state.oecd.pensionerFactorNote}`);
+        }
+      }
+    } else {
+      // modo OCDE ON pero sin demog para ese país => no bloquea; se queda hipotético en demografía
+      setDemogModeUI(false);
+      if (state.oecd.mode && !hasDemog){
+        setStatus(`OCDE: ${entry.name} · sin demografía en OECD_demografia.csv (usa modo hipotético).`);
+      } else {
+        setStatus(`OCDE: ${state.oecd.ready ? "OK" : "cargando…"}`);
+      }
+    }
+
+    state.t = 0;
+    state.playing = false;
+    return true;
+  }
+
+  // ==========================================================
+  // OCDE LOADERS
+  // ==========================================================
+  async function fetchJson(url){
+    const r = await fetch(url, { cache:"no-store" });
+    if (!r.ok) throw new Error(`No se pudo cargar JSON: ${url}`);
+    return r.json();
+  }
+
+  async function fetchTextFirst(candidates){
+    for (const url of candidates){
+      try{
+        const r = await fetch(url, { cache:"no-store" });
+        if (!r.ok) continue;
+        const t = await r.text();
+        if (t && t.length > 10) return { url, text: t };
+      }catch(e){}
+    }
+    return null;
+  }
+
+  function populateCountrySelect(){
+    if (!els.oecdCountrySelect) return;
+    els.oecdCountrySelect.innerHTML = "";
+
+    for (const name of state.oecd.nameList){
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      els.oecdCountrySelect.appendChild(opt);
+    }
+
+    // default
+    const defaultName = state.oecd.nameList.includes("Alemania") ? "Alemania" : (state.oecd.nameList[0] || null);
+    state.oecd.selectedName = defaultName;
+    if (defaultName) els.oecdCountrySelect.value = defaultName;
+  }
+
+  async function initOECD(){
+    setStatus("Datasets: cargando…");
+
+    // 1) pensions bundle
+    try{
+      const j = await fetchJson(OECD_PENSIONS_JSON);
+      const arr = extractCountriesArray(j);
+
+      const countries = [];
+      const byName = new Map();
+      const nameList = [];
+
+      for (const raw of arr){
+        const c = normalizeCountryEntry(raw);
+        if (!c || !c.name) continue;
+        countries.push(c);
+        byName.set(nowStrip(c.name), c);
+        nameList.push(c.name);
+      }
+
+      nameList.sort((a,b)=>a.localeCompare(b, "es", { sensitivity:"base" }));
+
+      state.oecd.countries = countries;
+      state.oecd.byName = byName;
+      state.oecd.nameList = nameList;
+      state.oecd.ready = true;
+
+      populateCountrySelect();
+
+      // enable UI
+      if (els.oecdCountrySelect) els.oecdCountrySelect.disabled = false;
+      if (els.oecdLoadBtn) els.oecdLoadBtn.disabled = false;
+      if (els.oecdClearBtn) els.oecdClearBtn.disabled = false;
+      if (els.oecdPrevBtn) els.oecdPrevBtn.disabled = false;
+      if (els.oecdNextBtn) els.oecdNextBtn.disabled = false;
+      if (els.oecdModeToggle) els.oecdModeToggle.disabled = false;
+
+    }catch(e){
+      setStatus("Datasets: error cargando merged_countries.json");
+      console.error(e);
+    }
+
+    // 2) demog csv
+    try{
+      const csvRes = await fetchTextFirst(OECD_DEMOG_CSV_CANDIDATES);
+      if (csvRes && csvRes.text){
+        loadDemografiaCSVText(csvRes.text);
+      }
+    }catch(e){
+      state.oecd.demogLoaded = false;
+      console.warn(e);
+    }
+
+    const demogStr = state.oecd.demogLoaded ? "demog:OK" : "demog:0";
+    setStatus(`Datasets OK · países=${state.oecd.nameList.length} · ${demogStr}`);
+  }
+
+  function getSelectedCountryEntry(){
+    const name = els.oecdCountrySelect ? els.oecdCountrySelect.value : state.oecd.selectedName;
+    state.oecd.selectedName = name;
+    if (!name) return null;
+    return state.oecd.byName.get(nowStrip(name)) || null;
+  }
+
+  function stepCountry(delta){
+    if (!els.oecdCountrySelect || !state.oecd.nameList.length) return;
+    const cur = els.oecdCountrySelect.value;
+    let idx = state.oecd.nameList.indexOf(cur);
+    if (idx < 0) idx = 0;
+    idx = (idx + delta + state.oecd.nameList.length) % state.oecd.nameList.length;
+    els.oecdCountrySelect.value = state.oecd.nameList[idx];
+    state.oecd.selectedName = state.oecd.nameList[idx];
+  }
+
+  // ==========================================================
+  // LOOP
   // ==========================================================
   function tick(ts){
-    if (!state.playing){
-      state.lastTs = ts;
-      return;
-    }
+    if (!state.playing){ state.lastTs = ts; return; }
     const dt = Math.min(0.05, (ts - state.lastTs) / 1000);
     state.lastTs = ts;
 
     state.t = state.t + dt * 12 * 1.0;
-
-    // En OCDE+demog capea a horizonte real si existe
-    const maxT = (state.oecd.mode && state.oecd.usesDemog && isFinite(state.oecd.maxT)) ? state.oecd.maxT : state.years;
-    if (state.t > maxT) state.t = maxT;
+    if (state.t > state.years) state.t = state.years;
 
     renderTimeChart();
 
-    if (state.t >= maxT){
-      state.playing = false;
-    }
+    if (state.t >= state.years) state.playing = false;
   }
-  function rafLoop(ts){
-    tick(ts);
-    requestAnimationFrame(rafLoop);
-  }
+  function rafLoop(ts){ tick(ts); requestAnimationFrame(rafLoop); }
 
   // ==========================================================
-  // UI SYNC
+  // SYNC UI
   // ==========================================================
   function syncUI(){
     els.popSlider.value = state.popTotalM;
@@ -2875,17 +2872,14 @@
       els.peakSlider
     ].forEach(paintRange);
 
-    // Aplica bloqueos según modo
-    setOecdModeUI(state.oecd.mode);
-
+    setDemogModeUI(!!(state.oecd.mode && state.oecd.usesDemog));
     syncAllSidebarsStable();
   }
 
   // ==========================================================
-  // HANDLERS
+  // EVENTS
   // ==========================================================
   els.peakSlider.addEventListener('input', (e) => {
-    if (state.oecd.mode) return;
     state.peakIdx = Number(e.target.value);
     paintRange(els.peakSlider);
     renderPyramid();
@@ -2893,7 +2887,6 @@
   });
 
   els.sigmaSlider.addEventListener('input', (e) => {
-    if (state.oecd.mode) return;
     state.sigma = Number(e.target.value);
     els.sigmaVal.textContent = String(state.sigma);
     paintRange(els.sigmaSlider);
@@ -2902,7 +2895,6 @@
   });
 
   els.densityYoungSlider.addEventListener('input', (e) => {
-    if (state.oecd.mode) return;
     state.densityYoung = Number(e.target.value);
     els.densityYoungVal.textContent = state.densityYoung.toFixed(2);
     paintRange(els.densityYoungSlider);
@@ -2911,7 +2903,6 @@
   });
 
   els.densityOldSlider.addEventListener('input', (e) => {
-    if (state.oecd.mode) return;
     state.densityOld = Number(e.target.value);
     els.densityOldVal.textContent = state.densityOld.toFixed(2);
     paintRange(els.densityOldSlider);
@@ -2920,7 +2911,6 @@
   });
 
   els.popSlider.addEventListener('input', (e) => {
-    if (state.oecd.mode) return; // bloqueado en OCDE profesional
     state.popTotalM = Number(e.target.value);
     els.popVal.textContent = state.popTotalM.toFixed(1);
     paintRange(els.popSlider);
@@ -2951,7 +2941,6 @@
   });
 
   els.popGrowthSlider.addEventListener('input', (e) => {
-    if (state.oecd.mode && state.oecd.usesDemog) return; // no aplica en demog
     const vPct = Number(e.target.value);
     state.popGrowth = vPct / 100.0;
     els.popGrowthVal.textContent = vPct.toFixed(2) + "%";
@@ -2960,7 +2949,6 @@
   });
 
   els.agingSlider.addEventListener('input', (e) => {
-    if (state.oecd.mode && state.oecd.usesDemog) return; // no aplica en demog
     const v = Number(e.target.value);
     state.agingPP = v / 100.0;
     els.agingVal.textContent = v.toFixed(2) + " pp";
@@ -2970,13 +2958,6 @@
 
   els.yearsSlider.addEventListener('input', (e) => {
     state.years = Number(e.target.value);
-
-    // Si OCDE+demog, capea al horizonte (sin cambiar el max del slider)
-    if (state.oecd.mode && state.oecd.usesDemog && isFinite(state.oecd.maxT)){
-      state.years = Math.min(state.years, state.oecd.maxT);
-      els.yearsSlider.value = state.years;
-    }
-
     els.yearsVal.textContent = String(state.years);
     state.t = clamp(state.t, 0, state.years);
     paintRange(els.yearsSlider);
@@ -2997,163 +2978,107 @@
     if (isFinite(cp)) renderWorkersIcons(cp);
   });
 
-  // ==========================================================
   // OCDE UI
-  // ==========================================================
-  function renderOecdSelect(){
-    const sel = els.oecdCountrySelect;
-    if (!sel) return;
-    sel.innerHTML = "";
-    state.oecd.oecdNames.forEach(name => {
-      const opt = document.createElement("option");
-      opt.value = name;
-      opt.textContent = name;
-      sel.appendChild(opt);
+  if (els.oecdCountrySelect){
+    els.oecdCountrySelect.addEventListener("change", () => {
+      state.oecd.selectedName = els.oecdCountrySelect.value;
     });
-
-    const saved = (() => { try{ return localStorage.getItem("pensionSim_oecdCountry"); }catch(e){ return null; } })();
-    const def = (saved && state.oecd.countriesByName.has(saved)) ? saved : (state.oecd.countriesByName.has("España") ? "España" : (state.oecd.oecdNames[0] || null));
-    if (def){
-      sel.value = def;
-      state.oecd.selectedName = def;
-    }
-    sel.disabled = false;
-
-    els.oecdLoadBtn.disabled = !def;
-    els.oecdModeToggle.disabled = false;
-    els.oecdModeToggle.checked = state.oecd.mode;
-
-    if (els.oecdPrevBtn) els.oecdPrevBtn.disabled = !def;
-    if (els.oecdNextBtn) els.oecdNextBtn.disabled = !def;
   }
 
-  function shiftOecdCountry(delta){
-    const sel = els.oecdCountrySelect;
-    if (!sel || sel.disabled) return;
-    const n = sel.options.length;
-    if (!n) return;
+  if (els.oecdModeToggle){
+    els.oecdModeToggle.addEventListener("change", (e) => {
+      const on = !!e.target.checked;
+      state.oecd.mode = on;
 
-    let idx = sel.selectedIndex;
-    if (idx < 0) idx = 0;
-    let next = (idx + delta) % n;
-    if (next < 0) next += n;
-
-    sel.selectedIndex = next;
-    const name = sel.value || null;
-
-    state.oecd.selectedName = name;
-    els.oecdLoadBtn.disabled = !name;
-
-    if (name) applyOecdCountry(name);
-  }
-
-  function wireOecdUI(){
-    if (els.oecdCountrySelect){
-      els.oecdCountrySelect.addEventListener("change", (e) => {
-        state.oecd.selectedName = e.target.value || null;
-        els.oecdLoadBtn.disabled = !state.oecd.selectedName;
-        if (els.oecdPrevBtn) els.oecdPrevBtn.disabled = !state.oecd.selectedName;
-        if (els.oecdNextBtn) els.oecdNextBtn.disabled = !state.oecd.selectedName;
-      });
-    }
-
-    if (els.oecdLoadBtn){
-      els.oecdLoadBtn.addEventListener("click", () => {
-        const name = els.oecdCountrySelect?.value || state.oecd.selectedName;
-        if (name) applyOecdCountry(name);
-      });
-    }
-
-    if (els.oecdPrevBtn){
-      els.oecdPrevBtn.addEventListener("click", () => shiftOecdCountry(-1));
-    }
-    if (els.oecdNextBtn){
-      els.oecdNextBtn.addEventListener("click", () => shiftOecdCountry(+1));
-    }
-
-    if (els.oecdClearBtn){
-      els.oecdClearBtn.addEventListener("click", () => {
-        restoreHypoState();
-        els.oecdInfo.textContent = "Modo hipotético restaurado.";
-      });
-    }
-
-    if (els.oecdModeToggle){
-      els.oecdModeToggle.addEventListener("change", (e) => {
-        const on = !!e.target.checked;
-
-        if (on && !state.oecd.mode){
-          const name = els.oecdCountrySelect?.value || state.oecd.selectedName;
-          if (name) applyOecdCountry(name);
-          else e.target.checked = false;
-          return;
-        }
-        if (!on){
-          restoreHypoState();
-          els.oecdInfo.textContent = "Modo hipotético restaurado.";
-        }
-      });
-    }
-  }
-
-  async function initOECD(){
-    els.oecdInfo.textContent = "Cargando datasets OCDE…";
-    try{
-      await Promise.all([loadPensionsJSON(), loadDemografiaCSV()]);
-      state.oecd.ready = true;
-
-      renderOecdSelect();
-      wireOecdUI();
-
-      // Stats
-      const isoCount = state.oecd.demogByIso3.size;
-      let minY = null, maxY = null;
-      for (const ys of state.oecd.demogYearsByIso3.values()){
-        if (!ys.length) continue;
-        minY = (minY===null) ? ys[0] : Math.min(minY, ys[0]);
-        maxY = (maxY===null) ? ys[ys.length-1] : Math.max(maxY, ys[ys.length-1]);
+      if (!on){
+        restoreHypothetical();
+        syncUI();
+        renderPyramid();
+        renderTimeChart();
+        setStatus(`Modo OCDE: OFF`);
+        return;
       }
 
-      const msg = `Datasets OK · países(bundles)=${state.oecd.oecdNames.length} · DEMOG(ISO3)=${isoCount} · años=${minY ?? "—"}→${maxY ?? "—"}`;
-      els.oecdInfo.textContent = msg;
+      // ON: si ya hay un país cargado/seleccionado, aplicamos
+      const entry = getSelectedCountryEntry();
+      if (!entry){
+        setStatus("OCDE: selecciona un país.");
+        return;
+      }
 
-      els.oecdModeToggle.checked = false;
-      setOecdModeUI(false);
+      if (!state.hypoBackup) takeHypoSnapshot();
 
-    }catch(err){
-      state.oecd.ready = false;
-      els.oecdInfo.textContent =
-        `No se pudieron cargar "${OECD_PENSIONS_JSON}" o "${OECD_DEMOG_CSV}". Revisa que existan y se sirvan desde tu repo.`;
-      els.oecdCountrySelect.disabled = true;
-      els.oecdLoadBtn.disabled = true;
-      els.oecdClearBtn.disabled = true;
-      els.oecdModeToggle.disabled = true;
-      if (els.oecdPrevBtn) els.oecdPrevBtn.disabled = true;
-      if (els.oecdNextBtn) els.oecdNextBtn.disabled = true;
-      console.error(err);
-    }
+      applyCountryToState(entry);
+      syncUI();
+      renderPyramid();
+      renderTimeChart();
+    });
+  }
+
+  if (els.oecdLoadBtn){
+    els.oecdLoadBtn.addEventListener("click", () => {
+      const entry = getSelectedCountryEntry();
+      if (!entry){
+        setStatus("OCDE: selecciona un país.");
+        return;
+      }
+
+      if (!els.oecdModeToggle.checked){
+        // si no está marcado, solo carga τ/ρ “sin activar” demog
+        if (!state.hypoBackup) takeHypoSnapshot();
+        state.oecd.mode = false;
+      } else {
+        state.oecd.mode = true;
+      }
+
+      applyCountryToState(entry);
+      syncUI();
+      renderPyramid();
+      renderTimeChart();
+    });
+  }
+
+  if (els.oecdClearBtn){
+    els.oecdClearBtn.addEventListener("click", () => {
+      restoreHypothetical();
+      syncUI();
+      renderPyramid();
+      renderTimeChart();
+      setStatus("Modo OCDE: OFF · estado hipotético restaurado.");
+    });
+  }
+
+  if (els.oecdPrevBtn){
+    els.oecdPrevBtn.addEventListener("click", () => {
+      stepCountry(-1);
+    });
+  }
+  if (els.oecdNextBtn){
+    els.oecdNextBtn.addEventListener("click", () => {
+      stepCountry(+1);
+    });
   }
 
   // ==========================================================
   // INIT
   // ==========================================================
   ensureWorkerSeq(30);
+
+  // Inicializa valores UI y renders
   syncUI();
   renderPyramid();
   renderTimeChart();
+  syncAllSidebarsStable();
 
-  setupSidebarObservers();
   setupTimeScrub();
-
-  window.addEventListener('load', () => {
-    syncAllSidebarsStable();
-    const cp = parseFloat(els.heroCP.textContent);
-    if (isFinite(cp)) renderWorkersIcons(cp);
-  });
-
   requestAnimationFrame(rafLoop);
 
-  initOECD();
+  // Carga datasets OCDE
+  initOECD().then(() => {
+    // si quieres autoseleccionar Alemania y “preparar” modo sin activarlo:
+    // nada más aquí; el usuario decide.
+  });
+
 })();
 </script>
 
