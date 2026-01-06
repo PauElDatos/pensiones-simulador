@@ -8,7 +8,7 @@
   <style>
     :root{
       --fontScale: 1.12;
-      --axisLabelGap: 112px;
+      --axisLabelGap: 78px;
       --axisLabelFontScale: 1.05;
 
       --bg:#252525;
@@ -35,7 +35,7 @@
     @media (max-width: 420px){
       :root{
         --fontScale: 1.06;
-        --axisLabelGap: 120px;
+        --axisLabelGap: 84px;
         --axisLabelFontScale: 1.00;
       }
     }
@@ -238,41 +238,6 @@
       line-height:1.35;
       max-width: 680px;
     }
-
-    /* Indicador visual de desplegables (flecha) */
-    .oecd-details > summary.oecd-btn{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .oecd-details > summary.oecd-btn::after{
-      content:"▾";
-      font-size: calc(16px * var(--fontScale));
-      opacity:.95;
-      transform: translateY(-1px);
-      transition: transform .18s ease;
-      flex: 0 0 auto;
-    }
-    .oecd-details[open] > summary.oecd-btn::after{
-      transform: translateY(-1px) rotate(180deg);
-    }
-
-    .caption-toggle{
-      position:relative;
-    }
-    .caption-toggle::after{
-      content:"▾";
-      font-size: calc(14px * var(--fontScale));
-      opacity:.95;
-      margin-left:8px;
-      transition: transform .18s ease;
-      transform: translateY(-1px);
-    }
-    .caption-details[open] .caption-toggle::after{
-      transform: translateY(-1px) rotate(180deg);
-    }
-
 
     #oecdInfo{ display:none !important; }
 
@@ -671,18 +636,9 @@
 <script>
 (function(){
   try{
-    // Redirección a versión escritorio cuando el viewport es ancho.
-    // Por defecto:
-    //  - si este archivo se llama "movil_XXXX.html" → redirige a "XXXX.html"
-    //  - si no, usa DESKTOP_FILE (ajústalo a tu nombre real).
     if (window.matchMedia && window.matchMedia("(min-width: 901px)").matches) {
-      const DESKTOP_FILE = "simulador.html"; // <-- Cambia esto si tu archivo de escritorio tiene otro nombre.
-      const currentFile = (location.pathname.split("/").pop() || "");
-      const derivedDesktop = currentFile.startsWith("movil_") ? currentFile.replace(/^movil_/, "") : null;
-      const target = derivedDesktop || DESKTOP_FILE;
-
-      if (target && currentFile !== target && !location.pathname.endsWith("/" + target) && !location.pathname.endsWith(target)) {
-        window.location.replace(target);
+      if (!location.pathname.endsWith("simulador.html")) {
+        window.location.replace("simulador.html");
       }
     }
   }catch(e){}
@@ -2195,7 +2151,7 @@
         x: box + gap,
         y: yy + 2,
         fill: COLORS.text,
-        "font-size": fsTick(22),
+        "font-size": fsTick(18),
         "font-family":"Arial, sans-serif",
         "text-anchor":"start",
         "opacity":"0.92"
@@ -2261,7 +2217,7 @@
     clearSvg(svg);
 
     const W = 1000, H = 700;
-    const pad = {l: 90, r: 30, t: 24, b: 200};
+    const pad = {l: 90, r: 30, t: 24, b: 140};
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -2286,7 +2242,7 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 6, y: yToPx(yv) + 4,
-        fill: COLORS.text, "font-size": fsTick(16), "font-family":"Arial, sans-serif",
+        fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
       t.textContent = String(Math.round(yv));
@@ -2302,7 +2258,7 @@
       }));
       const t = svgEl('text',{
         x: xToPx(xv), y: pad.t + innerH + 26,
-        fill: COLORS.text, "font-size": fsTick(16), "font-family":"Arial, sans-serif",
+        fill: COLORS.text, "font-size": fsTick(12), "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
       t.textContent = String(xv);
@@ -2321,17 +2277,17 @@
     const xAxisLabelY = Math.min(H - 44, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
-      fill: COLORS.text, "font-size": fsAxisLabel(18), "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    const legendY = Math.min(H - 80, xAxisLabelY + 58);
+    const legendY = Math.min(H - 16, xAxisLabelY + 30);
     renderTimeLegendHorizontal(svg, legendY);
 
     const yLabelX = Math.max(18, pad.l - (getAxisLabelGap() * 0.65));
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size": fsAxisLabel(18), "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxisLabel(14), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
     })).textContent = "Personas (millones)";
@@ -2459,7 +2415,7 @@
     clearSvg(svg);
 
     const W = 1000, H = 700;
-    const pad = {l: 90, r: 30, t: 26, b: 130};
+    const pad = {l: 90, r: 30, t: 26, b: 70};
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -2490,7 +2446,7 @@
       }));
       const t = svgEl('text',{
         x: pad.l - 6, y: yToPx(v) + 4,
-        fill: COLORS.text, "font-size": fsTick(16),
+        fill: COLORS.text, "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
         "text-anchor":"end", "opacity":"0.90"
       });
@@ -2505,7 +2461,7 @@
       }));
       const t = svgEl('text',{
         x: xToPx(v), y: pad.t + innerH + 26,
-        fill: COLORS.text, "font-size": fsTick(16),
+        fill: COLORS.text, "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
@@ -2525,7 +2481,7 @@
     const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
-      fill: COLORS.text, "font-size": fsAxisLabel(18),
+      fill: COLORS.text, "font-size": fsAxisLabel(14),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
@@ -2533,7 +2489,7 @@
     const yLabelX = Math.max(18, pad.l - (getAxisLabelGap() * 0.65));
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
-      fill: COLORS.text, "font-size": fsAxisLabel(18),
+      fill: COLORS.text, "font-size": fsAxisLabel(14),
       "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95",
       transform: `rotate(-90 ${yLabelX} ${pad.t + innerH/2})`
@@ -2578,7 +2534,7 @@
     }));
     svg.appendChild(svgEl('text',{
       x: xToPx(C) + 10, y: yToPx(P) - 10,
-      fill: COLORS.retired, "font-size": fs(18),
+      fill: COLORS.retired, "font-size": fs(14),
       "font-family":"Arial, sans-serif", "opacity":"0.95"
     })).textContent = `t=${cur.t}`;
 
@@ -2798,7 +2754,7 @@
     svg.appendChild(svgEl('text',{
       x: cx - 10, y: 50,
       fill: COLORS.workers,
-      "font-size": fsTick(16),
+      "font-size": fsTick(13),
       "font-family":"Arial, sans-serif",
       "text-anchor":"end",
       "opacity":"0.92"
@@ -2807,7 +2763,7 @@
     svg.appendChild(svgEl('text',{
       x: cx + 10, y: 50,
       fill: COLORS.retired,
-      "font-size": fsTick(16),
+      "font-size": fsTick(13),
       "font-family":"Arial, sans-serif",
       "text-anchor":"start",
       "opacity":"0.92"
@@ -2840,7 +2796,7 @@
       const t = svgEl('text',{
         x: 12, y: y + h*0.72,
         fill: COLORS.text,
-        "font-size": fsTick(16),
+        "font-size": fsTick(12),
         "font-family":"Arial, sans-serif",
         "opacity":"0.90"
       });
