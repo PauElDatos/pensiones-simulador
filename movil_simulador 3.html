@@ -10,7 +10,6 @@
       --fontScale: 1.12;
       --axisLabelGap: 112px;
       --axisLabelFontScale: 1.05;
-      --chartFontScale: 2.75;
 
       --bg:#252525;
       --primary:#FEF702;
@@ -38,7 +37,6 @@
         --fontScale: 1.06;
         --axisLabelGap: 120px;
         --axisLabelFontScale: 1.00;
-        --chartFontScale: 3.05;
       }
     }
 
@@ -241,62 +239,42 @@
       max-width: 680px;
     }
 
-        /* Indicador visual de desplegables (más vistoso) */
+    /* Indicador visual de desplegables (flecha) */
     .oecd-details > summary.oecd-btn{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-    }
-    .oecd-details > summary.oecd-btn::after{
-      content:"▼";
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:36px;
-      height:36px;
-      border-radius:12px;
-      background: var(--primary);
-      color:#111;
-      font-size: 18px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.25);
-      flex:0 0 auto;
-      transition: transform .18s ease, filter .18s ease;
-    }
-    .oecd-details[open] > summary.oecd-btn::after{
-      transform: rotate(180deg);
-      filter: brightness(0.95);
-    }
-
-    .caption-details > summary.caption-toggle{
-      display:inline-flex;
-      align-items:center;
       gap:10px;
     }
-    .caption-details > summary.caption-toggle::after{
-      content:"▼";
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:32px;
-      height:32px;
-      border-radius:10px;
-      background: var(--primary);
-      color:#111;
-      font-size: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.25);
-      flex:0 0 auto;
-      transition: transform .18s ease, filter .18s ease;
+    .oecd-details > summary.oecd-btn::after{
+      content:"▾";
+      font-size: calc(16px * var(--fontScale));
+      opacity:.95;
+      transform: translateY(-1px);
+      transition: transform .18s ease;
+      flex: 0 0 auto;
     }
-    .caption-details[open] > summary.caption-toggle::after{
-      transform: rotate(180deg);
-      filter: brightness(0.95);
+    .oecd-details[open] > summary.oecd-btn::after{
+      transform: translateY(-1px) rotate(180deg);
     }
 
-    /* Más altura para la gráfica temporal (para evitar solapes de leyenda/etiqueta) */
-    #timeSvg{ aspect-ratio: 1000 / 1200; }
+    .caption-toggle{
+      position:relative;
+    }
+    .caption-toggle::after{
+      content:"▾";
+      font-size: calc(14px * var(--fontScale));
+      opacity:.95;
+      margin-left:8px;
+      transition: transform .18s ease;
+      transform: translateY(-1px);
+    }
+    .caption-details[open] .caption-toggle::after{
+      transform: translateY(-1px) rotate(180deg);
+    }
 
-#oecdInfo{ display:none !important; }
+
+    #oecdInfo{ display:none !important; }
 
     .oecd-nav{
       display:flex;
@@ -784,7 +762,7 @@
 
           <div class="cb">
             <div class="sim-wrap">
-              <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 1200" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
+              <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
             </div>
 
             <div class="sys-controls" aria-label="Parámetros del sistema">
@@ -1059,14 +1037,6 @@
     return isFinite(v) ? v : 1;
   };
 
-  const getChartFontScale = () => {
-    const v = parseFloat(CSS('--chartFontScale'));
-    return isFinite(v) ? v : 1;
-  };
-
-  const su = (v) => v * getFontScale() * getChartFontScale();
-
-
   const WORKER_POOL = [
     "figuras/noun-avatar-5116460.svg",
     "figuras/noun-avatar-5116462.svg",
@@ -1236,9 +1206,9 @@
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const toM = (x) => x / 1_000_000;
 
-  const fs = (px) => (px * getFontScale() * getChartFontScale()).toFixed(2);
-  const fsTick = (px) => (px * getFontScale() * getChartFontScale()).toFixed(2);
-  const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale() * getChartFontScale()).toFixed(2);
+  const fs = (px) => (px * getFontScale()).toFixed(2);
+  const fsTick = (px) => (px * getFontScale()).toFixed(2);
+  const fsAxisLabel = (px) => (px * getFontScale() * getAxisLabelFontScale()).toFixed(2);
 
   const safeNum = (x) => (typeof x === "number" && isFinite(x)) ? x : null;
 
@@ -2201,9 +2171,9 @@
 
     const g = svgEl('g', { "opacity":"0.95" });
 
-    const box = su(14);
-    const gap = su(10);
-    const rowH = su(24);
+    const box = 14;
+    const gap = 10;
+    const rowH = 24;
 
     const startY = y - ((items.length - 1) * rowH) / 2;
 
@@ -2211,7 +2181,7 @@
       const yy = startY + i * rowH;
 
       g.appendChild(svgEl('rect', {
-        x: 0, y: yy - (box - su(2)),
+        x: 0, y: yy - (box - 2),
         width: box, height: box,
         fill: it.fill,
         "fill-opacity": it.op,
@@ -2290,8 +2260,8 @@
     const svg = els.timeSvg;
     clearSvg(svg);
 
-    const W = 1000, H = 1200;
-    const pad = {l: 180, r: 40, t: 40, b: 560};
+    const W = 1000, H = 700;
+    const pad = {l: 90, r: 30, t: 24, b: 200};
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -2331,7 +2301,7 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.30"
       }));
       const t = svgEl('text',{
-        x: xToPx(xv), y: pad.t + innerH + su(26),
+        x: xToPx(xv), y: pad.t + innerH + 26,
         fill: COLORS.text, "font-size": fsTick(16), "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
       });
@@ -2348,18 +2318,17 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = pad.t + innerH + su(52);
-
+    const xAxisLabelY = Math.min(H - 44, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
-      fill: COLORS.text, "font-size": fsAxisLabel(22), "font-family":"Arial, sans-serif",
+      fill: COLORS.text, "font-size": fsAxisLabel(18), "font-family":"Arial, sans-serif",
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Años / turnos";
 
-    const legendY = pad.t + innerH + su(125);
+    const legendY = Math.min(H - 80, xAxisLabelY + 58);
     renderTimeLegendHorizontal(svg, legendY);
 
-    const yLabelX = Math.max(24, pad.l - su(70));
+    const yLabelX = Math.max(18, pad.l - (getAxisLabelGap() * 0.65));
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(18), "font-family":"Arial, sans-serif",
@@ -2490,7 +2459,7 @@
     clearSvg(svg);
 
     const W = 1000, H = 700;
-    const pad = {l: 170, r: 40, t: 40, b: 300};
+    const pad = {l: 90, r: 30, t: 26, b: 130};
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -2535,7 +2504,7 @@
         stroke: COLORS.grid, "stroke-width":"1", "stroke-opacity":"0.35"
       }));
       const t = svgEl('text',{
-        x: xToPx(v), y: pad.t + innerH + su(26),
+        x: xToPx(v), y: pad.t + innerH + 26,
         fill: COLORS.text, "font-size": fsTick(16),
         "font-family":"Arial, sans-serif",
         "text-anchor":"middle", "opacity":"0.90"
@@ -2553,7 +2522,7 @@
       stroke: COLORS.text, "stroke-width":"1.2", "stroke-opacity":"0.9"
     }));
 
-    const xAxisLabelY = pad.t + innerH + su(52);
+    const xAxisLabelY = Math.min(H - 16, pad.t + innerH + getAxisLabelGap());
     svg.appendChild(svgEl('text',{
       x: pad.l + innerW/2, y: xAxisLabelY,
       fill: COLORS.text, "font-size": fsAxisLabel(18),
@@ -2561,7 +2530,7 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
-    const yLabelX = Math.max(24, pad.l - su(70));
+    const yLabelX = Math.max(18, pad.l - (getAxisLabelGap() * 0.65));
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(18),
