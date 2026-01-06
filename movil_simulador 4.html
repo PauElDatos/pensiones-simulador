@@ -10,8 +10,7 @@
       --fontScale: 1.12;
       --axisLabelGap: 112px;
       --axisLabelFontScale: 1.05;
-      --chartFontScaleUser: 2.75; /* Ajusta esto para cambiar tamaño de tipografías en las 3 gráficas */
-      --chartFontScale: var(--chartFontScaleUser);
+      --chartFontScale: 2.75;
 
       --bg:#252525;
       --primary:#FEF702;
@@ -39,7 +38,7 @@
         --fontScale: 1.06;
         --axisLabelGap: 120px;
         --axisLabelFontScale: 1.00;
-        --chartFontScale: var(--chartFontScaleUser);
+        --chartFontScale: 3.05;
       }
     }
 
@@ -257,23 +256,17 @@
       width:36px;
       height:36px;
       border-radius:12px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.14);
-      color: var(--text);
+      background: var(--primary);
+      color:#111;
       font-size: 18px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.22);
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
       flex:0 0 auto;
-      transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+      transition: transform .18s ease, filter .18s ease;
     }
-    .oecd-details > summary.oecd-btn:hover::after{
-      background: rgba(255,255,255,.09);
-      border-color: rgba(255,255,255,.22);
-      color:#fff;
-    }
-
-.oecd-details[open] > summary.oecd-btn::after{
+    .oecd-details[open] > summary.oecd-btn::after{
       transform: rotate(180deg);
-      }
+      filter: brightness(0.95);
+    }
 
     .caption-details > summary.caption-toggle{
       display:inline-flex;
@@ -288,23 +281,17 @@
       width:32px;
       height:32px;
       border-radius:10px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.14);
-      color: var(--text);
+      background: var(--primary);
+      color:#111;
       font-size: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.22);
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
       flex:0 0 auto;
-      transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+      transition: transform .18s ease, filter .18s ease;
     }
-    .caption-details > summary.caption-toggle:hover::after{
-      background: rgba(255,255,255,.09);
-      border-color: rgba(255,255,255,.22);
-      color:#fff;
-    }
-
-.caption-details[open] > summary.caption-toggle::after{
+    .caption-details[open] > summary.caption-toggle::after{
       transform: rotate(180deg);
-      }
+      filter: brightness(0.95);
+    }
 
     /* Más altura para la gráfica temporal (para evitar solapes de leyenda/etiqueta) */
     #timeSvg{ aspect-ratio: 1000 / 1200; }
