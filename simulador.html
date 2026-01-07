@@ -2281,8 +2281,8 @@
     }));
 
     svg.appendChild(svgEl('circle', {
-      cx: xNow, cy: yToPx(toM(cur.total)), r: "5.5",
-      fill: COLORS.primary, "fill-opacity":"0.95"
+      cx: xNow, cy: yToPx(toM(cur.total)), r: "0",
+      fill: COLORS.primary, "fill-opacity":"0"
     }));
 
     const calYear = (cur.year && isFinite(cur.year)) ? ` (${cur.year})` : "";

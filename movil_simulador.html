@@ -22,8 +22,8 @@
       /* ===== Distancia horizontal de la etiqueta del eje Y (unidades base del SVG; se escala con su()) =====
          Valores más pequeños acercan el texto al eje (menos desplazamiento hacia la izquierda).
       */
-      --axisLabelGapTime: 30;
-      --axisLabelGapCP: 30;
+      --axisLabelGapTime:    40;
+      --axisLabelGapCP:      40;
 
 --bg:#252525;
       --primary:#FEF702;
@@ -2464,8 +2464,8 @@
     }));
 
     svg.appendChild(svgEl('circle', {
-      cx: xNow, cy: yToPx(toM(cur.total)), r: "5.5",
-      fill: COLORS.primary, "fill-opacity":"0.95"
+      cx: xNow, cy: yToPx(toM(cur.total)), r: "0",
+      fill: COLORS.primary, "fill-opacity":"0"
     }));
 
     // tReadout + año calendario si aplica
