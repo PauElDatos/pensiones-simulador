@@ -87,7 +87,6 @@
       overflow:hidden;
     }
 
-    /* ====== CABECERA DEL PANEL: ahora en columna para que las pills queden debajo del título ====== */
     .ph{
       padding:14px 16px 12px 16px;
       border-bottom:1px solid var(--stroke);
@@ -173,7 +172,7 @@
     .vslider-shell input[type="range"]{
       -webkit-appearance: none;
       appearance: none;
-      width: 260px; /* JS lo recalcula */
+      width: 260px;
       height: 4px;
       position:absolute;
       left:50%;
@@ -197,7 +196,6 @@
     }
     .val{ font-variant-numeric: tabular-nums; opacity:.95; }
 
-    /* ====== SLIDERS ====== */
     input[type="range"]{
       width:100%;
       display:block;
@@ -249,12 +247,12 @@
       border-top:1px solid rgba(255,255,255,.06);
     }
 
-    /* MOD: stack vertical + full width */
+    /* Botonera en columna y a ancho completo */
     .btns{
       display:flex;
-      flex-direction:column;  /* MOD */
-      gap:10px;               /* MOD */
-      width:100%;             /* MOD */
+      flex-direction:column;
+      gap:10px;
+      width:100%;
     }
 
     .btn{
@@ -264,9 +262,11 @@
       background:rgba(255,255,255,.03);
       color:var(--text);
       padding:10px 12px;
-      min-width:160px;
       text-align:center;
       font-size:13px;
+      width:100%;
+      min-width:0;
+      display:block;
     }
     .btn:hover{
       border-color: rgba(254,247,2,.35);
@@ -280,13 +280,6 @@
     }
     .btn.primary:hover{
       background: rgba(254,247,2,1);
-    }
-
-    /* MOD: botones full width dentro de su contenedor */
-    .btn.full{
-      width:100%;
-      min-width:0;
-      display:block;
     }
 
     /* Pills (Menores / Laboral / Mayores) */
@@ -343,7 +336,6 @@
     <div class="ph">
       <div class="ttl">Paso 1 — Pirámide</div>
 
-      <!-- Ahora estos 3 elementos quedan debajo del título -->
       <div class="mini" aria-label="Shares por grupo de edad">
         <span class="mini-pill" title="Menores (&lt;18)">
           <span class="mini-dot ylw"></span><span id="shareMin">—</span>
@@ -358,7 +350,6 @@
     </div>
 
     <div class="content">
-      <!-- Pirámide -->
       <div class="card" aria-label="Pirámide por quinquenios">
         <div class="ch">
           <div class="cttl">Pirámide</div>
@@ -375,7 +366,6 @@
         </div>
       </div>
 
-      <!-- Controles -->
       <div class="card" aria-label="Parámetros de pirámide">
         <div class="ch">
           <div class="cttl">Parámetros</div>
@@ -408,11 +398,8 @@
 
           <div class="btn-row">
             <div class="btns">
-              <!-- MOD: full width -->
-              <button id="nextBtn" class="btn primary full" type="button">Aceptar</button>
-
-              <!-- MOD: nuevo botón debajo -->
-              <button id="oecdBtn" class="btn full" type="button">Cargar paises OCDE</button>
+              <button id="nextBtn" class="btn primary" type="button">Aceptar</button>
+              <button id="oecdBtn" class="btn" type="button">Cargar paises OCDE</button>
             </div>
           </div>
         </div>
@@ -471,7 +458,7 @@
     shareRet: document.getElementById('shareRet'),
 
     nextBtn: document.getElementById('nextBtn'),
-    oecdBtn: document.getElementById('oecdBtn'), // MOD
+    oecdBtn: document.getElementById('oecdBtn'),
   };
 
   const svgEl = (name, attrs={}) => {
@@ -754,6 +741,17 @@
     [els.peakSlider, els.sigmaSlider, els.densityYoungSlider, els.densityOldSlider].forEach(paintRange);
   }
 
+  // Helpers: detección móvil/escritorio
+  function isMobileView(){
+    // coherente con tu criterio anterior: <= 900px -> móvil
+    return window.matchMedia && window.matchMedia("(max-width: 900px)").matches;
+  }
+
+  function goToSimulator(){
+    const target = isMobileView() ? "movil_simulador.html" : "simulador.html";
+    window.location.href = target;
+  }
+
   // Eventos
   els.peakSlider.addEventListener('input', (e) => {
     state.peakIdx = Number(e.target.value);
@@ -792,10 +790,10 @@
     window.location.href = "parametrosTiempo.html";
   });
 
-  // MOD: nuevo botón -> móvil directo
+  // Cargar países OCDE -> simulador según dispositivo
   els.oecdBtn.addEventListener('click', () => {
     saveState();
-    window.location.href = "movil_simulador.html";
+    goToSimulator();
   });
 
   window.addEventListener('resize', () => {
