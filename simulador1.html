@@ -3048,51 +3048,9 @@
   }
 
   // ==========================================================
-  // STORAGE (pirámide / tiempo)
-  // ==========================================================
-  const PYR_KEY  = "pensionSim_pyramid_v1";
-  const TIME_KEY = "pensionSim_time_v1";
-
-  function loadFromStorage(){
-    // Pirámide
-    try{
-      const raw = localStorage.getItem(PYR_KEY);
-      if (raw){
-        const o = JSON.parse(raw);
-        if (o && typeof o === "object"){
-          if (isFinite(Number(o.popTotalM)))    state.popTotalM = Number(o.popTotalM);
-          if (isFinite(Number(o.peakIdx)))      state.peakIdx = Number(o.peakIdx);
-          if (isFinite(Number(o.sigma)))        state.sigma = Number(o.sigma);
-          if (isFinite(Number(o.densityYoung))) state.densityYoung = Number(o.densityYoung);
-          if (isFinite(Number(o.densityOld)))   state.densityOld = Number(o.densityOld);
-        }
-      }
-    }catch(e){}
-
-    // Tiempo
-    try{
-      const raw = localStorage.getItem(TIME_KEY);
-      if (raw){
-        const o = JSON.parse(raw);
-        if (o && typeof o === "object"){
-          if (isFinite(Number(o.rho)))       state.rho = Number(o.rho);
-          if (isFinite(Number(o.tau)))       state.tau = Number(o.tau);
-          if (isFinite(Number(o.u)))         state.u = Math.max(0, Math.min(0.35, Number(o.u)));
-          if (isFinite(Number(o.popGrowth))) state.popGrowth = Number(o.popGrowth);
-          if (isFinite(Number(o.agingPP)))   state.agingPP = Number(o.agingPP);
-          if (isFinite(Number(o.years)))     state.years = Math.max(20, Math.min(140, Number(o.years)));
-        }
-      }
-    }catch(e){}
-  }
-
-
-
-  // ==========================================================
   // INIT
   // ==========================================================
   ensureWorkerSeq(30);
-  loadFromStorage();
   syncUI();
   renderPyramid();
   renderTimeChart();
