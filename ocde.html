@@ -109,6 +109,12 @@
       overflow:hidden;
       min-height:0;
     }
+
+    /* =========================
+       MODIFICACIÓN PRINCIPAL:
+       - Permitimos wrap siempre en .ph
+       - Añadimos un bloque de detalles (.ph-details) a ancho completo debajo
+       ========================= */
     .ph{
       padding:12px 12px 10px 12px;
       border-bottom:1px solid var(--stroke);
@@ -118,7 +124,11 @@
       justify-content:space-between;
       gap:10px;
       min-height:44px;
+
+      /* MODIFICACIÓN: permitir segunda fila (para Detalles modo OCDE a ancho completo) */
+      flex-wrap:wrap;
     }
+
     .ttl{
       font-family:var(--fontTitle);
       color:var(--primary);
@@ -172,10 +182,27 @@
       background:rgba(254,247,2,.08);
       color:#fff;
     }
+
+    /* MODIFICACIÓN: bloque de detalles a ancho completo bajo título/botones/selector (readout) */
+    .ph-details{
+      flex: 0 0 100%;
+      width: 100%;
+      order: 99; /* asegurar que siempre quede debajo del resto */
+      padding:10px 12px 12px 12px;
+      border-top:1px solid rgba(255,255,255,.06);
+      background:rgba(0,0,0,.10);
+      font-size: calc(12px * var(--uiScale));
+      line-height:1.35;
+      white-space:normal;
+      overflow-wrap:anywhere;
+    }
+    .ph-details[hidden]{ display:none !important; }
+
     @media (max-width: 900px){
       .ph{ flex-wrap:wrap; }
       .ph-actions{ width:100%; order:3; justify-content:stretch; }
       .sub{ width:100%; order:2; text-align:left; }
+      .ph-details{ order:4; } /* debajo del selector/readout y de los botones */
     }
 
     .countries{ display:flex; flex-direction:column; height:100%; min-height:0; }
@@ -520,9 +547,27 @@
         <button class="ph-btn" id="btnSortLeastSustainable" type="button" aria-pressed="false" title="Ordena por mayor tensión: (P − k·C) relativo (mayor a menor)">
           Menos sostenibles ↓
         </button>
+
+        <!-- MODIFICACIÓN: botón Detalles modo OCDE -->
+        <button
+          class="ph-btn"
+          id="btnOecdDetails"
+          type="button"
+          aria-pressed="false"
+          aria-expanded="false"
+          aria-controls="oecdDetails"
+          title="Muestra/oculta la explicación del modo OCDE"
+        >
+          Detalles modo OCDE
+        </button>
       </div>
 
       <div class="sub mono" id="cpReadout">C: — | P: —</div>
+
+      <!-- MODIFICACIÓN: el desplegable ya NO sale “pegado” al botón: aparece aquí, debajo de todo y a ancho completo -->
+      <div class="ph-details" id="oecdDetails" hidden>
+        En modo OCDE: 1) τ y ρ se inicializan con valores del dataset (pendiente k=τ/ρ). 2) La demografía se lee de OECD_demografia.csv (proyección por edades), y sustituye a los sliders de crec. población y envejecimiento. 3) C(t) se calibra en t0 para cuadrar C_people ajustando participación/u y se proyecta con la demografía. 4) P(t) usa Opción B: P(t)=α·(65+)(t) con α calibrado en t0 para que P(t0)=P_people (con checks de plausibilidad y fallback a α=1).
+      </div>
     </div>
 
     <div class="viz">
@@ -693,6 +738,10 @@
     btnSortProductivity: document.getElementById('btnSortProductivity'),
     btnSortMostProfitable: document.getElementById('btnSortMostProfitable'),
     btnSortLeastSustainable: document.getElementById('btnSortLeastSustainable'),
+
+    /* MODIFICACIÓN: Detalles modo OCDE */
+    btnOecdDetails: document.getElementById('btnOecdDetails'),
+    oecdDetails: document.getElementById('oecdDetails'),
 
     resultMini: document.getElementById('resultMini'),
     resultBadge: document.getElementById('resultBadge'),
@@ -890,6 +939,25 @@
     els.countrySelect.addEventListener('change', (e) => {
       const name = e.target.value;
       if (name) selectCountry(name, {syncSelect:false});
+    });
+  }
+
+  /* ===== MODIFICACIÓN: toggle Detalles modo OCDE (bloque a ancho completo debajo del header) ===== */
+  function wireOecdDetails(){
+    const btn = els.btnOecdDetails;
+    const box = els.oecdDetails;
+    if (!btn || !box) return;
+
+    const setOpen = (open) => {
+      box.hidden = !open;
+      btn.setAttribute("aria-pressed", open ? "true" : "false");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    };
+
+    setOpen(false);
+
+    btn.addEventListener("click", () => {
+      setOpen(box.hidden); // si está hidden => abrir
     });
   }
 
@@ -1478,8 +1546,10 @@
       els.loadText.textContent = "Leyendo JSON + CSV…";
 
       await Promise.all([ loadPensionsJSON(), loadPopulationCSV() ]);
+
       wireSortButtons();
       wireCountrySelect();
+      wireOecdDetails(); /* MODIFICACIÓN */
 
       els.loadBox.style.display = "none";
 
