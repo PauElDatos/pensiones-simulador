@@ -281,7 +281,7 @@
       padding-top:8px;
       border-top:1px solid rgba(255,255,255,.06);
     }
-    .btns{ display:flex; gap:8px; flex-wrap:wrap; }
+    .btns{ display:flex; gap:8px; flex-wrap:wrap; width:100%; } /* <-- MOD: asegura que el contenedor pueda ocupar todo el ancho */
     .btn{
       cursor:pointer;
       border-radius:12px;
@@ -302,6 +302,9 @@
       border-color: rgba(254,247,2,.35);
       color:#111;
       background: rgba(254,247,2,.90);
+      width:100%;               /* <-- MOD: el botón Aceptar ocupa todo el ancho */
+      min-width:0;              /* <-- MOD: evita que el min-width impida el 100% en layouts estrechos */
+      display:block;            /* <-- MOD: asegura comportamiento de bloque */
     }
     .btn.primary:hover{ background: rgba(254,247,2,1); }
 
