@@ -323,11 +323,11 @@
       }
 
     /* Más altura para la gráfica temporal (para evitar solapes de leyenda/etiqueta) */
-    #timeSvg{ aspect-ratio: 1000 / 1050; }
+    #timeSvg{ aspect-ratio: 1000 / 1200; }
 
 
     /* Ajuste de proporción para que "C–P y equilibrio" NO se vea achatada */
-    #cpSvg{ aspect-ratio: 1000 / 1000; }
+    #cpSvg{ aspect-ratio: 1000 / 700; }
 #oecdInfo{ display:none !important; }
 
     .oecd-nav{
@@ -435,10 +435,10 @@
     }
 
     .sim-wrap{
-      display:flex;
-      justify-content:center;
-      align-items:center;
+      display:grid;
+      grid-template-columns: 1fr;
       gap:10px;
+      align-items:stretch;
     }
 
     .caption{
@@ -816,7 +816,7 @@
 
           <div class="cb">
             <div class="sim-wrap">
-              <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 1050" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
+              <svg id="timeSvg" class="bigsvg" viewBox="0 0 1000 1200" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica temporal"></svg>
             </div>
 
             <div class="sys-controls" aria-label="Parámetros del sistema">
@@ -921,7 +921,7 @@
           </div>
 
           <div class="cb">
-            <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
+            <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
 
             <div class="cp-below" aria-label="Indicadores C–P">
               <div class="cp-ratio-hero" id="cpRatioHero">
@@ -2334,8 +2334,8 @@
     setChartCtx("timeSvg");
     clearSvg(svg);
 
-    const W = 1000, H = 1050;
-    const pad = {l: 180, r: 40, t: 40, b: 410};
+    const W = 1000, H = 1200;
+    const pad = {l: 180, r: 40, t: 40, b: 560};
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -2534,8 +2534,8 @@
     setChartCtx("cpSvg");
     clearSvg(svg);
 
-    const W = 1000, H = 1000;
-    const pad = {l: 170, r: 40, t: 40, b: 210};
+    const W = 1000, H = 700;
+    const pad = {l: 170, r: 40, t: 40, b: 300};
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
