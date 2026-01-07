@@ -10,10 +10,10 @@ from typing import Any, Dict, List, Optional, Tuple
 # ============================================================
 # CONFIG: edita aquí tus rutas (Windows/Linux/macOS)
 # ============================================================
-INPUT_DIR = r"/Users/paulmuseck/Desktop/pensiones-simulador/JSONANTIGUO"    
+INPUT_DIR = r"/mnt/data"                 # carpeta donde está el JSON merged
 INPUT_FILENAME = "oecd_pensions_merged.json"
 
-OUTPUT_DIR = r"/Users/paulmuseck/Desktop/pensiones-simulador/JSONANTIGUO/oecd_countries"
+OUTPUT_DIR = r"/mnt/data/oecd_countries" # carpeta destino (se crea si no existe)
 
 # Si quieres también un índice con todos los países generados:
 WRITE_INDEX_FILE = True
