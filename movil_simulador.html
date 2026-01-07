@@ -8,15 +8,24 @@
   <style>
     :root{
       --fontScale: 1.12;
-      --axisLabelGap: 112px;
       --axisLabelFontScale: 1.05;
 
-/* AJUSTE RÁPIDO: escala de letras/números dentro de las gráficas (ejes, ticks, labels, etc.)
-   1.00 = tamaño “base”; 0.80 = más pequeño; 1.20 = más grande */
---chartTextScale: 1.0;
---chartFontScale: calc(2.75 * var(--chartTextScale));
+      /* ===== Tipografías por gráfica (multiplicador interno de SVG) =====
+         - Evolución en el tiempo:   --chartFontScaleTime
+         - C–P y equilibrio:        --chartFontScaleCP
+         - Pirámide:                --chartFontScalePyr
+      */
+      --chartFontScaleTime: 2.1;
+      --chartFontScaleCP: 2.1;
+      --chartFontScalePyr: 2.1;
 
-      --bg:#252525;
+      /* ===== Distancia horizontal de la etiqueta del eje Y (unidades base del SVG; se escala con su()) =====
+         Valores más pequeños acercan el texto al eje (menos desplazamiento hacia la izquierda).
+      */
+      --axisLabelGapTime: 70;
+      --axisLabelGapCP: 70;
+
+--bg:#252525;
       --primary:#FEF702;
       --text:#B0B0B0;
       --grid:#4A4A4A;
@@ -40,9 +49,13 @@
     @media (max-width: 420px){
       :root{
         --fontScale: 1.06;
-        --axisLabelGap: 120px;
         --axisLabelFontScale: 1.00;
-        --chartFontScale: calc(3.05 * var(--chartTextScale));
+
+        /* Si quieres tipografías algo más pequeñas en pantallas muy estrechas, ajusta aquí:
+        --chartFontScaleTime: 2.0;
+        --chartFontScaleCP: 2.0;
+        --chartFontScalePyr: 2.0;
+        */
       }
     }
 
@@ -262,17 +275,21 @@
       border-radius:12px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.14);
-      color:#fff;
+      color: var(--text);
       font-size: 18px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+      box-shadow: 0 2px 10px rgba(0,0,0,.22);
       flex:0 0 auto;
-      transition: transform .18s ease, background-color .18s ease, border-color .18s ease;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
     }
-    .oecd-details[open] > summary.oecd-btn::after{
+    .oecd-details > summary.oecd-btn:hover::after{
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.22);
+      color:#fff;
+    }
+
+.oecd-details[open] > summary.oecd-btn::after{
       transform: rotate(180deg);
-      background: rgba(255,255,255,.10);
-      border-color: rgba(255,255,255,.18);
-    }
+      }
 
     .caption-details > summary.caption-toggle{
       display:inline-flex;
@@ -289,21 +306,28 @@
       border-radius:10px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.14);
-      color:#fff;
+      color: var(--text);
       font-size: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+      box-shadow: 0 2px 10px rgba(0,0,0,.22);
       flex:0 0 auto;
-      transition: transform .18s ease, background-color .18s ease, border-color .18s ease;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
     }
-    .caption-details[open] > summary.caption-toggle::after{
+    .caption-details > summary.caption-toggle:hover::after{
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.22);
+      color:#fff;
+    }
+
+.caption-details[open] > summary.caption-toggle::after{
       transform: rotate(180deg);
-      background: rgba(255,255,255,.10);
-      border-color: rgba(255,255,255,.18);
-    }
+      }
 
     /* Más altura para la gráfica temporal (para evitar solapes de leyenda/etiqueta) */
     #timeSvg{ aspect-ratio: 1000 / 1200; }
 
+
+    /* Ajuste de proporción para que "C–P y equilibrio" NO se vea achatada */
+    #cpSvg{ aspect-ratio: 1000 / 700; }
 #oecdInfo{ display:none !important; }
 
     .oecd-nav{
@@ -1047,6 +1071,10 @@
   const SPLIT_85P = [0.56, 0.26, 0.12, 0.06];
 
   const CSS = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  // Contexto de renderizado: qué gráfica está pintándose (para escalas independientes)
+  let CHART_CTX_ID = null; // 'timeSvg' | 'cpSvg' | 'pyrSvg'
+  const setChartCtx = (id) => { CHART_CTX_ID = id || null; };
   const COLORS = {
     primary: CSS('--primary'),
     text: CSS('--text'),
@@ -1059,8 +1087,11 @@
 
   const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
   const getAxisLabelGap = () => {
-    const v = parseFloat(CSS('--axisLabelGap'));
-    return isFinite(v) ? v : 60;
+    // Unidades base del SVG (antes de su()).
+    // Valores más pequeños acercan la etiqueta del eje Y al propio eje.
+    const varName = (CHART_CTX_ID === "cpSvg") ? "--axisLabelGapCP" : "--axisLabelGapTime";
+    const v = parseFloat(CSS(varName));
+    return isFinite(v) ? v : 70;
   };
   const getAxisLabelFontScale = () => {
     const v = parseFloat(CSS('--axisLabelFontScale'));
@@ -1068,7 +1099,11 @@
   };
 
   const getChartFontScale = () => {
-    const v = parseFloat(CSS('--chartFontScale'));
+    const varName =
+      (CHART_CTX_ID === "cpSvg")  ? "--chartFontScaleCP"  :
+      (CHART_CTX_ID === "pyrSvg") ? "--chartFontScalePyr" :
+                                   "--chartFontScaleTime";
+    const v = parseFloat(CSS(varName));
     return isFinite(v) ? v : 1;
   };
 
@@ -2296,6 +2331,7 @@
   // ==========================================================
   function renderTimeChart(){
     const svg = els.timeSvg;
+    setChartCtx("timeSvg");
     clearSvg(svg);
 
     const W = 1000, H = 1200;
@@ -2367,7 +2403,7 @@
     const legendY = pad.t + innerH + su(125);
     renderTimeLegendHorizontal(svg, legendY);
 
-    const yLabelX = Math.max(24, pad.l - su(70));
+    const yLabelX = Math.max(24, pad.l - su(getAxisLabelGap()));
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(18), "font-family":"Arial, sans-serif",
@@ -2495,6 +2531,7 @@
 
   function renderCPChartSim(cur, series){
     const svg = els.cpSvg;
+    setChartCtx("cpSvg");
     clearSvg(svg);
 
     const W = 1000, H = 700;
@@ -2569,7 +2606,7 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
-    const yLabelX = Math.max(24, pad.l - su(70));
+    const yLabelX = Math.max(24, pad.l - su(getAxisLabelGap()));
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(18),
@@ -2774,6 +2811,7 @@
 
   function renderPyramid(){
     const svg = els.pyrSvg;
+    setChartCtx("pyrSvg");
     clearSvg(svg);
 
     const W = 520, H = 650;
