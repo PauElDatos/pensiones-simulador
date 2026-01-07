@@ -1085,68 +1085,6 @@
     noncot: CSS('--noncot')
   };
 
-  // ==========================================================
-  // PERSISTENCIA (Paso 1 y Paso 2)
-  // Lee la pirámide y los parámetros de tiempo guardados en localStorage
-  // por piramidePoblacional.html y parametrosTiempo.html
-  // ==========================================================
-  const PYR_KEY  = "pensionSim_pyramid_v1";
-  const TIME_KEY = "pensionSim_time_v1";
-
-  function loadFromStorage(){
-    // --- Pirámide ---
-    try{
-      const raw = localStorage.getItem(PYR_KEY);
-      if (raw){
-        const o = JSON.parse(raw);
-        if (o && typeof o === "object"){
-          const pop = Number(o.popTotalM);
-          if (isFinite(pop)) state.popTotalM = Math.max(0.1, Math.min(400, pop));
-
-          const peak = Number(o.peakIdx);
-          if (isFinite(peak)) state.peakIdx = Math.max(0, Math.min(20, Math.round(peak)));
-
-          const sigma = Number(o.sigma);
-          if (isFinite(sigma)) state.sigma = Math.max(6, Math.min(40, sigma));
-
-          const dy = Number(o.densityYoung);
-          if (isFinite(dy)) state.densityYoung = Math.max(0.35, Math.min(1.25, dy));
-
-          const do_ = Number(o.densityOld);
-          if (isFinite(do_)) state.densityOld = Math.max(0.35, Math.min(1.25, do_));
-        }
-      }
-    }catch(e){}
-
-    // --- Tiempo ---
-    try{
-      const raw = localStorage.getItem(TIME_KEY);
-      if (raw){
-        const o = JSON.parse(raw);
-        if (o && typeof o === "object"){
-          const rho = Number(o.rho);
-          if (isFinite(rho)) state.rho = Math.max(0.40, Math.min(1.40, rho));
-
-          const tau = Number(o.tau);
-          if (isFinite(tau)) state.tau = Math.max(0.05, Math.min(0.45, tau));
-
-          const u = Number(o.u);
-          if (isFinite(u)) state.u = Math.max(0, Math.min(0.35, u));
-
-          const pg = Number(o.popGrowth);
-          if (isFinite(pg)) state.popGrowth = Math.max(-0.015, Math.min(0.025, pg));
-
-          const ag = Number(o.agingPP);
-          if (isFinite(ag)) state.agingPP = Math.max(-0.005, Math.min(0.008, ag));
-
-          const years = Number(o.years);
-          if (isFinite(years)) state.years = Math.max(20, Math.min(140, Math.round(years)));
-        }
-      }
-    }catch(e){}
-  }
-
-
   const getFontScale = () => parseFloat(CSS('--fontScale')) || 1;
   const getAxisLabelGap = () => {
     // Unidades base del SVG (antes de su()).
@@ -3321,7 +3259,6 @@
   // INIT
   // ==========================================================
   ensureWorkerSeq(30);
-  loadFromStorage();
   syncUI();
   renderPyramid();
   renderTimeChart();
