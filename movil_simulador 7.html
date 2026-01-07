@@ -10,13 +10,25 @@
       --fontScale: 1.12;
       --axisLabelGap: 112px;
       --axisLabelFontScale: 1.05;
+      /* ======================
+         AJUSTES DE TIPOGRAFÍA EN GRÁFICAS (usuario)
+         - Escala por gráfica (SVG)
+         - Ajuste de offset del label del eje Y por gráfica
+         ====================== */
+      --chartFontScaleTimeUser: 2.2; /* Evolución en el tiempo */
+      --chartFontScaleCPUser:   2.2; /* C–P y equilibrio */
+      --chartFontScalePyrUser:  2.2; /* Pirámide */
 
-/* AJUSTE RÁPIDO: escala de letras/números dentro de las gráficas (ejes, ticks, labels, etc.)
-   1.00 = tamaño “base”; 0.80 = más pequeño; 1.20 = más grande */
---chartTextScale: 0.70;
---chartFontScale: calc(2.75 * var(--chartTextScale));
+      --chartFontScaleTime: var(--chartFontScaleTimeUser);
+      --chartFontScaleCP:   var(--chartFontScaleCPUser);
+      --chartFontScalePyr:  var(--chartFontScalePyrUser);
 
-      --bg:#252525;
+      /* Distancia horizontal del texto del eje Y (en unidades base del SVG; escala con la tipografía) */
+      --yAxisLabelOffsetTimeUser: 40;
+      --yAxisLabelOffsetCPUser:   40;
+      --yAxisLabelOffsetTime: var(--yAxisLabelOffsetTimeUser);
+      --yAxisLabelOffsetCP:   var(--yAxisLabelOffsetCPUser);
+--bg:#252525;
       --primary:#FEF702;
       --text:#B0B0B0;
       --grid:#4A4A4A;
@@ -42,8 +54,19 @@
         --fontScale: 1.06;
         --axisLabelGap: 120px;
         --axisLabelFontScale: 1.00;
-        --chartFontScale: calc(3.05 * var(--chartTextScale));
-      }
+        --chartFontScaleTimeUser: 3.05;
+        --chartFontScaleCPUser:   3.05;
+        --chartFontScalePyrUser:  3.05;
+
+        --chartFontScaleTime: var(--chartFontScaleTimeUser);
+        --chartFontScaleCP:   var(--chartFontScaleCPUser);
+        --chartFontScalePyr:  var(--chartFontScalePyrUser);
+
+        --yAxisLabelOffsetTimeUser: 66;
+        --yAxisLabelOffsetCPUser:   66;
+        --yAxisLabelOffsetTime: var(--yAxisLabelOffsetTimeUser);
+        --yAxisLabelOffsetCP:   var(--yAxisLabelOffsetCPUser);
+}
     }
 
     *{box-sizing:border-box}
@@ -262,17 +285,21 @@
       border-radius:12px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.14);
-      color:#fff;
+      color: var(--text);
       font-size: 18px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+      box-shadow: 0 2px 10px rgba(0,0,0,.22);
       flex:0 0 auto;
-      transition: transform .18s ease, background-color .18s ease, border-color .18s ease;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
     }
-    .oecd-details[open] > summary.oecd-btn::after{
+    .oecd-details > summary.oecd-btn:hover::after{
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.22);
+      color:#fff;
+    }
+
+.oecd-details[open] > summary.oecd-btn::after{
       transform: rotate(180deg);
-      background: rgba(255,255,255,.10);
-      border-color: rgba(255,255,255,.18);
-    }
+      }
 
     .caption-details > summary.caption-toggle{
       display:inline-flex;
@@ -289,17 +316,21 @@
       border-radius:10px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.14);
-      color:#fff;
+      color: var(--text);
       font-size: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+      box-shadow: 0 2px 10px rgba(0,0,0,.22);
       flex:0 0 auto;
-      transition: transform .18s ease, background-color .18s ease, border-color .18s ease;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
     }
-    .caption-details[open] > summary.caption-toggle::after{
+    .caption-details > summary.caption-toggle:hover::after{
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.22);
+      color:#fff;
+    }
+
+.caption-details[open] > summary.caption-toggle::after{
       transform: rotate(180deg);
-      background: rgba(255,255,255,.10);
-      border-color: rgba(255,255,255,.18);
-    }
+      }
 
     /* Más altura para la gráfica temporal (para evitar solapes de leyenda/etiqueta) */
     #timeSvg{ aspect-ratio: 1000 / 1200; }
@@ -410,7 +441,10 @@
       display:block;
     }
 
-    .sim-wrap{
+    
+    /* CP: evita 'achatamiento' por mismatch entre aspect-ratio del contenedor y el viewBox (1000x700) */
+    #cpSvg.bigsvg{ aspect-ratio: 1000 / 900; }
+.sim-wrap{
       display:grid;
       grid-template-columns: 1fr;
       gap:10px;
@@ -897,7 +931,7 @@
           </div>
 
           <div class="cb">
-            <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
+            <svg id="cpSvg" class="bigsvg" viewBox="0 0 1000 900" preserveAspectRatio="xMidYMid meet" aria-label="Gráfica C vs P"></svg>
 
             <div class="cp-below" aria-label="Indicadores C–P">
               <div class="cp-ratio-hero" id="cpRatioHero">
@@ -1067,15 +1101,23 @@
     return isFinite(v) ? v : 1;
   };
 
+  let __chartKey = "Time"; // Time | CP | Pyr
+  const setChartKey = (k) => { __chartKey = k; };
+
   const getChartFontScale = () => {
-    const v = parseFloat(CSS('--chartFontScale'));
+    const v = parseFloat(CSS(`--chartFontScale${__chartKey}User`));
     return isFinite(v) ? v : 1;
   };
 
+  // Offset del label del eje Y (en unidades base del SVG, escaladas con la tipografía de esa gráfica)
+  const getYAxisLabelOffset = () => {
+    const raw = parseFloat(CSS(`--yAxisLabelOffset${__chartKey}User`));
+    const base = isFinite(raw) ? raw : 70;
+    return base * getFontScale() * getChartFontScale();
+  };
+
   const su = (v) => v * getFontScale() * getChartFontScale();
-
-
-  const WORKER_POOL = [
+const WORKER_POOL = [
     "figuras/noun-avatar-5116460.svg",
     "figuras/noun-avatar-5116462.svg",
     "figuras/noun-avatar-5116468.svg",
@@ -2295,6 +2337,7 @@
   // CHART 1
   // ==========================================================
   function renderTimeChart(){
+    setChartKey("Time");
     const svg = els.timeSvg;
     clearSvg(svg);
 
@@ -2367,7 +2410,7 @@
     const legendY = pad.t + innerH + su(125);
     renderTimeLegendHorizontal(svg, legendY);
 
-    const yLabelX = Math.max(24, pad.l - su(70));
+    const yLabelX = Math.max(24, pad.l - getYAxisLabelOffset());
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(18), "font-family":"Arial, sans-serif",
@@ -2494,11 +2537,12 @@
   }
 
   function renderCPChartSim(cur, series){
+    setChartKey("CP");
     const svg = els.cpSvg;
     clearSvg(svg);
 
-    const W = 1000, H = 700;
-    const pad = {l: 170, r: 40, t: 40, b: 300};
+    const W = 1000, H = 900;
+    const pad = {l: 140, r: 40, t: 50, b: 230};
     const innerW = W - pad.l - pad.r;
     const innerH = H - pad.t - pad.b;
 
@@ -2569,7 +2613,7 @@
       "text-anchor":"middle", "opacity":"0.95"
     })).textContent = "Cotizantes (millones)";
 
-    const yLabelX = Math.max(24, pad.l - su(70));
+    const yLabelX = Math.max(24, pad.l - getYAxisLabelOffset());
     svg.appendChild(svgEl('text',{
       x: yLabelX, y: pad.t + innerH/2,
       fill: COLORS.text, "font-size": fsAxisLabel(18),
@@ -2773,6 +2817,7 @@
   }
 
   function renderPyramid(){
+    setChartKey("Pyr");
     const svg = els.pyrSvg;
     clearSvg(svg);
 
